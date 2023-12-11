@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { Status } from "@/app/models/status";
 import { UserShowData } from "@/app/models/userShowData";
 import { Rating } from "@/app/models/rating";
+import { UserUpdate } from "@/app/models/userUpdate";
 
 export async function getUserShowData({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserShowData | null> {
 
@@ -54,4 +55,18 @@ export async function getAllStatuses(): Promise<Status[]|null> {
     const { data } = await supabase.from("status").select();
     const statuses = data as unknown as Status[];
     return statuses;
+}
+
+export async function getUserUpdates({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserUpdate[]|null> {
+    if (!userId) return null;
+  
+    const cookieStore = cookies()
+    const supabase = createClient(cookieStore);
+    const { data: updateData } = await supabase.from("UserUpdate").select().match({userId: userId, showId: showId});
+    
+    if (!updateData) return null;   
+  
+    const ouput: UserUpdate[] = updateData as unknown as UserUpdate[];
+    
+    return ouput;
 }

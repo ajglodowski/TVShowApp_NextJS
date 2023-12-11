@@ -1,13 +1,17 @@
 import type { Show } from '@/app/models/show';
 import { boolToEmoji } from '@/utils/boolToEmoji';
-import { getAllTags, getShow, getShowImage, getTags } from './ShowService';
+import { getAllTags, getRatingCounts, getShow, getShowImage, getTags } from './ShowService';
 import ShowTagsSection from "./components/ShowTagsSection";
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
 import { get } from 'http';
 import SeasonsRow from './components/SeasonsRow';
-import { getAllStatuses, getUserShowData, updateCurrentSeason, updateStatus } from './UserShowDataService';
+import { getAllStatuses, getUserShowData, getUserUpdates, updateCurrentSeason, updateStatus } from './UserShowDataService';
 import ShowStatusSection from './components/ShowStatusSection';
+import RatingsSection from './components/RatingsSection';
+import Image from 'next/image';
+import UserUpdatesSection from './components/UserUpdatesSection';
+import ShowTile from '@/app/components/show/ShowTile';
 
 function ShowNotFound() {
   return (
@@ -24,6 +28,11 @@ export default async function ShowPage({ params }: { params: { showId: string } 
   const showId = params.showId;
 
   const showData = await getShow(showId);
+
+  if (!showData) {
+    return <ShowNotFound />
+  }
+
   const currentTags = await getTags(showId);
   const allTags = await getAllTags(showId);
   const show = showData as Show;
@@ -38,19 +47,19 @@ export default async function ShowPage({ params }: { params: { showId: string } 
   const userInfoData = await getUserShowData({userId: currentUserId, showId: showId});
   const loggedIn = currentUserId !== undefined;
   const allStatuses = await getAllStatuses();
+  const ratingCounts = await getRatingCounts(showId);
+  const userUpdates = await getUserUpdates({showId: showId, userId: currentUserId});
 
-  if (!showData) {
-    return <ShowNotFound />
-  }
+  
 
   /* div className={`text-red bg-[${backgroundColor}]/1`}> */
 
   return (
     <div style={{ backgroundColor: backgroundColor }} className='w-full'>
       <div className='flex justify-center'>
-        <div>
-          <img src={showImageUrl} alt={show.name} className='object-contain h-96 w-96 rounded-lg m-2 hover:shadow-2xl'/>
-        </div>
+        {showImageUrl && <div>
+          <Image src={showImageUrl} alt={show.name} width={600} height={600} className='object-contain h-96 w-96 rounded-lg m-2 hover:shadow-2xl'/>
+        </div> }
         <div className='shadow-2xl rounded-lg m-8 p-4'>
             <h1 className='text-4xl font-bold'>{show.name}</h1>
             <h2 className='text-2xl'>{show.length} minutes - {show.service.name}</h2>
@@ -72,12 +81,19 @@ export default async function ShowPage({ params }: { params: { showId: string } 
             <p className='text-xs'>Show ID: {params.showId}</p>
         </div>
       </div>
-      <div>
-        Your Updates:
+      <div className='flex'>
+        <div>
+          <h2>Your Updates:</h2>
+          <UserUpdatesSection userUpdates={userUpdates}/>
+        </div>
       </div>
       <div>
         <ShowTagsSection currentTags={currentTags} allTags={allTags}/>
       </div>
+      <div>
+        <RatingsSection ratingCounts={ratingCounts}/>
+      </div>
+      <ShowTile showId={showId}/>
     </div>
     
   );
