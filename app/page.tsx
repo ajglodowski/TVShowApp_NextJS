@@ -1,9 +1,9 @@
-import DeployButton from '../components/DeployButton'
-import AuthButton from '../components/AuthButton'
+import DeployButton from '../supabase_components/DeployButton'
+import AuthButton from '../supabase_components/AuthButton'
 import { createClient } from '@/utils/supabase/server'
-import ConnectSupabaseSteps from '@/components/ConnectSupabaseSteps'
-import SignUpUserSteps from '@/components/SignUpUserSteps'
-import Header from '@/components/Header'
+import ConnectSupabaseSteps from '@/supabase_components/ConnectSupabaseSteps'
+import SignUpUserSteps from '@/supabase_components/SignUpUserSteps'
+import Header from '@/supabase_components/Header'
 import { cookies } from 'next/headers'
 
 export default async function Index() {

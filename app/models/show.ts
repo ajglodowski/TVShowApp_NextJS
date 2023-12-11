@@ -5,6 +5,7 @@ export type Show = {
     id: number;
     name: string;
     created_at: Date;
+    lastUpdated: Date;
     length: ShowLength;
     limitedSeries: boolean;
     currentlyAiring: boolean;
