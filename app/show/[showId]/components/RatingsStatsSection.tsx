@@ -3,8 +3,7 @@ import { Rating, RatingPoints } from '@/app/models/rating';
 import { RatingCounts } from '@/app/models/ratingCounts';
 import React from 'react';
 
-export default function RatingsSection ({ ratingCounts }: { ratingCounts: RatingCounts| null }) {
-    console.log(ratingCounts);
+export default function RatingsStatsSection ({ ratingCounts }: { ratingCounts: RatingCounts| null }) {
 
     if (!ratingCounts) {
         return (

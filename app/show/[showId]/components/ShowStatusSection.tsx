@@ -2,7 +2,9 @@
 
 import { Status } from "@/app/models/status";
 import { UserShowData } from "@/app/models/userShowData";
+import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { useState } from "react";
+import { updateUserShowData } from "../UserShowDataService";
 
 export default function ShowStatusSection({ userShowData, allStatuses, updateFunction, loggedIn }: { userShowData: UserShowData | null, allStatuses: Status[] | null, updateFunction: Function, loggedIn: boolean }) {
 
@@ -14,7 +16,7 @@ export default function ShowStatusSection({ userShowData, allStatuses, updateFun
 
     async function changeCurrentStatus(status: Status) {
         console.log(`Changing status to ${status.name}`);
-        var updateResponse = await updateFunction({ userId: userShowData!.userId, showId: userShowData!.showId, newStatus: status });
+        var updateResponse = await updateFunction({ updateType: UserUpdateCategory.UpdatedStatus, userId: userShowData!.userId, showId: userShowData!.showId, newValue: status });
         if (updateResponse) setCurrentStatus(status);
         else console.log(`Error updating season to ${status}`);
     };

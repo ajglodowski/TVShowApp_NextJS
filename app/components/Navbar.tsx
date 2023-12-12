@@ -11,7 +11,7 @@ function Navbar() {
                     <Link href="/">Home</Link>
                 </li>
                 <li>
-                    <Link href="/about">About</Link>
+                    <Link href="/show/1">About</Link>
                 </li>
                 <li>
                     <AuthButton />

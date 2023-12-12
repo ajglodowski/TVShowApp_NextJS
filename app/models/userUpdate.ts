@@ -6,12 +6,10 @@ export type UserUpdate = AddedToWatchlistUpdate | UpdatedStatusUpdate | RemovedF
 
 export type UserUpdateBase = {
     id: number;
-    name: string;
     userId: string;
     showId: number;
     updateType: UserUpdateCategory;
     updateDate: Date;
-    updateMessage: string;
 }
 
 export interface AddedToWatchlistUpdate extends UserUpdateBase {

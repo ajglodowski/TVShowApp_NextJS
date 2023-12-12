@@ -2,6 +2,7 @@ import { ChangedRatingUpdate, ChangedSeasonUpdate, UpdatedStatusUpdate, UserUpda
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 
 export function getUserUpdateMessage(update: UserUpdate): string {
+    console.log(update);
     switch (update.updateType as UserUpdateCategory) {
         case UserUpdateCategory.ChangedSeason:
             const changeSeasonUpdate = update as ChangedSeasonUpdate;

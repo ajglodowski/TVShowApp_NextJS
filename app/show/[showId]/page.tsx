@@ -4,14 +4,13 @@ import { getAllTags, getRatingCounts, getShow, getShowImage, getTags } from './S
 import ShowTagsSection from "./components/ShowTagsSection";
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
-import { get } from 'http';
 import SeasonsRow from './components/SeasonsRow';
-import { getAllStatuses, getUserShowData, getUserUpdates, updateCurrentSeason, updateStatus } from './UserShowDataService';
+import { getAllStatuses, getUserShowData, getUserUpdates, updateCurrentSeason, updateRating, updateStatus, updateUserShowData } from './UserShowDataService';
 import ShowStatusSection from './components/ShowStatusSection';
-import RatingsSection from './components/RatingsSection';
 import Image from 'next/image';
 import UserUpdatesSection from './components/UserUpdatesSection';
-import ShowTile from '@/app/components/show/ShowTile';
+import RatingsStatsSection from './components/RatingsStatsSection';
+import UserRatingsSection from './components/UserRatingsSection';
 
 function ShowNotFound() {
   return (
@@ -56,14 +55,19 @@ export default async function ShowPage({ params }: { params: { showId: string } 
 
   return (
     <div style={{ backgroundColor: backgroundColor }} className='w-full'>
-      <div className='flex justify-center'>
+      <div className='flex items-center justify-center'>
         {showImageUrl && <div>
           <Image src={showImageUrl} alt={show.name} width={600} height={600} className='object-contain h-96 w-96 rounded-lg m-2 hover:shadow-2xl'/>
         </div> }
         <div className='shadow-2xl rounded-lg m-8 p-4'>
-            <h1 className='text-4xl font-bold'>{show.name}</h1>
-            <h2 className='text-2xl'>{show.length} minutes - {show.service.name}</h2>
-            <ShowStatusSection userShowData={userInfoData} allStatuses={allStatuses} updateFunction={updateStatus} loggedIn={loggedIn}/>
+            <span className='flex justify-between items-center'>
+              <div>
+                <h1 className='text-4xl font-bold'>{show.name}</h1>
+                <h2 className='text-2xl'>{show.length} minutes - {show.service.name}</h2>
+              </div>
+              {loggedIn && <UserRatingsSection userInfo={userInfoData} updateFunction={updateUserShowData}/> }
+            </span>
+            <ShowStatusSection userShowData={userInfoData} allStatuses={allStatuses} updateFunction={updateUserShowData} loggedIn={loggedIn}/>
             <span className='flex flex-row content-start justify-between text-xl'>
               <h2>Running: {boolToEmoji(show.running)} </h2>
               <h2 >Currently Airing: {boolToEmoji(show.currentlyAiring)}</h2>
@@ -91,9 +95,8 @@ export default async function ShowPage({ params }: { params: { showId: string } 
         <ShowTagsSection currentTags={currentTags} allTags={allTags}/>
       </div>
       <div>
-        <RatingsSection ratingCounts={ratingCounts}/>
+        <RatingsStatsSection ratingCounts={ratingCounts}/>
       </div>
-      <ShowTile showId={showId}/>
     </div>
     
   );
