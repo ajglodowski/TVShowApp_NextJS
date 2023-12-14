@@ -72,10 +72,12 @@ export async function getUserUpdates({showId, userId}: {showId: string, userId: 
         let formatted = {
             ...update,
             statusChange: update.status as unknown as Status,
+            updateDate: new Date(update.updateDate),
             status: undefined,
         }
         updates.push(formatted);
     }
+    updates.sort((a, b) => {return b.updateDate.getTime() - a.updateDate.getTime()});
    
     return updates as unknown as UserUpdate[];
 }
@@ -122,11 +124,10 @@ export async function updateUserShowData({updateType, userId, showId, newValue }
         case UserUpdateCategory.RemovedRating:
             response = await updateRating({userId: userId, showId: showId, newRating: newValue as Rating});
             if (response) update ={ 
-                id: -1, userId: userId, showId: Number(showId), ratingChange: newValue as Rating, updateType: UserUpdateCategory.ChangedRating,updateDate: new Date()
+                id: -1, userId: userId, showId: Number(showId), updateType: UserUpdateCategory.RemovedRating,updateDate: new Date()
             };
             break;
         case UserUpdateCategory.UpdatedStatus:
-            console.log("Updating status")
             response = await updateStatus({userId: userId, showId: showId, newStatus: newValue as Status});
             if (response) update = {
                 id: -1, userId: userId, showId: Number(showId), statusChange: newValue as Status, updateType: UserUpdateCategory.UpdatedStatus,updateDate: new Date()

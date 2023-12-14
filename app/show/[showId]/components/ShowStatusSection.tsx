@@ -21,22 +21,28 @@ export default function ShowStatusSection({ userShowData, allStatuses, updateFun
         else console.log(`Error updating season to ${status}`);
     };
 
+    const [showOptions, setShowOptions] = useState(false);
+
     return (
-        <div>
+        <div className="w-full">
             <h1 className="text-2xl">Current Status: {currentStatus.name}</h1>
-            {allStatuses && <div>
-                <h2>Change status:</h2>
-                <div className="h-16 flex-row  overflow-scroll no-scrollbar">
+            {allStatuses && <div className="">
+                <span className="flex items-center">
+                    <button onClick={() => setShowOptions(!showOptions)} className="py-1 px-2 m-1 rounded-lg outline outline-white hover:bg-white hover:text-black">
+                        {showOptions ? 'Hide other statuses' : 'Change status'}
+                    </button>
+                </span>
+                {showOptions && <div className="whitespace-nowrap overflow-x-auto w-full">
                     {otherStatuses!.map((status: Status) => (
                         <button
                             key={status.id}
                             onClick={() => changeCurrentStatus(status)}
-                            className={`py-2 px-4 m-1 rounded-lg outline outline-white hover:bg-white hover:text-black`}
+                            className={`py-1 px-2 m-1 rounded-lg outline outline-white hover:bg-white hover:text-black`}
                         >
                             {status.name}
                         </button>
                     ))}
-                </div>
+                </div>}
             </div>}
         </div>
     );

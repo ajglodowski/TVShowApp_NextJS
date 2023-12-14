@@ -13,11 +13,11 @@ export default function UserRatingsSection ({ userInfo, updateFunction }: { user
 
     if (!userInfo) return (<></>);
 
-    function updateRating(rating: Rating) {
-        console.log(`Changing rating to ${rating}`);
-        var updateResponse = updateFunction({ updateType: UserUpdateCategory.ChangedRating , userId: userInfo!.userId, showId: userInfo!.showId, newValue: rating });
+    function updateRating(rating: Rating| null) {
+        const updateCategory = rating ? UserUpdateCategory.ChangedRating : UserUpdateCategory.RemovedRating;
+        var updateResponse = updateFunction({ updateType: updateCategory , userId: userInfo!.userId, showId: userInfo!.showId, newValue: rating });
         if (updateResponse) setCurrentRating(rating);
-        else console.log(`Error updating rating to ${rating}`);
+        else console.error(`Error updating rating to ${rating}`);
     }
 
     function getRatingIcon(rating: Rating) {
@@ -52,9 +52,14 @@ export default function UserRatingsSection ({ userInfo, updateFunction }: { user
 
     return (
         <div className=''>
-            <div className='flex'>
+            <div className='flex items-center'>
                 Your Rating: {currentRating ? currentRating : 'No Rating'}
                 {/*currentRating && <div className='px-1'>{currentRatingIcon()}</div>*/}
+                {currentRating && <button 
+                    onClick={() => updateRating(null)}
+                    className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'>
+                    Remove Rating
+                </button> }
             </div>
             <div className='flex text-center'>
                 {ratings.map((rating) => {

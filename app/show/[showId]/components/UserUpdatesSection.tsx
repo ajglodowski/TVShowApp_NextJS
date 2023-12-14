@@ -1,5 +1,6 @@
 import { UserUpdate } from "@/app/models/userUpdate";
 import { getUserUpdateMessage } from "@/utils/getUserUpdateMessage";
+import { dateToString } from "@/utils/timeUtils";
 
 export default function UserUpdatesSection ({ userUpdates }: { userUpdates: UserUpdate[] | null }) {
 
@@ -8,10 +9,17 @@ export default function UserUpdatesSection ({ userUpdates }: { userUpdates: User
     if (userUpdates.length === 0) return (<div>No updates</div>);
 
     return (
-        <div>
-        {userUpdates.map((update, index) => (
-            <div key={index}>{getUserUpdateMessage(update)}</div>
-        ))}
-        </div>
+        <ul>
+            {userUpdates.map((update, index) => (
+                <li key={index}
+                    className="border border-white rounded-full p-2 px-4 my-2 w-full"
+                >
+                    <span className="flex justify-between">
+                        <p>{getUserUpdateMessage(update)}</p>
+                        <p className="pr-2 pl-4">{dateToString(update.updateDate)}</p>
+                    </span>
+                </li>
+            ))}
+        </ul>
     );
 };

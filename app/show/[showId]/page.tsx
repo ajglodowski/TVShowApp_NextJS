@@ -11,6 +11,7 @@ import Image from 'next/image';
 import UserUpdatesSection from './components/UserUpdatesSection';
 import RatingsStatsSection from './components/RatingsStatsSection';
 import UserRatingsSection from './components/UserRatingsSection';
+import { dateToString } from '@/utils/timeUtils';
 
 function ShowNotFound() {
   return (
@@ -56,10 +57,10 @@ export default async function ShowPage({ params }: { params: { showId: string } 
   return (
     <div style={{ backgroundColor: backgroundColor }} className='w-full'>
       <div className='flex items-center justify-center'>
-        {showImageUrl && <div>
-          <Image src={showImageUrl} alt={show.name} width={600} height={600} className='object-contain h-96 w-96 rounded-lg m-2 hover:shadow-2xl'/>
+        {showImageUrl && <div className='w-3/12'>
+          <Image src={showImageUrl} alt={show.name} width={600} height={600} className='rounded-lg m-2 hover:shadow-2xl'/>
         </div> }
-        <div className='shadow-2xl rounded-lg m-8 p-4'>
+        <div className='w-9/12 shadow-2xl rounded-lg m-8 p-4'>
             <span className='flex justify-between items-center'>
               <div>
                 <h1 className='text-4xl font-bold'>{show.name}</h1>
@@ -77,10 +78,10 @@ export default async function ShowPage({ params }: { params: { showId: string } 
               <h2>Limited Series: {boolToEmoji(show.limitedSeries)}</h2>
             </span>
             <SeasonsRow userId={currentUserId} currentSeason={userInfoData?.currentSeason} totalSeasons={showData.totalSeasons} showId={showId} updateFunction={updateCurrentSeason}/>
-            {userInfoData?.updated && <h3 className='text-lg'>You last updated at: {userInfoData?.updated.toString()}</h3>}
+            {userInfoData?.updated && <h3 className='text-lg'>You last updated at: {dateToString(userInfoData?.updated)}</h3>}
             <span className='flex flex-row content-start justify-between text-md'>
-              <h4 className=''>Show created at: {show.created_at.toString()}</h4>
-              <h4 className=''>Last updated: {show.lastUpdated.toString()}</h4>
+              <h4 className=''>Show created at: {dateToString(show.created_at)}</h4>
+              <h4 className=''>Last updated: {dateToString(show.lastUpdated)}</h4>
             </span>
             <p className='text-xs'>Show ID: {params.showId}</p>
         </div>

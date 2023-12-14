@@ -68,7 +68,7 @@ export async function getShowImage(showName: string): Promise<ShowImage | null> 
     const averageColor = `rgb(${data[0]},${data[1]},${data[2]})`;
     return { imageUrl: url, averageColor };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return null;
   }
 }

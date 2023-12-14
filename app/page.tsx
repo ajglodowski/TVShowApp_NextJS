@@ -1,11 +1,10 @@
-import ShowTile from "./components/show/ShowTile";
+import Home from "./components/home/Home";
 
 export default async function Index() {
 
   return (
-    <div className="">
-      <ShowTile showId="1"/>
-      <ShowTile showId="2"/>
+    <div className="w-full">
+      <Home />
     </div>
   )
 }

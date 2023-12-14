@@ -12,19 +12,19 @@ export default async function ShowTile({ showId }: { showId: string }) {
     const backgroundColor = showImageInfo?.averageColor;
 
     if (!showData) {
-        return <div>Show not found</div>
+        return <div key={showId}>Show not found</div>
     }
 
     return (
-        <Link href={`show/${showId}`}>
-            <div className="inline-block p-1 m-2 rounded-lg w-42 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
+        <Link key={showId} href={`show/${showId}`}>
+            <div key={showId} className="inline-block m-2 rounded-lg w-42 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
                 <div className="h-full w-full items-center text-center justify-center">
                     <div className="w-32 h-32 mx-auto items-center">
                         {showImageUrl && <div className="relative">
                             <Image src={showImageUrl} alt={show.name} width="0"
                                 height="0"
                                 sizes="100vw"
-                                className="w-full h-full rounded-lg"
+                                className="w-full h-full rounded-lg shadow-md"
                             />
                         </div>}
                     </div>
