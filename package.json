@@ -8,11 +8,13 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@img/sharp-darwin-x64": "^0.33.1",
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.20",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
     "@types/color-thief-node": "^1.0.4",
+    "@vercel/speed-insights": "^1.0.2",
     "autoprefixer": "10.4.15",
     "colorthief": "^2.4.0",
     "firebase": "^10.7.1",
@@ -22,7 +24,7 @@
     "postcss": "8.4.29",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "sharp": "^0.33.0",
+    "sharp": "^0.33.1",
     "tailwindcss": "3.3.3",
     "typescript": "5.1.3"
   },
