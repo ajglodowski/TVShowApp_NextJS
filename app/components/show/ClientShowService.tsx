@@ -11,12 +11,13 @@ export async function getShow( showId: string ): Promise<Show | null> {
     const supabase = createClient();
     const { data: showData } = await supabase.from("show").select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, totalSeasons, service (id, name)').match({id: showId}).single();
     
-    if (!showData) return null;   
+    if (!showData) { console.log("HEre"); return null;   }
 
     const show: Show = {
         ...showData,
         service: showData.service as unknown as Service
     };
+    
     
     return show;
 }

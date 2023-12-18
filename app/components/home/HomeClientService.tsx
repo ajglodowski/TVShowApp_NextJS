@@ -13,7 +13,6 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
     }
     statusesString = statusesString.slice(0, -1);
     statusesString += ")";
-    console.log(statusesString);
 
     const supabase = createClient();
     var response = null;

@@ -51,11 +51,11 @@ export default function YourShowsRow ({userId}: {userId: string}) {
         if (displayedShows === null) return (<div>Error Loading your shows</div>);
         if (displayedShows.length === 0) return (<div>No Shows match this criteria</div>);
         return (
-            <>
+            <div className="overflow-x-auto">
                 {displayedShows.map((showData) => (
                     <ClientShowTile showId={showData.showId.toString()} />
                 ))}
-            </>
+            </div>
         );
     }
 
@@ -95,9 +95,7 @@ export default function YourShowsRow ({userId}: {userId: string}) {
             <div className="whitespace-nowrap overflow-x-auto ">
                 <AllStatusesButtons />
             </div>
-            <div className="whitespace-nowrap overflow-x-auto ">
-                <ShowRow />
-            </div>
+            <ShowRow />
         </div>
     )
 };

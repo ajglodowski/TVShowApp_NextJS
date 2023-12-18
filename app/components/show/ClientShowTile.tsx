@@ -24,7 +24,7 @@ export default function ClientShowTile({ showId }: { showId: string }) {
     useEffect(() => {
         if (!show) return;
         getShowImage(show.name).then((showImageInfo) => {
-            if (!showImageInfo) setShowData(null);
+            if (!showImageInfo) setShowImageInfo(null);
             else setShowImageInfo(showImageInfo as ShowImage);
         });
     },[showData]);
@@ -33,14 +33,14 @@ export default function ClientShowTile({ showId }: { showId: string }) {
 
         if (showData === undefined) return <div>Loading show</div>
 
-        if (!showData) return <div>Show not found</div>
+        if (showData === null){ console.log(showId); console.log(showData); return <div>Show not found</div> }
 
         return(
             <>
                 <h2 className="text-xl font-bold">{show.name}</h2>
                 <span className="flex justify-evenly text-lg">
-                <p>{show.length}m</p>
-                <p>{show.service.name}</p>
+                    <p>{show.length}m</p>
+                    <p>{show.service.name}</p>
                 </span>
             </>
         )
@@ -50,7 +50,7 @@ export default function ClientShowTile({ showId }: { showId: string }) {
 
     return (
         <Link href={`show/${showId}`}>
-            <div key={showId} className="inline-block m-2 rounded-lg w-42 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
+            <div key={showId} className="inline-block m-2 rounded-lg w-32 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
                 <div className="h-full w-full items-center text-center justify-center">
                     <div className="w-32 h-32 mx-auto items-center">
                         {showImageUrl && <div className="relative">
@@ -61,7 +61,7 @@ export default function ClientShowTile({ showId }: { showId: string }) {
                             />
                         </div>}
                     </div>
-                    <div className="">
+                    <div className="text-ellipsis overflow-hidden">
                         <ShowInfo />
                     </div>
                 </div>
