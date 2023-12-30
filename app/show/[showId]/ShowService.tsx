@@ -3,8 +3,8 @@ import { createClient } from '@/utils/supabase/server';
 import { Show } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
 import { Service } from "@/app/models/service";
-import { ref, getDownloadURL } from "firebase/storage";
-import { firebaseStorage } from "@/app/firebaseConfig";
+//import { ref, getDownloadURL } from "firebase/storage";
+import { firebaseImageBaseURL, firebaseStorage, setFirebaseImageBaseURL } from "@/app/firebaseConfig";
 import { ShowImage } from "@/app/models/showImage";
 import sharp from 'sharp';
 import { Rating } from "@/app/models/rating";
@@ -49,13 +49,21 @@ export async function getAllTags(showId: string): Promise<ShowTag[] | null> {
   return tags;
 }
 
+export async function getShowImageURL(showName: string): Promise<string> {
+  if (!firebaseImageBaseURL) await setFirebaseImageBaseURL();
+  var baseURL = firebaseImageBaseURL;
+  var showNameURL = `${baseURL}${showName}_640x640.jpeg?alt=media`;
+  return showNameURL;
+}
+
 export async function getShowImage(showName: string): Promise<ShowImage | null> {
-  const storage = firebaseStorage;
+  //const storage = firebaseStorage;
 
   // Create a reference under which you want to list
-  const imageRef = ref(storage, `showImages/resizedImages/${showName}_640x640.jpeg`);
+  //const imageRef = ref(storage, `showImages/resizedImages/${showName}_640x640.jpeg`);
   try {
-    const url = await getDownloadURL(imageRef);
+    //const url = await getDownloadURL(imageRef);
+    const url = await getShowImageURL(showName);
     const response = await fetch(url);
     const imageBuffer = await response.arrayBuffer();
 

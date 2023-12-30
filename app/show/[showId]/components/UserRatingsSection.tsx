@@ -4,7 +4,7 @@
 import { Rating } from '@/app/models/rating';
 import { UserShowData } from '@/app/models/userShowData';
 import { UserUpdateCategory } from '@/app/models/userUpdateType';
-import { Error, Favorite, FavoriteBorder, FavoriteOutlined, RemoveCircle, RemoveCircleOutline, ThumbDown, ThumbDownOutlined, ThumbUp, ThumbUpOutlined } from '@mui/icons-material';
+import { Error, Favorite, FavoriteBorder, RemoveCircle, RemoveCircleOutline, ThumbDown, ThumbDownOutlined, ThumbUp, ThumbUpOutlined } from '@mui/icons-material';
 import { useState } from 'react';
 
 export default function UserRatingsSection ({ userInfo, updateFunction }: { userInfo: UserShowData | null, updateFunction: Function }) {
@@ -51,7 +51,7 @@ export default function UserRatingsSection ({ userInfo, updateFunction }: { user
     }
 
     return (
-        <div className=''>
+        <div className='my-auto'>
             <div className='flex items-center'>
                 Your Rating: {currentRating ? currentRating : 'No Rating'}
                 {/*currentRating && <div className='px-1'>{currentRatingIcon()}</div>*/}

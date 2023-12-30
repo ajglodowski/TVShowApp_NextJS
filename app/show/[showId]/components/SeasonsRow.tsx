@@ -40,7 +40,10 @@ export default function SeasonsRow({ userId, currentSeason, totalSeasons, showId
   };
 
   return (
-    <div>{renderSeasonButtons()}</div>
+    <div>
+      <h2 className='text-2xl tracking-tight text-left'>Current Season</h2>
+      <div>{renderSeasonButtons()}</div>
+    </div>
   );
 };
 
