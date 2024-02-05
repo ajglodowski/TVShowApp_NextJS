@@ -14,6 +14,8 @@ import UserRatingsSection from './components/UserRatingsSection';
 import { dateToString } from '@/utils/timeUtils';
 import { randomInt } from 'crypto';
 import Divider from '@/app/components/Divider';
+import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function ShowNotFound() {
   return (
@@ -93,6 +95,9 @@ export default async function ShowPage({ params }: { params: { showId: string } 
           {showImageUrl && <div className='w-4/12 mx-auto'>
             <Image src={showImageUrl} alt={show.name} width={600} height={600} className='rounded-lg m-2 hover:shadow-2xl'/>
           </div> }
+          { !showImageUrl && <div className="w-4/12 mx-auto">
+            <Skeleton className="w-[600px] h-[600px] object-contain rounded-md" />
+          </div>}
         </div>
         <h1 className='text-9xl font-extrabold tracking-tighter text-center -mt-16'>{show.name}</h1>
       </div>
@@ -116,6 +121,9 @@ export default async function ShowPage({ params }: { params: { showId: string } 
             <div className='my-auto text-right'>
               <h3 className='text-lg'>Name - {show.name}</h3>
               <h3 className='text-lg'>Service - {show.service.name}</h3>
+              <Link href={`/editShow/${showId}`}>
+                <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'>Edit Show</button>
+              </Link>
             </div>
           </span>
           <span className='flex flex-row content-start justify-between text-xl'>

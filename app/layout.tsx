@@ -2,6 +2,7 @@ import { GeistSans } from 'geist/font/sans'
 import './globals.css'
 import Navbar from './components/Navbar'
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Toaster } from '@/components/ui/toaster'
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -27,6 +28,7 @@ export default function RootLayout({
           {children}
           <SpeedInsights />
         </main>
+        <Toaster />
       </body>
     </html>
   )

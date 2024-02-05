@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getShow, getShowImage } from "./ClientShowService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ClientShowTile({ showId }: { showId: string }) {
 
@@ -59,6 +60,9 @@ export default function ClientShowTile({ showId }: { showId: string }) {
                                 sizes="100vw"
                                 className="w-full h-full rounded-lg shadow-md"
                             />
+                        </div>}
+                        { !showImageUrl && <div className="w-full h-full">
+                            <Skeleton className="h-full w-full rounded-md" />
                         </div>}
                     </div>
                     <div className="text-ellipsis overflow-hidden">

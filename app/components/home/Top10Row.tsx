@@ -10,7 +10,7 @@ export default async function Top10Row() {
     return (
         <div className="flex">
             {shows.map((showId) => (
-                <ShowTile key={showId} showId={showId.toString()} />
+                <ShowTile showId={showId.toString()} />
             ))}
         </div>
     )

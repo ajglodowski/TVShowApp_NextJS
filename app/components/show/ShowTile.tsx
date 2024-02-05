@@ -1,5 +1,6 @@
 import { Show } from "@/app/models/show";
 import { getShow, getShowImage } from "@/app/show/[showId]/ShowService";
+import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -26,6 +27,9 @@ export default async function ShowTile({ showId }: { showId: string }) {
                                 sizes="100vw"
                                 className="w-full h-full rounded-lg shadow-md"
                             />
+                        </div>}
+                        { !showImageUrl && <div className="w-full h-full">
+                            <Skeleton className="h-full w-full rounded-md" />
                         </div>}
                     </div>
                     <div>

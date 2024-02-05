@@ -13,7 +13,7 @@ import { RatingCounts } from "@/app/models/ratingCounts";
 export async function getShow( showId: string ): Promise<Show | null> {
     const cookieStore = cookies()
     const supabase = createClient(cookieStore);
-    const { data: showData } = await supabase.from("show").select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, totalSeasons, service (id, name)').match({id: showId}).single();
+    const { data: showData } = await supabase.from("show").select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, totalSeasons, service (id, name), airdate').match({id: showId}).single();
     
     if (!showData) return null;   
 
