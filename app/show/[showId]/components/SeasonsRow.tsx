@@ -1,11 +1,10 @@
 'use client'
 
+import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { useState } from "react";
-import { updateCurrentSeason } from "../UserShowDataService";
 
 export default function SeasonsRow({ userId, currentSeason, totalSeasons, showId, updateFunction }:
     { userId: string | undefined, currentSeason: number | undefined, totalSeasons: number | undefined, showId: string, updateFunction: Function }) {
-
 
   if (userId === undefined) return (<div>Login to change current season</div>);
   if (currentSeason === undefined) return (<div>Error Loading current season</div>);
@@ -14,7 +13,7 @@ export default function SeasonsRow({ userId, currentSeason, totalSeasons, showId
   const [currentSeasonState, setCurrentSeasonState] = useState(currentSeason);
 
   async function changeCurrentSeason(season: number){
-    var updateResponse = await updateFunction({ userId: userId!, showId: showId, newSeason: season });
+    var updateResponse = await updateFunction({ updateType: UserUpdateCategory.ChangedSeason, userId: userId, showId: showId, newValue: season });
     if (updateResponse) setCurrentSeasonState(season);
     else console.log(`Error updating season to ${season} for user ${userId} show ${showId}`);
   };

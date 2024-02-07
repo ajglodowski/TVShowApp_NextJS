@@ -4,6 +4,7 @@ import { getAllStatuses, getYourShows } from "./HomeClientService";
 import ClientShowTile from "../show/ClientShowTile";
 import { Status } from "@/app/models/status";
 import { UserShowData } from "@/app/models/userShowData";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function YourShowsRow ({userId}: {userId: string}) {
 
@@ -37,7 +38,6 @@ export default function YourShowsRow ({userId}: {userId: string}) {
     useEffect(() => {
         setDisplayedShows(undefined);
         getYourShows({userId: userId, selectedStatuses: selectedStatus}).then((shows) => {
-            console.log(shows);
             if (!shows) setDisplayedShows(null);
             else setDisplayedShows(shows);
         });
@@ -51,10 +51,15 @@ export default function YourShowsRow ({userId}: {userId: string}) {
         if (displayedShows === null) return (<div>Error Loading your shows</div>);
         if (displayedShows.length === 0) return (<div>No Shows match this criteria</div>);
         return (
-            <div className="overflow-x-auto">
-                {displayedShows.map((showData) => (
-                    <ClientShowTile showId={showData.showId.toString()} />
-                ))}
+            <div className="flex items-center justify-center mx-2">
+                <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+                    <div className="flex">
+                        {displayedShows.map((showData) => (
+                            <ClientShowTile showId={showData.showId.toString()} />
+                        ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
             </div>
         );
     }
@@ -76,16 +81,22 @@ export default function YourShowsRow ({userId}: {userId: string}) {
     function AllStatusesButtons() {
         if (!allStatuses) return (<></>);
         return (
-            <div className="flex my-2">
-                {displayedStatuses().map((status) => (
-                    <button
-                        key={status.id}
-                        onClick={() => handleStatusChange(status)}
-                        className={`rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black ${bubbleStyle(status)}`}
-                    >
-                        {status.name}
-                    </button>
-                ))}
+
+            <div className="flex items-center justify-center mx-2">
+                <ScrollArea className="w-full whitespace-nowrap rounded-md">
+                    <div className="flex py-1">
+                        {displayedStatuses().map((status) => (
+                            <button
+                                key={status.id}
+                                onClick={() => handleStatusChange(status)}
+                                className={`rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black ${bubbleStyle(status)}`}
+                            >
+                                {status.name}
+                            </button>
+                        ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
             </div>
         )
     }

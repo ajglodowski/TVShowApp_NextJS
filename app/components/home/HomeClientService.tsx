@@ -16,8 +16,8 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
 
     const supabase = createClient();
     var response = null;
-    if (selectedStatuses.length === 0) response = await supabase.from("UserShowDetails").select('userId, showId, created_at, updated, currentSeason, rating, status (id, name)').match({userId: userId}).limit(15);
-    else response = await supabase.from("UserShowDetails").select('userId, showId, created_at, updated, currentSeason, rating, status (id, name)').match({userId: userId}).filter('status', 'in', statusesString).limit(15);
+    if (selectedStatuses.length === 0) response = await supabase.from("UserShowDetails").select('userId, showId, created_at, updated, currentSeason, rating, status (id, name)').match({userId: userId}).order('updated', {ascending: false}).limit(15);
+    else response = await supabase.from("UserShowDetails").select('userId, showId, created_at, updated, currentSeason, rating, status (id, name)').match({userId: userId}).filter('status', 'in', statusesString).order('updated', {ascending: false}).limit(15);
     
     if (!response) return null;
     const showData = response.data as unknown as UserShowData[];
@@ -26,7 +26,6 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
         console.error(response.error);
         return null;   
     }
-    console.log(showData);
 
     const output: UserShowData[] = [];
     for (const show of showData) {
@@ -37,7 +36,6 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
         };
         output.push(converted);
     }
-    console.log(output);
     
     return output;
 }

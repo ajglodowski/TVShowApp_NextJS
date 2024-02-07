@@ -14,6 +14,7 @@ export type Show = {
     service: Service;
     totalSeasons: number;
     airdate: AirDate | undefined;
+    releaseDate: Date | undefined;
 }
 
 export const NewShow: Show = {
@@ -27,5 +28,6 @@ export const NewShow: Show = {
     running: false,
     service: OtherService,
     totalSeasons: 1,
-    airdate: undefined
+    airdate: undefined,
+    releaseDate: undefined
 }

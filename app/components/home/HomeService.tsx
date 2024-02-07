@@ -30,16 +30,14 @@ export async function getCurrentlyAiring({userId}: {userId: string}): Promise<an
     return output;
 }
 
-export async function getTop10(): Promise<number[] | null> {
+export async function getTop10(): Promise<{showId: number, updates: number}[] | null> {
 
     const cookieStore = cookies()
     const supabase = createClient(cookieStore);
-    const { data: showData } = await supabase.from("top10shows").select('showId');
+    const { data: showData } = await supabase.from("top10shows").select('showId, updates');
     
     if (!showData) return null;   
+    const output = showData as unknown as {showId: number, updates: number}[];
 
-    const ids = showData.map((obj) => obj.showId);
-    const output = ids as unknown as number[];
-    
     return output;
 }

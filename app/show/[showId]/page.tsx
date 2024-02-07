@@ -11,7 +11,7 @@ import Image from 'next/image';
 import UserUpdatesSection from './components/UserUpdatesSection';
 import RatingsStatsSection from './components/RatingsStatsSection';
 import UserRatingsSection from './components/UserRatingsSection';
-import { dateToString } from '@/utils/timeUtils';
+import { dateToString, releaseDateToString } from '@/utils/timeUtils';
 import { randomInt } from 'crypto';
 import Divider from '@/app/components/Divider';
 import Link from 'next/link';
@@ -112,7 +112,7 @@ export default async function ShowPage({ params }: { params: { showId: string } 
           <Divider />
           <ShowStatusSection userShowData={userInfoData} allStatuses={allStatuses} updateFunction={updateUserShowData} loggedIn={loggedIn}/>
           <Divider />
-          <SeasonsRow userId={currentUserId} currentSeason={userInfoData?.currentSeason} totalSeasons={showData.totalSeasons} showId={showId} updateFunction={updateCurrentSeason}/>  
+          <SeasonsRow userId={currentUserId} currentSeason={userInfoData?.currentSeason} totalSeasons={showData.totalSeasons} showId={showId} updateFunction={updateUserShowData}/>  
         </div>
 
         <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 h-auto shadow-2xl rounded-lg'>
@@ -133,6 +133,10 @@ export default async function ShowPage({ params }: { params: { showId: string } 
           <span className='flex flex-row content-start justify-between text-xl'>
             <h2>Total Seasons: {show.totalSeasons} </h2>
             <h2>Limited Series: {boolToEmoji(show.limitedSeries)}</h2>
+          </span>
+          <span className='flex flex-row content-start justify-between text-xl'>
+            {!!show.releaseDate && <h2>Release Date: {releaseDateToString(show.releaseDate)}</h2>}
+            {!!show.airdate && <h2>Airdate: {show.airdate}</h2>}
           </span>
           <span className='flex flex-row content-start justify-between text-md'>
             <h4 className=''>Show created at: {dateToString(show.created_at)}</h4>

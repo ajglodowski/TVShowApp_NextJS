@@ -9,7 +9,7 @@ import ColorThief from "colorthief";
 
 export async function getShow( showId: string ): Promise<Show | null> {
     const supabase = createClient();
-    const { data: showData } = await supabase.from("show").select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, totalSeasons, service (id, name), airdate').match({id: showId}).single();
+    const { data: showData } = await supabase.from("show").select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, totalSeasons, service (id, name), airdate, releaseDate').match({id: showId}).single();
     
     if (!showData) { console.log("HEre"); return null;   }
 

@@ -30,7 +30,7 @@ export default async function Home () {
     ]
 
     return (
-        <div className="">
+        <div className="px-2">
             <div className="flex">
                 <h1 className="text-4xl font-bold">Welcome to TV Show App</h1>
             </div>

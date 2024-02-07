@@ -4,13 +4,17 @@ import { getShow, updateShow } from "@/app/components/show/ClientShowService";
 import { AirDate } from "@/app/models/airDate";
 import { Show } from "@/app/models/show";
 import { ShowLength } from "@/app/models/showLength";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { CardContent } from "@mui/material";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -78,6 +82,30 @@ export default function EditShowPage({ params }: { params: { showId: string } })
     return airdate;
   }
 
+  const ReleaseDatePicker = () => {
+    return (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className= "w-[280px] justify-start text-left font-normal text-black text"
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {showData.releaseDate ? format(showData.releaseDate, "PPP") : <span>Pick a date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={showData.releaseDate}
+              onSelect={(e) => setShowData({...showData, releaseDate: e})}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+    );
+  }
+
   return (
     <div className='w-full h-full'>
       <button 
@@ -91,13 +119,20 @@ export default function EditShowPage({ params }: { params: { showId: string } })
             <span className="flex items-center justify-between">
               <h1>Show Info</h1>
               <span className="flex items-center space-x-2">
-                <button onClick={() => submitChanges()} className='p-1 mx-2 text-md rounded-lg outline outline-white hover:bg-white hover:text-black'>
-                    Submit Changes
-                </button>
+                <Button
+                  variant="ghost"
+                  className= "text-xl"
+                  onClick={() => submitChanges()}
+                >
+                  Submit Changes
+                </Button>
                 <Link href={`/show/${showId}`}>
-                  <button onClick={() => logFunction()} className='p-1 mx-2 text-md rounded-lg outline outline-white hover:bg-white hover:text-black'>
-                      Return to Show
-                  </button>
+                  <Button
+                    variant="ghost"
+                    className= "text-xl"
+                  >
+                    Return to Show
+                  </Button>
                 </Link>
               </span>
             </span>
@@ -146,6 +181,7 @@ export default function EditShowPage({ params }: { params: { showId: string } })
               onChange={(e) => setShowData({...showData, totalSeasons: Number(e.target.value)})}
             />
           </div>
+          <ReleaseDatePicker />
         </CardContent>
       </Card>
 
