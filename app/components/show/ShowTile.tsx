@@ -3,12 +3,13 @@ import { getShow, getShowImage } from "@/app/show/[showId]/ShowService";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default async function ShowTile({ showId }: { showId: string }) {
 
     const showData = await getShow(showId) as Show;
     const show = showData as Show;
-    const showImageInfo = await getShowImage(show.name);
+    const showImageInfo = await getShowImage(show.name, true);
     const showImageUrl = showImageInfo?.imageUrl;
     const backgroundColor = showImageInfo?.averageColor;
 
@@ -16,21 +17,38 @@ export default async function ShowTile({ showId }: { showId: string }) {
         return <div key={showId}>Show not found</div>
     }
 
-    return (
-        <Link key={showId} href={`show/${showId}`}>
-            <div key={showId} className="inline-block m-2 rounded-lg w-42 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
-                <div className="h-full w-full items-center text-center justify-center">
-                    <div className="w-32 h-32 mx-auto items-center">
-                        {showImageUrl && <div className="relative">
+    const LoadingImageSkeleton = () => {
+        return (
+            <div className="w-full h-full">
+                <Skeleton className="h-full w-full rounded-md" />
+            </div>
+        );
+    }
+
+    const ShowImage = () => {
+        if (showImageUrl) {
+            return (
+                <div className="relative">
                             <Image src={showImageUrl} alt={show.name} width="0"
                                 height="0"
                                 sizes="100vw"
                                 className="w-full h-full rounded-lg shadow-md"
                             />
-                        </div>}
-                        { !showImageUrl && <div className="w-full h-full">
-                            <Skeleton className="h-full w-full rounded-md" />
-                        </div>}
+                        </div>
+            );
+        } else {
+            return <LoadingImageSkeleton />;
+        }
+    }
+
+    return (
+        <Link key={showId} href={`show/${showId}`}>
+            <div key={showId} className="inline-block m-2 rounded-lg w-42 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
+                <div className="h-full w-full items-center text-center justify-center">
+                    <div className="w-32 h-32 mx-auto items-center">
+                        <Suspense fallback={<LoadingImageSkeleton />}>
+                            <ShowImage/>
+                        </Suspense>
                     </div>
                     <div>
                         <h2 className="text-xl font-bold">{show.name}</h2>

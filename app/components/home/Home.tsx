@@ -4,9 +4,11 @@ import { Watch } from '@mui/icons-material';
 import { cookies } from 'next/headers'
 import WatchListRow from './WatchlistRow';
 import Top10Row from './Top10Row';
-import YourShowsRow from './YourShowsRow';
+import YourShowsRow from './YourShowsRow/YourShowsRow';
 import { ClientSearch } from '../search/ClientSearch';
 import CurrentlyAiringRow from './CurrentlyAiringRow';
+import ComingSoonRow from './ComingSoonRow';
+import YourUpdatesRow from './YourUpdatesRow';
 
 export default async function Home () {
 
@@ -23,9 +25,11 @@ export default async function Home () {
     const rows = [
 
         {header: "Search:", component: <ClientSearch/>}, 
+        {header: "Your Recent Updates:", component: <YourUpdatesRow userId={currentUserId}/>},
         {header: "Your shows:", component: <YourShowsRow userId={currentUserId}/>}, 
         {header: "Currently Airing:", component: <CurrentlyAiringRow userId={currentUserId}/>}, 
         {header: "Top 10 this week:", component: <Top10Row/>}, 
+        {header: "Coming Soon:", component: <ComingSoonRow userId={currentUserId}/>}, 
         {header: "Shows for you to start:", component: <WatchListRow userId={currentUserId}/>}, 
     ]
 

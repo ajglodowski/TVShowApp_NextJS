@@ -17,6 +17,9 @@ export type Show = {
     releaseDate: Date | undefined;
 }
 
+export const ShowProperties = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service, totalSeasons, airdate, releaseDate';
+export const ShowPropertiesWithService = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service (id, name), totalSeasons, airdate, releaseDate';
+
 export const NewShow: Show = {
     id: 0,
     name: "",

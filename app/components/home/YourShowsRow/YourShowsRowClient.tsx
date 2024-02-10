@@ -1,14 +1,13 @@
 'use client'
 import { useEffect, useState } from "react";
-import { getAllStatuses, getYourShows } from "./HomeClientService";
-import ClientShowTile from "../show/ClientShowTile";
+import { getAllStatuses, getYourShows } from "../HomeClientService";
+import ClientShowTile from "../../show/ClientShowTile";
 import { Status } from "@/app/models/status";
 import { UserShowData } from "@/app/models/userShowData";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-export default function YourShowsRow ({userId}: {userId: string}) {
+export default function YourShowsRowClient ({userId, allStatuses}: {userId: string, allStatuses: Status[] | null}) {
 
-    const [allStatuses, setAllStatuses] = useState<Status[] | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<Status[]>([]);
     const [displayedShows, setDisplayedShows] = useState<UserShowData[]| null | undefined>(undefined);
 
@@ -22,11 +21,6 @@ export default function YourShowsRow ({userId}: {userId: string}) {
   
 
     useEffect(() => { // On page load
-
-        getAllStatuses().then((statuses) => {
-            if (!statuses) setAllStatuses(null);
-            else setAllStatuses(statuses);
-        });
 
         getYourShows({userId: userId, selectedStatuses: []}).then((shows) => {
             if (!shows) setDisplayedShows(null);

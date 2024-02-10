@@ -35,3 +35,5 @@ export async function setFirebaseImageBaseURL() {
   const fullBaseURL = baseURL + "resizedImages%2F";
   firebaseImageBaseURL = fullBaseURL;
 }
+
+setFirebaseImageBaseURL();

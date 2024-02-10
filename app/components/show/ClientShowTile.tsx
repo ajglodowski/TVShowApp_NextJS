@@ -24,7 +24,7 @@ export default function ClientShowTile({ showId }: { showId: string }) {
 
     useEffect(() => {
         if (!show) return;
-        getShowImage(show.name).then((showImageInfo) => {
+        getShowImage(show.name, true).then((showImageInfo) => {
             if (!showImageInfo) setShowImageInfo(null);
             else setShowImageInfo(showImageInfo as ShowImage);
         });

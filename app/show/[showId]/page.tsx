@@ -40,7 +40,7 @@ export default async function ShowPage({ params }: { params: { showId: string } 
   const currentTags = await getTags(showId);
   const allTags = await getAllTags(showId);
   const show = showData as Show;
-  const showImageInfo = await getShowImage(show.name);
+  const showImageInfo = await getShowImage(show.name, false);
   const showImageUrl = showImageInfo?.imageUrl;
   const backgroundColor = showImageInfo?.averageColor;
 

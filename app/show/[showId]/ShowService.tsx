@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { createClient } from '@/utils/supabase/server';
-import { Show } from "@/app/models/show";
+import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
 import { Service } from "@/app/models/service";
 //import { ref, getDownloadURL } from "firebase/storage";
@@ -13,7 +13,7 @@ import { RatingCounts } from "@/app/models/ratingCounts";
 export async function getShow( showId: string ): Promise<Show | null> {
     const cookieStore = cookies()
     const supabase = createClient(cookieStore);
-    const { data: showData } = await supabase.from("show").select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, totalSeasons, service (id, name), airdate, releaseDate').match({id: showId}).single();
+    const { data: showData } = await supabase.from("show").select(ShowPropertiesWithService).match({id: showId}).single();
     
     if (!showData) return null;   
 
@@ -49,22 +49,24 @@ export async function getAllTags(showId: string): Promise<ShowTag[] | null> {
   return tags;
 }
 
-export async function getShowImageURL(showName: string): Promise<string> {
+export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
   if (!firebaseImageBaseURL) await setFirebaseImageBaseURL();
   var baseURL = firebaseImageBaseURL;
-  var showNameURL = `${baseURL}${showName}_640x640.jpeg?alt=media`;
+  const dimensions = tile ? "200x200" : "640x640";
+  var showNameURL = `${baseURL}${showName}_${dimensions}.jpeg?alt=media`;
   return showNameURL;
 }
 
-export async function getShowImage(showName: string): Promise<ShowImage | null> {
+export async function getShowImage(showName: string, tile: boolean): Promise<ShowImage | null> {
   //const storage = firebaseStorage;
 
   // Create a reference under which you want to list
   //const imageRef = ref(storage, `showImages/resizedImages/${showName}_640x640.jpeg`);
   try {
     //const url = await getDownloadURL(imageRef);
-    const url = await getShowImageURL(showName);
+    const url = await getShowImageURL(showName, tile);
     const response = await fetch(url);
+    if (response.status !== 200) return null;
     const imageBuffer = await response.arrayBuffer();
 
     // Use sharp to resize the image to 1x1 and get the RGB values
