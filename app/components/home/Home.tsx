@@ -1,6 +1,5 @@
 
 import { createClient } from '@/utils/supabase/server'
-import { Watch } from '@mui/icons-material';
 import { cookies } from 'next/headers'
 import WatchListRow from './WatchlistRow';
 import Top10Row from './Top10Row';

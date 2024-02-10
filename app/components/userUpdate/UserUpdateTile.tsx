@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getUserUpdate } from "./UserUpdateService";
 import { dateToString } from "@/utils/timeUtils";
-import { Update } from "@mui/icons-material";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 
 export default async function UserUpdateTile({ updateId }: { updateId: number }) {
