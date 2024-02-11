@@ -5,6 +5,7 @@ import { ShowImage } from "@/app/models/showImage";
 import { createClient } from "@/utils/supabase/client";
 import { getDownloadURL, ref } from "firebase/storage";
 import ColorThief from "colorthief";
+import { ShowTag } from "@/app/models/showTag";
 
 
 export async function getShow( showId: string ): Promise<Show | null> {
@@ -70,3 +71,23 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
         return null;
     }
 }
+
+export async function addShowTag(showId: string, tag: ShowTag): Promise<boolean> {
+    const supabase = createClient();
+    const { error } = await supabase.from("ShowTagRelationship").insert({showId: showId, tagId: tag.id});
+    if (error) {
+      console.error(error);
+      return false;
+    }
+    return true;
+  }
+  
+  export async function removeShowTag(showId: string, tag: ShowTag): Promise<boolean> {
+    const supabase = createClient();
+    const { error } = await supabase.from("ShowTagRelationship").delete().match({showId: showId, tagId: tag.id});
+    if (error) {
+      console.error(error);
+      return false;
+    }
+    return true;
+  }

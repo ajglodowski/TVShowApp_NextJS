@@ -1,6 +1,6 @@
 import type { Show } from '@/app/models/show';
 import { boolToEmoji } from '@/utils/boolToEmoji';
-import { getAllTags, getRatingCounts, getShow, getShowImage, getTags } from './ShowService';
+import { getAllTags, getRatingCounts, getShow, getShowImage, getStatusCounts, getTags } from './ShowService';
 import ShowTagsSection from "./components/ShowTagsSection";
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
@@ -16,6 +16,7 @@ import { randomInt } from 'crypto';
 import Divider from '@/app/components/Divider';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import StatusStatsSection from './components/StatusStatsSection';
 
 function ShowNotFound() {
   return (
@@ -52,6 +53,7 @@ export default async function ShowPage({ params }: { params: { showId: string } 
   const loggedIn = currentUserId !== undefined;
   const allStatuses = await getAllStatuses();
   const ratingCounts = await getRatingCounts(showId);
+  const statusCounts = await getStatusCounts(showId);
   const userUpdates = await getUserUpdates({showId: showId, userId: currentUserId});
 
   const RGBAToHexA = (rgba: string, forceRemoveAlpha = false) => {
@@ -145,6 +147,31 @@ export default async function ShowPage({ params }: { params: { showId: string } 
           <p className='text-xs'>Show ID: {params.showId}</p>
         </div>
       </div>
+
+      <div className='flex'>
+        <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
+          <h1 className='text-7xl font-bold tracking-tighter'>Your Updates</h1>
+          <UserUpdatesSection userUpdates={userUpdates} />
+        </div>
+      </div>
+
+      <div className='flex flex-wrap md:flex-nowrap'>
+        <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
+          <h1 className='text-7xl font-bold tracking-tighter text-right'>Tags</h1>
+          <ShowTagsSection showId={showId} currentTags={currentTags} allTags={allTags} />
+        </div>
+        <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
+          <RatingsStatsSection ratingCounts={ratingCounts} />
+        </div>
+      </div>
+
+      <div className='flex'>
+        <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
+          <StatusStatsSection statusCounts={statusCounts} />
+        </div>
+      </div>
+
+
     </div>
 
   );

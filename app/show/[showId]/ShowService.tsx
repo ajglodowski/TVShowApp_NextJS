@@ -9,6 +9,8 @@ import { ShowImage } from "@/app/models/showImage";
 import sharp from 'sharp';
 import { Rating } from "@/app/models/rating";
 import { RatingCounts } from "@/app/models/ratingCounts";
+import { StatusCount } from "@/app/models/statusCount";
+import { Status } from "@/app/models/status";
 
 export async function getShow( showId: string ): Promise<Show | null> {
     const cookieStore = cookies()
@@ -111,5 +113,20 @@ export async function getRatingCounts(showId: string): Promise<RatingCounts | nu
   };
   */
 
+  return output;
+}
+
+export async function getStatusCounts(showId: string): Promise<StatusCount[] | null> {
+  const cookieStore = cookies()
+  const supabase = createClient(cookieStore);
+  const { data: ratingData } = await supabase.from("showstatuscounts").select('status:status(id, name), count').match({showId: showId});
+  if (!ratingData) return null;
+  let output = [];
+  for (const status of ratingData) {
+    output.push({
+      status: status.status as unknown as Status,
+      count: status.count
+    } as unknown as StatusCount);
+  }
   return output;
 }

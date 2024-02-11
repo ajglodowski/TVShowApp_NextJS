@@ -1,12 +1,29 @@
 'use client'
 
+import { addShowTag, removeShowTag } from "@/app/components/show/ClientShowService";
 import { ShowTag } from "@/app/models/showTag";
 import { useState } from "react";
 
-export default function ShowTagsSection({currentTags, allTags}: {currentTags: ShowTag[] | null, allTags: ShowTag[] | null} ) {
+export default function ShowTagsSection({showId, currentTags, allTags}: {showId: string, currentTags: ShowTag[] | null, allTags: ShowTag[] | null} ) {
     
-    const unusedTags = allTags?.filter((allTag) => !currentTags?.some((currentTag) => currentTag.id === allTag.id));
     const [editingTags, setEditingTags] = useState(false);
+    const [appliedTags, setAppliedTags] = useState<ShowTag[]>(currentTags ? currentTags : []);
+
+    const unusedTags = () => allTags?.filter((allTag) => !appliedTags?.some((currentTag) => currentTag.id === allTag.id));
+
+    async function addTag(tag: ShowTag) {
+        if (appliedTags.includes(tag)) return;
+        const response = await addShowTag(showId, tag);
+        if (response) {
+            if (appliedTags === null) setAppliedTags([tag]);
+            else setAppliedTags([...appliedTags, tag]);
+        }
+    }
+
+    async function removeTag(tag: ShowTag) {
+        const response = await removeShowTag(showId, tag);
+        if (response) setAppliedTags(appliedTags.filter((appliedTag) => appliedTag.id !== tag.id));
+    }
 
     function CurrentTagsSection() {
         if (currentTags === null) return (
@@ -15,7 +32,7 @@ export default function ShowTagsSection({currentTags, allTags}: {currentTags: Sh
             </div>
         );
     
-        if (currentTags.length === 0) return (
+        if (appliedTags.length === 0) return (
             <div>
                 <h1>No tags yet</h1>
             </div>
@@ -23,11 +40,19 @@ export default function ShowTagsSection({currentTags, allTags}: {currentTags: Sh
 
         return (
             <div>
-                {editingTags && <h1>Current Tags:</h1>}
                 <ul className='flex flex-row flex-wrap'>
-                    {currentTags.map((tag: ShowTag) => (
-                        <li key={tag.id} className='bg-slate-400 rounded-md m-1 p-1'>
-                            <h2 className='text-lg'>{tag.name}</h2>
+                    {appliedTags.map((tag: ShowTag) => (
+                        <li key={tag.id}>
+                            {editingTags &&
+                                <button
+                                    className='p-1 px-2 mx-2 rounded-full outline outline-white hover:bg-white hover:text-black'
+                                    onClick={() => removeTag(tag)}>
+                                    <h2 className=''>{tag.name}</h2>
+                                </button>
+                            }
+                            {!editingTags &&
+                                <h2 className='p-1 px-2 mx-2 rounded-full outline outline-white'>{tag.name}</h2>
+                            }
                         </li>
                     ))}
                 </ul>
@@ -36,22 +61,22 @@ export default function ShowTagsSection({currentTags, allTags}: {currentTags: Sh
     }
 
     function AllTagsSection() {
-        if (allTags === null || unusedTags === null) return (
+        if (allTags === null || unusedTags() === null) return (
             <div>
                 <h1>Error fetching other tags</h1>
             </div>
-        )
-
-        console.log(unusedTags);
-
+        );
         return (
             <div>
                 <h1>Other Tags:</h1>
                 <ul className='flex flex-row flex-wrap'>
-                    {unusedTags!.map((tag: ShowTag) => (
-                        <li key={tag.id} className='bg-slate-400 rounded-md m-1 p-1'>
-                            <h2 className='text-lg'>{tag.name}</h2>
-                        </li>
+                    {unusedTags()!.map((tag: ShowTag) => (
+                        <button key={tag.id} 
+                            className='p-1 px-2 mx-2 rounded-full outline outline-white hover:bg-white hover:text-black'
+                            onClick={()=>{addTag(tag)}}
+                        >
+                            <h2 className=''>{tag.name}</h2>
+                        </button>
                     ))}
                 </ul>
             </div>
@@ -63,7 +88,7 @@ export default function ShowTagsSection({currentTags, allTags}: {currentTags: Sh
         <span className="flex justify-between">
             <h1 className='text-2xl font-bold'>Tags</h1>
             <button 
-                className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+                className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
                 onClick={() => setEditingTags(!editingTags)}>
                 {editingTags ? 'Done' : 'Edit'}
             </button>
