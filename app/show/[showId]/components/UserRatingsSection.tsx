@@ -61,7 +61,7 @@ export default function UserRatingsSection ({ userInfo, updateFunction }: { user
                     Remove Rating
                 </button> }
             </div>
-            <div className='flex text-center'>
+            <div className='flex text-center justify-center'>
                 {ratings.map((rating) => {
                     if (rating === currentRating) {
                         return (

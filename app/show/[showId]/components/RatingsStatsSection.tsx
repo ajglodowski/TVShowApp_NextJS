@@ -36,7 +36,7 @@ export default function RatingsStatsSection ({ ratingCounts }: { ratingCounts: R
 
 
     return (
-        <div className='text-left flex'>
+        <div className='text-left flex flex-wrap md:flex-nowrap'>
             <div>
                 <h1 className='text-7xl font-bold tracking-tighter'>Ratings</h1>
                 <h2 className='text-lg'>Average Rating Score: {averageRating().toFixed(2)}</h2>

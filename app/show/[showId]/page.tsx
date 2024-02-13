@@ -94,22 +94,24 @@ export default async function ShowPage({ params }: { params: { showId: string } 
     <div style={gradientStyle(50)}  className='w-full h-full'>
       <div className=''>
         <div className='w-full'>
-          {showImageUrl && <div className='w-4/12 mx-auto'>
+          {showImageUrl && <div className='w-9/12 md:4/12 max-w-xl min-w-64 mx-auto'>
             <Image src={showImageUrl} alt={show.name} width={600} height={600} className='rounded-lg m-2 hover:shadow-2xl'/>
           </div> }
-          { !showImageUrl && <div className="w-4/12 mx-auto">
+          { !showImageUrl && <div className="w-7/12 max-w-xl min-w-32 mx-auto">
             <Skeleton className="w-[600px] h-[600px] object-contain rounded-md" />
           </div>}
         </div>
-        <h1 className='text-9xl font-extrabold tracking-tighter text-center -mt-16'>{show.name}</h1>
+        <h1 className='text-7xl sm:text-9xl font-extrabold tracking-tighter text-center -mt-16'>{show.name}</h1>
       </div>
       <h2 className='text-2xl tracking-tight text-center'>{show.length} minutes - {show.service.name}</h2>
       
       <div className='flex flex-wrap md:flex-nowrap'>
         <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
-          <span className='flex justify-between my-auto'>
-            {loggedIn && <UserRatingsSection userInfo={userInfoData} updateFunction={updateUserShowData}/> }
-            <h2 className='text-7xl font-bold tracking-tighter text-center my-auto'>Your History</h2>
+          <span className='flex flex-wrap md:flex-nowrap justify-between my-auto'>
+            <div className='mx-auto'>
+              {loggedIn && <UserRatingsSection userInfo={userInfoData} updateFunction={updateUserShowData}/> }
+            </div>
+            <h2 className='text-5xl md:text-7xl font-bold tracking-tighter md:text-center my-auto'>Your History</h2>
           </span>
           <Divider />
           <ShowStatusSection userShowData={userInfoData} allStatuses={allStatuses} updateFunction={updateUserShowData} loggedIn={loggedIn}/>
