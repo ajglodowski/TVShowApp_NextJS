@@ -13,8 +13,8 @@ export const RatingPoints = {
 }
 
 export const RatingColors = {
-    [Rating.DISLIKED]: 'red-500',
-    [Rating.MEH]: 'yellow-500',
-    [Rating.LIKED]: 'green-500',
-    [Rating.LOVED]: 'blue-500'
+    [Rating.DISLIKED]: 'red-400',
+    [Rating.MEH]: 'yellow-400',
+    [Rating.LIKED]: 'green-400',
+    [Rating.LOVED]: 'blue-400'
 }

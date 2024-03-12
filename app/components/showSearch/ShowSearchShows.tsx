@@ -4,9 +4,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ShowRow } from '../show/ShowRow';
 import Divider from '../Divider';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { UserShowData } from '@/app/models/userShowData';
 
 
-export default function ShowSearchShows({ shows }: { shows: Show[] | null | undefined }) {
+export default function ShowSearchShows({ shows, currentUserInfo }: { shows: Show[] | null | undefined, currentUserInfo: UserShowData[]| undefined | null}) {
 
     if (shows === null) {
         return (
@@ -20,13 +21,17 @@ export default function ShowSearchShows({ shows }: { shows: Show[] | null | unde
         );
     }
 
+    const getCurrentUserInfo = (showId: number) => {
+        return currentUserInfo?.find((item) => Number(item.showId) === showId);
+    }
+
     return (
         <div className='px-2'>
             <ScrollArea className='rounded-md border-2 h-96 overflow-auto'>
                 <div className='py-2'>
                     {shows.map((show: Show) => (
                         <div className='px-4' key={show.id}>
-                            <ShowRow show={show} />
+                            <ShowRow show={show} currentUserInfo={getCurrentUserInfo(show.id)}/>
                             <Divider />
                         </div>
                     ))}

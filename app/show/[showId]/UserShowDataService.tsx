@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { createClient } from '@/utils/supabase/server';
 import { Status } from "@/app/models/status";
-import { UserShowData } from "@/app/models/userShowData";
+import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
 import { Rating } from "@/app/models/rating";
 import { ChangedRatingUpdate, UserUpdate } from "@/app/models/userUpdate";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
@@ -12,7 +12,7 @@ export async function getUserShowData({showId, userId}: {showId: string, userId:
   
     const cookieStore = cookies()
     const supabase = createClient(cookieStore);
-    const { data: showData } = await supabase.from("UserShowDetails").select('userId, showId, created_at, updated, currentSeason, rating, status (id, name)').match({userId: userId, showId: showId}).single();
+    const { data: showData } = await supabase.from("UserShowDetails").select(UserShowDataParams).match({userId: userId, showId: showId}).single();
     
     if (!showData) return null;   
   

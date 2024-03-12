@@ -10,3 +10,5 @@ export type UserShowData = {
     rating: Rating;
     created_at: Date;
 }
+
+export const UserShowDataParams = 'userId, showId, created_at, updated, currentSeason, rating, status (id, name)';

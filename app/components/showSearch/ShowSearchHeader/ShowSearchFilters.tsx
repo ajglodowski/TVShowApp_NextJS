@@ -6,28 +6,11 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
-import { getServices } from "./ShowSearchService";
+import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ShowSearchFilters } from "./ShowSearchHeader";
 
-export type ShowSearchFilters = {
-    service: Service[];
-    length: ShowLength[];
-    airDate: AirDate[];
-    limitedSeries?: boolean;
-    running?: boolean;
-    currentlyAiring?: boolean;
-}
-
-export const defaultFilters: ShowSearchFilters = {
-    service: [],
-    length: [],
-    airDate: [],
-    limitedSeries: undefined,
-    running: undefined,
-    currentlyAiring: undefined
-}
-
-export default function ShowSearchHeader({filters, setFilters}: {filters: ShowSearchFilters, setFilters: Function}) {
+export default function ShowSearchFilters({filters, setFilters}: {filters: ShowSearchFilters, setFilters: Function}) {
 
     const [showFilters, setShowFilters] = useState<boolean>(false);
     const [services, setServices] = useState<Service[]|null|undefined>(undefined);
@@ -137,6 +120,8 @@ export default function ShowSearchHeader({filters, setFilters}: {filters: ShowSe
         <div className="text-white rounded-md p-4">
             <span className="flex justify-between">
                 <h1 className="text-5xl font-bold">Filters</h1>
+            </span>
+            <div className="border-2 rounded-md p-1">
                 <div className="flex items-center space-x-2 py-2">
                     <Label>Show Filters?</Label>
                     <Switch 
@@ -144,68 +129,68 @@ export default function ShowSearchHeader({filters, setFilters}: {filters: ShowSe
                         onCheckedChange={(changed) => setShowFilters(changed)} 
                     />
                 </div>
-            </span>
-            {showFilters && <div>
-                <div className="flex space-x-4">
-                    <div className="items-center space-x-2 py-2">
-                        <Label>Running?</Label>
-                        <RadioGroup value={String(filters.running)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, running: getBoolFromString(value)})}>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="undefined" id="r1" />
-                                <Label htmlFor="r1">Not Applied</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="true" id="r2" />
-                                <Label htmlFor="r2">Yes</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="false" id="r3" />
-                                <Label htmlFor="r3">No</Label>
-                            </div>
-                        </RadioGroup>
+                {showFilters && <div>
+                    <div className="flex space-x-4">
+                        <div className="items-center space-x-2 py-2">
+                            <Label>Running?</Label>
+                            <RadioGroup value={String(filters.running)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, running: getBoolFromString(value)})}>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="undefined" id="r1" />
+                                    <Label htmlFor="r1">Not Applied</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="true" id="r2" />
+                                    <Label htmlFor="r2">Yes</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="false" id="r3" />
+                                    <Label htmlFor="r3">No</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div className="items-center space-x-2 py-2">
+                            <Label>Limited Series?</Label>
+                            <RadioGroup value={String(filters.limitedSeries)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, limitedSeries: getBoolFromString(value)})}>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="undefined" id="l1" />
+                                    <Label htmlFor="l1">Not Applied</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="true" id="l2" />
+                                    <Label htmlFor="l2">Yes</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="false" id="l3" />
+                                    <Label htmlFor="l3">No</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                        <div className="items-center space-x-2 py-2">
+                            <Label>Currently Airing?</Label>
+                            <RadioGroup value={String(filters.currentlyAiring)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, currentlyAiring: getBoolFromString(value)})}>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="undefined" id="c1" />
+                                    <Label htmlFor="c1">Not Applied</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="true" id="c2" />
+                                    <Label htmlFor="c2">Yes</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="false" id="c3" />
+                                    <Label htmlFor="c3">No</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
                     </div>
-                    <div className="items-center space-x-2 py-2">
-                        <Label>Limited Series?</Label>
-                        <RadioGroup value={String(filters.limitedSeries)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, limitedSeries: getBoolFromString(value)})}>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="undefined" id="r1" />
-                                <Label htmlFor="r1">Not Applied</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="true" id="r2" />
-                                <Label htmlFor="r2">Yes</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="false" id="r3" />
-                                <Label htmlFor="r3">No</Label>
-                            </div>
-                        </RadioGroup>
+                    <div>
+                        {services && <ServicesRow />}
                     </div>
-                    <div className="items-center space-x-2 py-2">
-                        <Label>Currently Airing?</Label>
-                        <RadioGroup value={String(filters.currentlyAiring)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, currentlyAiring: getBoolFromString(value)})}>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="undefined" id="r1" />
-                                <Label htmlFor="r1">Not Applied</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="true" id="r2" />
-                                <Label htmlFor="r2">Yes</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="false" id="r3" />
-                                <Label htmlFor="r3">No</Label>
-                            </div>
-                        </RadioGroup>
+                    <div>
+                        <AirdatesRow />
                     </div>
-                </div>
-                <div>
-                    {services && <ServicesRow />}
-                </div>
-                <div>
-                    <AirdatesRow />
-                </div>
-            </div>}
+                </div>}
+            </div>
         </div>
     );
 
