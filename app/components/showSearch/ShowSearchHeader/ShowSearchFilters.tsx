@@ -117,9 +117,9 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
     }
 
     return (
-        <div className="text-white rounded-md p-4">
+        <div className="text-white p-4">
             <span className="flex justify-between">
-                <h1 className="text-5xl font-bold">Filters</h1>
+                <h1 className="text-5xl font-bold">Search Filters</h1>
             </span>
             <div className="border-2 rounded-md p-1">
                 <div className="flex items-center space-x-2 py-2">

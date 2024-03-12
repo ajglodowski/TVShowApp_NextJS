@@ -10,6 +10,7 @@ import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowSearchFilters from "./ShowSearchFilters";
 import Divider from "../../Divider";
+import { Input } from "@/components/ui/input";
 
 export type ShowSearchFilters = {
     service: Service[];
@@ -29,17 +30,40 @@ export const defaultFilters: ShowSearchFilters = {
     currentlyAiring: undefined
 }
 
-export default function ShowSearchHeader({filters, setFilters, showingCurrentUserInfo, setShowCurrentUserInfo}: {filters: ShowSearchFilters, setFilters: Function, showingCurrentUserInfo: boolean, setShowCurrentUserInfo: Function}) {
+type ShowSearchHeaderProps = {
+    filters: ShowSearchFilters;
+    setFilters: Function; 
+    showingCurrentUserInfo: boolean; 
+    setShowCurrentUserInfo: Function
+    searchResults: string | undefined;
+    setSearchResults: Function;
+}
+
+export default function ShowSearchHeader(props: ShowSearchHeaderProps) {
 
     return (
         <div className="">
-            <ShowSearchFilters filters={filters} setFilters={setFilters} />
-            <div className="flex items-center space-x-2 py-2">
-                <Label>Show Your Info?</Label>
-                <Switch 
-                    checked={showingCurrentUserInfo} 
-                    onCheckedChange={(changed) => setShowCurrentUserInfo(changed)} 
-                />
+            <ShowSearchFilters filters={props.filters} setFilters={props.setFilters} />
+            <div className="text-white p-4">
+                <span className="flex justify-between">
+                    <h1 className="text-5xl font-bold">Result Filters</h1>
+                </span>
+                <div className="flex items-center space-x-2 py-2">
+                    <Label>Show Your Info?</Label>
+                    <Switch 
+                        checked={props.showingCurrentUserInfo} 
+                        onCheckedChange={(changed) => props.setShowCurrentUserInfo(changed)} 
+                    />
+                </div>
+                <div className="flex items-center space-x-2 py-2">
+                    <Input
+                        className="bg-black"
+                        type="text"
+                        placeholder="Search through results" 
+                        value={props.searchResults} 
+                        onChange={(e) => props.setSearchResults(e.target.value)}
+                    />
+                </div>
             </div>
             <Divider />
         </div>

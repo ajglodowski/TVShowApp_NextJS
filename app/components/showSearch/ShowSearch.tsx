@@ -4,7 +4,6 @@ import ShowSearchHeader, { ShowSearchFilters, defaultFilters } from './ShowSearc
 import { useEffect, useState } from 'react';
 import ShowSearchShows from './ShowSearchShows';
 import { fetchShows, getUserShowData } from './ShowSearchService';
-import { cookies } from 'next/headers';
 import { UserShowData } from '@/app/models/userShowData';
 import { createClient } from '@/utils/supabase/client';
 
@@ -22,6 +21,8 @@ export default function ShowSearch({userId}: {userId?: string}) {
     const [shows, setShows] = useState<Show[]| undefined | null>(undefined);
     const [showingCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
     const [currentUserInfo, setCurrentUserInfo] = useState<UserShowData[]| undefined | null>(undefined);
+    const [resultsSearch, setResultsSearch] = useState<string | undefined>(undefined);
+    const [filteredShows, setFilteredShows] = useState<Show[]| undefined | null>(undefined);
 
     useEffect(() => {
         fetchShows(filters).then((shows) => setShows(shows));
@@ -48,14 +49,25 @@ export default function ShowSearch({userId}: {userId?: string}) {
         }
     }, [shows, showingCurrentUserInfo]);
 
+    useEffect(() => {
+        if (resultsSearch && resultsSearch?.length > 0) {
+            const updated = shows?.filter((show) => show.name.toLowerCase().includes(resultsSearch.toLowerCase()));
+            setFilteredShows(updated);
+        } else setFilteredShows(undefined);
+    }, [resultsSearch]);
+
+    const results = filteredShows ? filteredShows : shows;
+    const currentUserInfoDetails = showingCurrentUserInfo ? currentUserInfo : undefined;
 
     return (
         <div className='w-full'>
             <ShowSearchHeader 
                 filters={filters} setFilters={setFilters} 
-                showingCurrentUserInfo={showingCurrentUserInfo} setShowCurrentUserInfo={setShowCurrentUserInfo}/>
+                showingCurrentUserInfo={showingCurrentUserInfo} setShowCurrentUserInfo={setShowCurrentUserInfo}
+                searchResults={resultsSearch} setSearchResults={setResultsSearch}
+            />
             <div className=''>
-                <ShowSearchShows shows={shows} currentUserInfo={currentUserInfo}/>
+                <ShowSearchShows shows={results} currentUserInfo={currentUserInfoDetails}/>
             </div>
         </div>       
     );
