@@ -1,5 +1,5 @@
 import ShowSearch from "@/app/components/showSearch/ShowSearch";
-
+import { ShowSearchType } from "@/app/models/showSearchType";
 
 export default async function WatchlistPage({ params }: { params: { userId: string } }) {
 
@@ -8,7 +8,7 @@ export default async function WatchlistPage({ params }: { params: { userId: stri
     return (
         <div className="w-full">
             <h1>Watchlist Page {userId}</h1>
-            <ShowSearch />
+            <ShowSearch searchType={ShowSearchType.OTHER_USER_WATCHLIST}/>
         </div>
     );
 }

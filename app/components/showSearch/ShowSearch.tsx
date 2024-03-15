@@ -6,6 +6,7 @@ import ShowSearchShows from './ShowSearchShows';
 import { fetchShows, getUserShowData } from './ShowSearchService';
 import { UserShowData } from '@/app/models/userShowData';
 import { createClient } from '@/utils/supabase/client';
+import { ShowSearchType } from '@/app/models/showSearchType';
 
 export type ShowSearchData = { // Not used yet
     shows: Show[]| undefined | null;
@@ -15,7 +16,9 @@ export type ShowSearchData = { // Not used yet
     setShowCurrentUserInfo: Function;
 }
 
-export default function ShowSearch({userId}: {userId?: string}) {
+
+
+export default function ShowSearch({searchType, userId}: {searchType: ShowSearchType, userId?: string}) {
 
     const [filters, setFilters] = useState<ShowSearchFilters>(defaultFilters);
     const [shows, setShows] = useState<Show[]| undefined | null>(undefined);
@@ -25,7 +28,7 @@ export default function ShowSearch({userId}: {userId?: string}) {
     const [filteredShows, setFilteredShows] = useState<Show[]| undefined | null>(undefined);
 
     useEffect(() => {
-        fetchShows(filters).then((shows) => setShows(shows));
+        fetchShows(filters, searchType).then((shows) => setShows(shows));
     }, [filters]);
 
     useEffect(() => {

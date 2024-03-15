@@ -99,13 +99,29 @@ export async function updateRating({userId, showId, newRating}: {showId: string,
     return true;
 }
 
+export async function addToWatchList({userId, showId}: {showId: string, userId: string}): Promise<boolean> {
+    "use server";    
+    const cookieStore = cookies()
+    const supabase = createClient(cookieStore);
+    const error = (await supabase.from("UserShowDetails").insert({userId: userId, showId: showId, currentSeason: 1, status: 3})).error;
+    if (error) {
+        console.error(error);
+        return false;
+    }
+    return true;
+}
+
 export async function updateUserShowData({updateType, userId, showId, newValue }: {updateType: UserUpdateCategory, userId: string, showId: string, newValue: number | Rating | Status | undefined }): Promise<boolean> {
     "use server";
     var response = true;
     var update: UserUpdate | null = null;
     switch (updateType) {
         case UserUpdateCategory.AddedToWatchlist:
-            // TODO
+            response = await addToWatchList({userId: userId, showId: showId});
+            if (response) update = {
+                id: -1, userId: userId, showId: Number(showId), updateType: UserUpdateCategory.AddedToWatchlist, updateDate: new Date()
+            };
+            break;
         case UserUpdateCategory.ChangedRating:
             response = await updateRating({userId: userId, showId: showId, newRating: newValue as Rating});
             if (response) update = {

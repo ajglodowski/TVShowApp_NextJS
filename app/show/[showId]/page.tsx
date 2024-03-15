@@ -12,7 +12,6 @@ import UserUpdatesSection from './components/UserUpdatesSection';
 import RatingsStatsSection from './components/RatingsStatsSection';
 import UserRatingsSection from './components/UserRatingsSection';
 import { dateToString, releaseDateToString } from '@/utils/timeUtils';
-import { randomInt } from 'crypto';
 import Divider from '@/app/components/Divider';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -114,9 +113,9 @@ export default async function ShowPage({ params }: { params: { showId: string } 
             <h2 className='text-5xl md:text-7xl font-bold tracking-tighter md:text-center my-auto'>Your History</h2>
           </span>
           <Divider />
-          <ShowStatusSection userShowData={userInfoData} allStatuses={allStatuses} updateFunction={updateUserShowData} loggedIn={loggedIn}/>
+          <ShowStatusSection showId={showId} userId={currentUserId} userShowData={userInfoData} allStatuses={allStatuses} updateFunction={updateUserShowData} loggedIn={loggedIn}/>
           <Divider />
-          <SeasonsRow userId={currentUserId} currentSeason={userInfoData?.currentSeason} totalSeasons={showData.totalSeasons} showId={showId} updateFunction={updateUserShowData}/>  
+          {userInfoData && <SeasonsRow userId={currentUserId} currentSeason={userInfoData?.currentSeason} totalSeasons={showData.totalSeasons} showId={showId} updateFunction={updateUserShowData}/> }
         </div>
 
         <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 h-auto shadow-2xl rounded-lg'>

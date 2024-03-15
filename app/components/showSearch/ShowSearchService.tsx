@@ -5,8 +5,9 @@ import { Service } from "@/app/models/service";
 import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
 import { Status } from "@/app/models/status";
 import { Rating } from "@/app/models/rating";
+import { ShowSearchType } from "@/app/models/showSearchType";
 
-export async function fetchShows(filters: ShowSearchFilters): Promise<Show[] | null> {
+export async function fetchShows(filters: ShowSearchFilters, searchType: ShowSearchType, otherUserId?: string): Promise<Show[] | null> {
     const supabase = createClient();
     let queryBase = supabase.from("show").select(ShowPropertiesWithService);
 
@@ -17,6 +18,36 @@ export async function fetchShows(filters: ShowSearchFilters): Promise<Show[] | n
     if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
 
     //queryBase = queryBase.limit(100);
+    if (searchType === ShowSearchType.WATCHLIST) {
+        const { data: { user }, } = await supabase.auth.getUser();
+        const currentUserId = user?.id;
+        if (!currentUserId) return null;
+        const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
+        if (!showIds) return null;
+        queryBase = queryBase.in('id', showIds);
+    } 
+    if (searchType === ShowSearchType.OTHER_USER_WATCHLIST) {
+        if (!otherUserId) return null;
+        const showIds = (await getUserShowData({showIds: [], userId: otherUserId}))?.map((showData) => showData.showId);
+        if (!showIds) return null;
+        queryBase = queryBase.in('id', showIds);
+    }
+    if (searchType === ShowSearchType.DISCOVER_NEW) {
+        const { data: { user }, } = await supabase.auth.getUser();
+        const currentUserId = user?.id;
+        if (!currentUserId) return null;
+        const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
+        if (!showIds) return null;
+        var showIdsString = '(';
+        for (var i = 0; i < showIds.length; i++) {
+            showIdsString += showIds[i];
+            if (i < showIds.length - 1) {
+                showIdsString += ', ';
+            }
+        }
+        showIdsString += ')';
+        queryBase = queryBase.not('id', 'in', showIdsString);
+    }
 
     const { data: showData } = await queryBase;
     
@@ -46,9 +77,11 @@ export async function getUserShowData({showIds, userId}: {showIds: string[], use
     if (!userId) return null;
   
     const supabase = createClient();
-    const { data: showData } = await supabase.from("UserShowDetails").select(UserShowDataParams)
-        .match({userId: userId})
-        .in('showId', showIds);
+    var queryBase  = supabase.from("UserShowDetails").select(UserShowDataParams)
+        .match({userId: userId});
+
+    if (showIds.length > 0) queryBase = queryBase.in('showId', showIds);
+    const { data: showData } = await queryBase;
     
     if (!showData) return null;   
   

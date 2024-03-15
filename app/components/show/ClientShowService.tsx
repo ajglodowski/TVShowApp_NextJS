@@ -6,6 +6,8 @@ import { createClient } from "@/utils/supabase/client";
 import { getDownloadURL, ref } from "firebase/storage";
 import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
+import { updateUserShowData } from "@/app/show/[showId]/UserShowDataService";
+import { UserUpdateCategory } from "@/app/models/userUpdateType";
 
 
 export async function getShow( showId: string ): Promise<Show | null> {
@@ -27,7 +29,10 @@ export async function updateShow(show: Show): Promise<boolean> {
     const supabase = createClient();
     var showData: any = { ...show };
     showData.service = showData.service.id;
-    const { data, error } = await supabase.from("show").upsert(showData).match({id: show.id});
+    var query = supabase.from("show").upsert(showData)
+    if (show.id === 0) showData.id = undefined;
+    else query = query.match({id: show.id});
+    const { data, error } = await query;
     if (error) {
         console.error(error);
         return false;
@@ -82,7 +87,7 @@ export async function addShowTag(showId: string, tag: ShowTag): Promise<boolean>
     return true;
   }
   
-  export async function removeShowTag(showId: string, tag: ShowTag): Promise<boolean> {
+export async function removeShowTag(showId: string, tag: ShowTag): Promise<boolean> {
     const supabase = createClient();
     const { error } = await supabase.from("ShowTagRelationship").delete().match({showId: showId, tagId: tag.id});
     if (error) {
@@ -90,4 +95,4 @@ export async function addShowTag(showId: string, tag: ShowTag): Promise<boolean>
       return false;
     }
     return true;
-  }
+}
