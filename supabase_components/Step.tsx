@@ -6,7 +6,7 @@ export default function Step({
   children: React.ReactNode
 }) {
   return (
-    <li className="mx-4">
+    <li className="mx-4" key={title}>
       <input type="checkbox" id={title} className={`mr-2 peer`} />
       <label
         htmlFor={title}

@@ -7,13 +7,13 @@ function Navbar() {
     return (
         <nav>
             <ul className='flex justify-between'>
-                <li>
+                <li key="home">
                     <Link href="/">Home</Link>
                 </li>
-                <li>
+                <li key="watchlist">
                     <Link href="/watchlist">Watchlist</Link>
                 </li>
-                <li>
+                <li key="auth">
                     <AuthButton />
                 </li>
             </ul>

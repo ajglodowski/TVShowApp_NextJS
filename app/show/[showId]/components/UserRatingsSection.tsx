@@ -4,7 +4,10 @@
 import { Rating } from '@/app/models/rating';
 import { UserShowData } from '@/app/models/userShowData';
 import { UserUpdateCategory } from '@/app/models/userUpdateType';
-import { Error, Favorite, FavoriteBorder, RemoveCircle, RemoveCircleOutline, ThumbDown, ThumbDownOutlined, ThumbUp, ThumbUpOutlined } from '@mui/icons-material';
+import { DislikedIcon } from '@/assets/icons/DislikedIcon';
+import { LikedIcon } from '@/assets/icons/LikedIcon';
+import { LovedIcon } from '@/assets/icons/LovedIcon';
+import { MehIcon } from '@/assets/icons/MehIcon';
 import { useState } from 'react';
 
 export default function UserRatingsSection ({ userInfo, updateFunction }: { userInfo: UserShowData | null, updateFunction: Function }) {
@@ -23,30 +26,30 @@ export default function UserRatingsSection ({ userInfo, updateFunction }: { user
     function getRatingIcon(rating: Rating) {
         switch (rating) {
             case Rating.LOVED:
-                return <FavoriteBorder fontSize='large' />
+                return <LovedIcon size={8}/>
             case Rating.LIKED:
-                return <ThumbUpOutlined fontSize='large' />
+                return <LikedIcon size={8}/>
             case Rating.MEH:
-                return <RemoveCircleOutline fontSize='large' />
+                return <MehIcon size={8}/>
             case Rating.DISLIKED:
-                return <ThumbDownOutlined fontSize='large' />
+                return <DislikedIcon size={8}/>
             default:
-                return <Error fontSize='large' />
+                return <></>
         }
     }
 
     function currentRatingIcon() {
         switch (currentRating) {
             case Rating.LOVED:
-                return <Favorite fontSize='large' />
+                return <LovedIcon color='default' size={8}/>
             case Rating.LIKED:
-                return <ThumbUp fontSize='large' />
+                return <LikedIcon color='default' size={8}/>
             case Rating.MEH:
-                return <RemoveCircle fontSize='large' />
+                return <MehIcon color='default' size={8}/>
             case Rating.DISLIKED:
-                return <ThumbDown fontSize='large' />
+                return <DislikedIcon color='default' size={8}/>
             default:
-                return <Error fontSize='large' />
+                return <></>
         }
     }
 

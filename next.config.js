@@ -22,9 +22,9 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'firebasestorage.googleapis.com',
+                hostname: 'storage.googleapis.com',
                 port: '',
-                pathname: '/v0/b/tv-show-app-602d7.appspot.com/o/**',
+                pathname: '/**/*',
             },
         ],
         minimumCacheTTL: 60 * 60 * 24 * 1, // 1 day

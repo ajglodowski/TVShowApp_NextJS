@@ -4,13 +4,14 @@ import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
 import { Service } from "@/app/models/service";
 //import { ref, getDownloadURL } from "firebase/storage";
-import { firebaseImageBaseURL, firebaseStorage, setFirebaseImageBaseURL } from "@/app/firebaseConfig";
+//import { firebaseImageBaseURL, firebaseStorage, setFirebaseImageBaseURL } from "@/app/firebaseConfig";
 import { ShowImage } from "@/app/models/showImage";
 import sharp from 'sharp';
 import { Rating } from "@/app/models/rating";
 import { RatingCounts } from "@/app/models/ratingCounts";
 import { StatusCount } from "@/app/models/statusCount";
 import { Status } from "@/app/models/status";
+import { imageUrlBase } from "@/app/firebaseConfig";
 
 export async function getShow( showId: string ): Promise<Show | null> {
     const cookieStore = cookies()
@@ -52,10 +53,10 @@ export async function getAllTags(showId: string): Promise<ShowTag[] | null> {
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-  if (!firebaseImageBaseURL) await setFirebaseImageBaseURL();
-  var baseURL = firebaseImageBaseURL;
+  var baseURL = imageUrlBase;
+  const transformedName = showName.replace(/ /g, "%20");
   const dimensions = tile ? "200x200" : "640x640";
-  var showNameURL = `${baseURL}${showName}_${dimensions}.jpeg?alt=media`;
+  var showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
   return showNameURL;
 }
 

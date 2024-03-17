@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
+//import { initializeApp } from "firebase/app";
 
-import { getDownloadURL, getStorage, ref } from "firebase/storage";
+//import { getDownloadURL, getStorage, ref } from "firebase/storage";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -18,22 +18,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+//const app = initializeApp(firebaseConfig);
 
 // Initialize Cloud Storage and get a reference to the service
-export const firebaseStorage = getStorage(app);
-
-export var firebaseImageBaseURL: string|null = null;
-
-export async function setFirebaseImageBaseURL() {
-  if (firebaseImageBaseURL) return firebaseImageBaseURL;
-  const storage = firebaseStorage;
-  const imageRef = ref(storage, `showImages/resizedImages/broken_640x640.jpeg`);
-  const url = await getDownloadURL(imageRef);
-  const splitURL = url.split("resizedImages");
-  const baseURL = splitURL[0];
-  const fullBaseURL = baseURL + "resizedImages%2F";
-  firebaseImageBaseURL = fullBaseURL;
-}
-
-setFirebaseImageBaseURL();
+//export const firebaseStorage = getStorage(app);
+export const imageUrlBase = 'https://storage.googleapis.com/tv-show-app-602d7.appspot.com/showImages/resizedImages/';

@@ -1,4 +1,3 @@
-import { firebaseImageBaseURL, firebaseStorage, setFirebaseImageBaseURL } from "@/app/firebaseConfig";
 import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowImage } from "@/app/models/showImage";
@@ -8,6 +7,7 @@ import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
 import { updateUserShowData } from "@/app/show/[showId]/UserShowDataService";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
+import { imageUrlBase } from "@/app/firebaseConfig";
 
 
 export async function getShow( showId: string ): Promise<Show | null> {
@@ -41,15 +41,15 @@ export async function updateShow(show: Show): Promise<boolean> {
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-    if (!firebaseImageBaseURL) await setFirebaseImageBaseURL();
-    var baseURL = firebaseImageBaseURL;
-    var showNameURL = `${baseURL}${showName}_200x200.jpeg?alt=media`;
+    var baseURL = imageUrlBase;
+    const transformedName = showName.replace(/ /g, "%20");
+    var showNameURL = `${baseURL}${transformedName}_200x200.jpeg?alt=media`;
     return showNameURL;
 }
 
 
 export async function getShowImage(showName: string, tile: boolean): Promise<ShowImage | null> {
-    const storage = firebaseStorage;
+    //const storage = firebaseStorage;
 
     // Create a reference under which you want to list
     //const imageRef = ref(storage, `showImages/resizedImages/${showName}_200x200.jpeg`);
