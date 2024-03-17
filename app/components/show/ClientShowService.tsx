@@ -43,7 +43,8 @@ export async function updateShow(show: Show): Promise<boolean> {
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
     var baseURL = imageUrlBase;
     const transformedName = showName.replace(/ /g, "%20");
-    var showNameURL = `${baseURL}${transformedName}_200x200.jpeg?alt=media`;
+    const dimensions = tile ? "200x200" : "640x640";
+    var showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
     return showNameURL;
 }
 
@@ -58,16 +59,18 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
         const url = await getShowImageURL(showName, tile);
         //const response = await fetch(url);
 
-        const image = new Image();
+        var image = new Image();
+        image.src = "";
         image.src = url;
-        image.crossOrigin = "Anonymous";
+        //image.crossOrigin = "Anonymous";
 
         await new Promise((resolve) => {
             image.onload = resolve;
         });
 
-        const colorThief = new ColorThief();
-        const [red, green, blue] = colorThief.getColor(image);
+        //const colorThief = new ColorThief();
+        //const [red, green, blue] = colorThief.getColor(image);
+        const [red, green, blue] = [0, 0, 0];
 
         const averageColor = `rgb(${red},${green},${blue})`;
         return { imageUrl: url, averageColor };
