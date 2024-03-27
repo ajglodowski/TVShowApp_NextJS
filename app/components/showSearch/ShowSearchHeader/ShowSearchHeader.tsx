@@ -11,6 +11,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowSearchFilters from "./ShowSearchFilters";
 import Divider from "../../Divider";
 import { Input } from "@/components/ui/input";
+import ShowSearchCurrentUserFilters, { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
 
 export type ShowSearchFilters = {
     service: Service[];
@@ -37,6 +38,8 @@ type ShowSearchHeaderProps = {
     setShowCurrentUserInfo: Function
     searchResults: string | undefined;
     setSearchResults: Function;
+    currentUserFilters: CurrentUserFilters;
+    setCurrentUserFilters: Function;
 }
 
 export default function ShowSearchHeader(props: ShowSearchHeaderProps) {
@@ -48,13 +51,7 @@ export default function ShowSearchHeader(props: ShowSearchHeaderProps) {
                 <span className="flex justify-between">
                     <h1 className="text-5xl font-bold">Result Filters</h1>
                 </span>
-                <div className="flex items-center space-x-2 py-2">
-                    <Label>Show Your Info?</Label>
-                    <Switch 
-                        checked={props.showingCurrentUserInfo} 
-                        onCheckedChange={(changed) => props.setShowCurrentUserInfo(changed)} 
-                    />
-                </div>
+                <ShowSearchCurrentUserFilters showingCurrentUserInfo={props.showingCurrentUserInfo} filters={props.currentUserFilters} setFilters={props.setCurrentUserFilters} setShowCurrentUserInfo={props.setShowCurrentUserInfo}/>
                 <div className="flex items-center space-x-2 py-2">
                     <Input
                         className="bg-black"

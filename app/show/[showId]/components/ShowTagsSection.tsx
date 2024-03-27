@@ -25,6 +25,8 @@ export default function ShowTagsSection({showId, currentTags, allTags}: {showId:
         if (response) setAppliedTags(appliedTags.filter((appliedTag) => appliedTag.id !== tag.id));
     }
 
+    const tagStyle = 'p-1 px-2 m-1 rounded-full outline outline-white hover:bg-white hover:text-black';
+
     function CurrentTagsSection() {
         if (currentTags === null) return (
             <div>
@@ -45,7 +47,7 @@ export default function ShowTagsSection({showId, currentTags, allTags}: {showId:
                         <li key={tag.id}>
                             {editingTags &&
                                 <button
-                                    className='p-1 px-2 mx-2 rounded-full outline outline-white hover:bg-white hover:text-black'
+                                    className={tagStyle}
                                     onClick={() => removeTag(tag)}>
                                     <h2 className=''>{tag.name}</h2>
                                 </button>
@@ -72,7 +74,7 @@ export default function ShowTagsSection({showId, currentTags, allTags}: {showId:
                 <ul className='flex flex-row flex-wrap'>
                     {unusedTags()!.map((tag: ShowTag) => (
                         <button key={tag.id} 
-                            className='p-1 px-2 mx-2 rounded-full outline outline-white hover:bg-white hover:text-black'
+                            className={tagStyle}
                             onClick={()=>{addTag(tag)}}
                         >
                             <h2 className=''>{tag.name}</h2>
@@ -86,9 +88,9 @@ export default function ShowTagsSection({showId, currentTags, allTags}: {showId:
     return (
       <div className=''>
         <span className="flex justify-between">
-            <h1 className='text-2xl font-bold'>Tags</h1>
+            <h1 className='text-2xl font-bold my-auto'>Tags</h1>
             <button 
-                className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
+                className='p-1 mx-2 my-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
                 onClick={() => setEditingTags(!editingTags)}>
                 {editingTags ? 'Done' : 'Edit'}
             </button>

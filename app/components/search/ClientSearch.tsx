@@ -32,7 +32,9 @@ export const ClientSearch = () => {
             />
             <div>
                 {searchResults?.map((showId) => (
-                    <ClientShowTile showId={showId} />
+                    <div key={showId} className="m-2">
+                        <ClientShowTile showId={showId} />
+                    </div>
                 ))}
             </div>
         </div>

@@ -7,6 +7,9 @@ import { fetchShows, getUserShowData } from './ShowSearchService';
 import { UserShowData } from '@/app/models/userShowData';
 import { createClient } from '@/utils/supabase/client';
 import { ShowSearchType } from '@/app/models/showSearchType';
+import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
+import { set } from 'date-fns';
+import { Rating } from '@/app/models/rating';
 
 export type ShowSearchData = { // Not used yet
     shows: Show[]| undefined | null;
@@ -16,16 +19,20 @@ export type ShowSearchData = { // Not used yet
     setShowCurrentUserInfo: Function;
 }
 
+type ShowSearchProps = {
+    searchType: ShowSearchType;
+    userId?: string;
+}
 
-
-export default function ShowSearch({searchType, userId}: {searchType: ShowSearchType, userId?: string}) {
-
+export default function ShowSearch(props: ShowSearchProps) {
+    const {searchType, userId} = props;
     const [filters, setFilters] = useState<ShowSearchFilters>(defaultFilters);
     const [shows, setShows] = useState<Show[]| undefined | null>(undefined);
     const [showingCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
     const [currentUserInfo, setCurrentUserInfo] = useState<UserShowData[]| undefined | null>(undefined);
     const [resultsSearch, setResultsSearch] = useState<string | undefined>(undefined);
     const [filteredShows, setFilteredShows] = useState<Show[]| undefined | null>(undefined);
+    const [currentUserFilters, setCurrentUserFilters] = useState<CurrentUserFilters>(defaultCurrentUserFilters);
 
     useEffect(() => {
         fetchShows(filters, searchType).then((shows) => setShows(shows));
@@ -39,10 +46,7 @@ export default function ShowSearch({searchType, userId}: {searchType: ShowSearch
             const showIds = shows?.map((show) => String(show.id));
             if (!showIds) return;
             getUserShowData({showIds: showIds, userId: currentUserId}).then((showData) => {
-                if (showData) { 
-                    setCurrentUserInfo(showData);
-                    console.log(showData);
-                }
+                if (showData) setCurrentUserInfo(showData);
             });
         };
 
@@ -52,12 +56,42 @@ export default function ShowSearch({searchType, userId}: {searchType: ShowSearch
         }
     }, [shows, showingCurrentUserInfo]);
 
+    const inUserInfo = (showId: string) => {
+        if (!currentUserInfo) return false;
+        return currentUserInfo.find((s) => String(s.showId) === showId) ? true : false;
+    }
+
+    const currentUserRating = (showId: string): Rating|undefined => {
+        if (!currentUserInfo) return undefined;
+        const show = currentUserInfo.find((s) => String(s.showId) === showId);
+        return show?.rating;
+    }
+
+    const ratingInFilters = (rating: Rating|undefined) => {
+        if (!rating) return false;
+        return currentUserFilters.ratings.includes(rating);
+    }
+
     useEffect(() => {
+        if ((!!!resultsSearch || resultsSearch?.length > 0) && JSON.stringify(currentUserFilters) === JSON.stringify(defaultCurrentUserFilters)) {
+            setFilteredShows(undefined);
+            return;
+        }
+        var filt: Show[] = shows ? [...shows] : [];
         if (resultsSearch && resultsSearch?.length > 0) {
-            const updated = shows?.filter((show) => show.name.toLowerCase().includes(resultsSearch.toLowerCase()));
-            setFilteredShows(updated);
-        } else setFilteredShows(undefined);
-    }, [resultsSearch]);
+            filt = filt?.filter((show) => show.name.toLowerCase().includes(resultsSearch.toLowerCase()));
+        }
+        if (currentUserInfo) {
+            if (currentUserFilters.addedToWatchlist !== undefined) {
+                filt = filt.filter((show) => currentUserFilters.addedToWatchlist === inUserInfo(String(show.id)));
+            }
+            if (currentUserFilters.ratings.length > 0) {
+                filt = filt.filter((s) => ratingInFilters(currentUserRating(String(s.id))));
+            }
+        }
+        filt = filt.sort((a, b) => (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0);
+        setFilteredShows(filt);
+    }, [resultsSearch, shows, currentUserInfo, currentUserFilters]);
 
     const results = filteredShows ? filteredShows : shows;
     const currentUserInfoDetails = showingCurrentUserInfo ? currentUserInfo : undefined;
@@ -68,6 +102,7 @@ export default function ShowSearch({searchType, userId}: {searchType: ShowSearch
                 filters={filters} setFilters={setFilters} 
                 showingCurrentUserInfo={showingCurrentUserInfo} setShowCurrentUserInfo={setShowCurrentUserInfo}
                 searchResults={resultsSearch} setSearchResults={setResultsSearch}
+                currentUserFilters={currentUserFilters} setCurrentUserFilters={setCurrentUserFilters}
             />
             <div className=''>
                 <ShowSearchShows shows={results} currentUserInfo={currentUserInfoDetails}/>

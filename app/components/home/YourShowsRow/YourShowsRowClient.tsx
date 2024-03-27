@@ -49,7 +49,9 @@ export default function YourShowsRowClient ({userId, allStatuses}: {userId: stri
                 <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
                     <div className="flex">
                         {displayedShows.map((showData) => (
-                            <ClientShowTile showId={showData.showId.toString()} />
+                            <div key={showData.showId} className="m-2">
+                                <ClientShowTile showId={showData.showId.toString()} />
+                            </div>
                         ))}
                     </div>
                     <ScrollBar orientation="horizontal" />

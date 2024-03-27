@@ -36,7 +36,9 @@ export default async function CurrentlyAiringRow({userId}: {userId: string}) {
                             <h3 className="text-center text-lg font-bold"> {airDateInfo.day ? airDateInfo.day : "Unknown"} </h3>
                             <div>
                                 {airDateInfo.shows.map((show) => (
-                                    <ShowTile showId={show.id.toString()} />   
+                                    <div className="m-2">
+                                        <ShowTile showId={show.id.toString()} />    
+                                    </div>
                                 ))} 
                             </div>
                         </div>

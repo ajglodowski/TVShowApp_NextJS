@@ -60,7 +60,7 @@ export default function UserRatingsSection ({ userInfo, updateFunction }: { user
                 {/*currentRating && <div className='px-1'>{currentRatingIcon()}</div>*/}
                 {currentRating && <button 
                     onClick={() => updateRating(null)}
-                    className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'>
+                    className='p-1 mx-2 my-2 rounded-lg outline outline-white hover:bg-white hover:text-black'>
                     Remove Rating
                 </button> }
             </div>

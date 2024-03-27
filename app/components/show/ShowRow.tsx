@@ -57,9 +57,9 @@ export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, cur
     if (!showData) return (<div>Loading Show</div>);
     return (
         <Link href={`/show/${showData.id}`}>
-            <div className="flex justify-between">
-                <div className="flex space-x-2">
-                    <div className="">
+            <div className="flex flex-wrap md:flex-nowrap justify-between">
+                <div className="flex space-x-2 md:w-3/4 w-full my-auto">
+                    <div className="w-12 h-12">
                         {showImageUrl &&
                             <img src={showImageUrl} alt={showData.name} className="w-12 h-12 rounded-md" />
                         }
@@ -74,7 +74,7 @@ export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, cur
                         </span>
                     </div>
                 </div>
-                {currentUserInfo && <div className="">
+                {currentUserInfo && <div className="md:w-1/4 w-full">
                     <h5>Your Info:</h5>
                     <span className="flex justify-between">
                         <div>

@@ -51,7 +51,7 @@ export default function ClientShowTile({ showId }: { showId: string }) {
 
     return (
         <Link href={`show/${showId}`}>
-            <div key={showId} className="inline-block m-2 rounded-lg w-32 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
+            <div key={showId} className="inline-block rounded-lg w-32 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
                 <div className="h-full w-full items-center text-center justify-center">
                     <div className="w-32 h-32 mx-auto items-center">
                         {showImageUrl && <div className="relative">

@@ -28,7 +28,7 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
             <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
                 <div className="flex">
                     {shows.map((show) => (
-                        <div>
+                        <div className="m-2">
                             <ShowTile showId={show.showId} />
                             <p className="text-center">{daysAway(show.releaseDate)}</p>
                         </div>

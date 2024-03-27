@@ -14,7 +14,9 @@ export default async function WatchListRow ({userId}: {userId: string}) {
             <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
                 <div className="flex">
                     {shows.map((showId) => (
-                        <ShowTile key={showId} showId={showId.toString()} />
+                        <div key={showId} className="m-2">
+                            <ShowTile key={showId} showId={showId.toString()} />
+                        </div>
                     ))}
                 </div>
                 <ScrollBar orientation="horizontal" />
