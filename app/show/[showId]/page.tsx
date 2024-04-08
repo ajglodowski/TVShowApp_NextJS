@@ -31,30 +31,32 @@ function ShowNotFound() {
 export default async function ShowPage({ params }: { params: { showId: string } }) {
   const showId = params.showId;
 
-  const showData = await getShow(showId);
-
-  if (!showData) {
-    return <ShowNotFound />
-  }
-
-  const currentTags = await getTags(showId);
-  const allTags = await getAllTags(showId);
-  const show = showData as Show;
-  const showImageInfo = await getShowImage(show.name, false);
-  const showImageUrl = showImageInfo?.imageUrl;
-  const backgroundColor = showImageInfo?.averageColor;
-
+  // User Data
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
   const { data: { user }, } = await supabase.auth.getUser();
   const currentUserId = user?.id;
-  const userInfoData = await getUserShowData({userId: currentUserId, showId: showId});
   const loggedIn = currentUserId !== undefined;
-  const allStatuses = await getAllStatuses();
-  const ratingCounts = await getRatingCounts(showId);
-  const statusCounts = await getStatusCounts(showId);
-  const userUpdates = await getUserUpdates({showId: showId, userId: currentUserId});
 
+  const [showData, currentTags, allTags, userInfoData, allStatuses, ratingCounts, statusCounts, userUpdates] = await Promise.all([
+    getShow(showId),
+    getTags(showId),
+    getAllTags(showId),
+    getUserShowData({ userId: currentUserId, showId: showId }),
+    getAllStatuses(),
+    getRatingCounts(showId),
+    getStatusCounts(showId),
+    getUserUpdates({ showId: showId, userId: currentUserId })
+  ]);
+
+  if (!showData) {
+    return <ShowNotFound />
+  }
+  const show = showData as Show;
+
+  const showImageInfo = await getShowImage(show.name, false);
+  const showImageUrl = showImageInfo?.imageUrl;
+  const backgroundColor = showImageInfo?.averageColor;
   const RGBAToHexA = (rgba: string, forceRemoveAlpha = false) => {
     return "#" + rgba.replace(/^rgba?\(|\s+|\)$/g, '') // Get's rgba / rgb string values
       .split(',') // splits them at ","
