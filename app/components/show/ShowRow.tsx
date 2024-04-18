@@ -7,10 +7,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserShowData } from "@/app/models/userShowData";
 import { Rating, RatingColors } from "@/app/models/rating";
 import Link from "next/dist/client/link";
-import { LovedIcon } from "@/assets/icons/LovedIcon";
-import { LikedIcon } from "@/assets/icons/LikedIcon";
-import { MehIcon } from "@/assets/icons/MehIcon";
-import { DislikedIcon } from "@/assets/icons/DislikedIcon";
+import { LovedIcon } from "@/public/icons/LovedIcon";
+import { LikedIcon } from "@/public/icons/LikedIcon";
+import { MehIcon } from "@/public/icons/MehIcon";
+import { DislikedIcon } from "@/public/icons/DislikedIcon";
 
 export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowData | undefined }) => {
 

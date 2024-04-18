@@ -4,10 +4,10 @@
 import { Rating } from '@/app/models/rating';
 import { UserShowData } from '@/app/models/userShowData';
 import { UserUpdateCategory } from '@/app/models/userUpdateType';
-import { DislikedIcon } from '@/assets/icons/DislikedIcon';
-import { LikedIcon } from '@/assets/icons/LikedIcon';
-import { LovedIcon } from '@/assets/icons/LovedIcon';
-import { MehIcon } from '@/assets/icons/MehIcon';
+import { DislikedIcon } from '@/public/icons/DislikedIcon';
+import { LikedIcon } from '@/public/icons/LikedIcon';
+import { LovedIcon } from '@/public/icons/LovedIcon';
+import { MehIcon } from '@/public/icons/MehIcon';
 import { useState } from 'react';
 
 export default function UserRatingsSection ({ userInfo, updateFunction }: { userInfo: UserShowData | null, updateFunction: Function }) {
