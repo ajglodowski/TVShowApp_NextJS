@@ -1,13 +1,13 @@
 'use client'
 import { Show } from '@/app/models/show';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ShowRow } from '../show/ShowRow';
+import { ShowRow } from '../show/ShowRow/ShowRow';
 import Divider from '../Divider';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { UserShowData } from '@/app/models/userShowData';
+import { UserShowData, UserShowDataWithUserInfo } from '@/app/models/userShowData';
 
 
-export default function ShowSearchShows({ shows, currentUserInfo }: { shows: Show[] | null | undefined, currentUserInfo: UserShowData[]| undefined | null}) {
+export default function ShowSearchShows({ shows, currentUserInfo }: { shows: Show[] | null | undefined, currentUserInfo: UserShowDataWithUserInfo[]| undefined | null}) {
 
     if (shows === null) {
         return (

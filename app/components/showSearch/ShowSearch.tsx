@@ -4,7 +4,7 @@ import ShowSearchHeader, { ShowSearchFilters, defaultFilters } from './ShowSearc
 import { useEffect, useState } from 'react';
 import ShowSearchShows from './ShowSearchShows';
 import { fetchShows, getUserShowData } from './ShowSearchService';
-import { UserShowData } from '@/app/models/userShowData';
+import { UserShowData, UserShowDataWithUserInfo } from '@/app/models/userShowData';
 import { createClient } from '@/utils/supabase/client';
 import { ShowSearchType } from '@/app/models/showSearchType';
 import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
@@ -29,7 +29,7 @@ export default function ShowSearch(props: ShowSearchProps) {
     const [filters, setFilters] = useState<ShowSearchFilters>(defaultFilters);
     const [shows, setShows] = useState<Show[]| undefined | null>(undefined);
     const [showingCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
-    const [currentUserInfo, setCurrentUserInfo] = useState<UserShowData[]| undefined | null>(undefined);
+    const [currentUserInfo, setCurrentUserInfo] = useState<UserShowDataWithUserInfo[]| undefined | null>(undefined);
     const [resultsSearch, setResultsSearch] = useState<string | undefined>(undefined);
     const [filteredShows, setFilteredShows] = useState<Show[]| undefined | null>(undefined);
     const [currentUserFilters, setCurrentUserFilters] = useState<CurrentUserFilters>(defaultCurrentUserFilters);
@@ -73,7 +73,7 @@ export default function ShowSearch(props: ShowSearchProps) {
     }
 
     useEffect(() => {
-        if ((!!!resultsSearch || resultsSearch?.length > 0) && JSON.stringify(currentUserFilters) === JSON.stringify(defaultCurrentUserFilters)) {
+        if ((!!!resultsSearch || resultsSearch?.length === 0) && JSON.stringify(currentUserFilters) === JSON.stringify(defaultCurrentUserFilters)) {
             setFilteredShows(undefined);
             return;
         }

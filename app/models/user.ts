@@ -3,3 +3,8 @@ export type User = {
     username: string;
     created_at: Date;
 }
+
+export type UserBasicInfo = {
+    id: string;
+    username: string;
+}

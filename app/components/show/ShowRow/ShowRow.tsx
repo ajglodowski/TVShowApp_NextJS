@@ -2,9 +2,9 @@
 
 import { Show } from "@/app/models/show"
 import { useEffect, useState } from "react";
-import { getShowImage } from "./ClientShowService";
+import { getShowImage } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserShowData } from "@/app/models/userShowData";
+import { UserShowData, UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import { Rating, RatingColors } from "@/app/models/rating";
 import Link from "next/dist/client/link";
 import { LovedIcon } from "@/public/icons/LovedIcon";
@@ -12,8 +12,9 @@ import { LikedIcon } from "@/public/icons/LikedIcon";
 import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import Image from "next/image";
+import { UserDetailsDropdown } from "./UserDetailsDropdown";
 
-export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowData | undefined }) => {
+export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowDataWithUserInfo | undefined }) => {
 
     const [showData, setShowData] = useState<Show | undefined>(show as Show | undefined);
     const [showImageUrl, setShowImageUrl] = useState<string | undefined>(undefined);
@@ -59,7 +60,7 @@ export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, cur
     return (
         <Link href={`/show/${showData.id}`}>
             <div className="flex flex-wrap md:flex-nowrap justify-between">
-                <div className="flex space-x-2 md:w-3/4 w-full my-auto">
+                <div className="flex space-x-2 md:w-3/4 w-full my-auto justify-center md:justify-start">
                     <div className="w-12 h-12">
                         {showImageUrl &&
                             <Image src={showImageUrl} alt={showData.name} width="0"
@@ -76,18 +77,7 @@ export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, cur
                         </span>
                     </div>
                 </div>
-                {currentUserInfo && <div className="md:w-1/4 w-full">
-                    <h5>Your Info:</h5>
-                    <span className="flex justify-between">
-                        <div>
-                            <p>Current Season: {currentUserInfo.currentSeason}</p>
-                            <p>Status: {currentUserInfo.status.name}</p>
-                        </div>
-                        {currentUserInfo.rating && <div>
-                            {getRatingIcon(currentUserInfo.rating)}
-                        </div>}
-                    </span>
-                </div>}
+                {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo, currentUserInfo]}/>}
             </div>
         </Link>
     );

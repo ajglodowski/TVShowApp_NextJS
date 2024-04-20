@@ -2,10 +2,11 @@ import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowSearchFilters } from "./ShowSearchHeader/ShowSearchHeader";
 import { createClient } from "@/utils/supabase/client";
 import { Service } from "@/app/models/service";
-import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
+import { UserShowData, UserShowDataParams, UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
 import { Status } from "@/app/models/status";
 import { Rating } from "@/app/models/rating";
 import { ShowSearchType } from "@/app/models/showSearchType";
+import { UserBasicInfo } from "@/app/models/user";
 
 export async function fetchShows(filters: ShowSearchFilters, searchType: ShowSearchType, otherUserId?: string): Promise<Show[] | null> {
     const supabase = createClient();
@@ -72,12 +73,12 @@ export async function getServices(): Promise<Service[] | null> {
     return services;
 }
 
-export async function getUserShowData({showIds, userId}: {showIds: string[], userId: string | undefined}): Promise<UserShowData[] | null> {
+export async function getUserShowData({showIds, userId}: {showIds: string[], userId: string | undefined}): Promise<UserShowDataWithUserInfo[] | null> {
 
     if (!userId) return null;
   
     const supabase = createClient();
-    let queryBase  = supabase.from("UserShowDetails").select(UserShowDataParams)
+    let queryBase  = supabase.from("UserShowDetails").select(UserShowDataWithUserInfoParams)
         .match({userId: userId});
 
     if (showIds.length > 0) queryBase = queryBase.in('showId', showIds);
@@ -89,10 +90,12 @@ export async function getUserShowData({showIds, userId}: {showIds: string[], use
     for (const data of showData) {
         output.push({
             ...data,
+            user: data.user as unknown as UserBasicInfo,
             status: data.status as unknown as Status,
             rating: data.rating as unknown as Rating
-        } as UserShowData);
+        } as UserShowDataWithUserInfo);
     }
+    //console.log(output);
     
     return output;
 }
