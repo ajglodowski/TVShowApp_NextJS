@@ -9,6 +9,10 @@ import { useToast } from "@/components/ui/use-toast";
 
 export default function ShowStatusSection({ showId, userId, userShowData, allStatuses, updateFunction, loggedIn }: { showId: string, userId: string | undefined, userShowData: UserShowData | null, allStatuses: Status[] | null, updateFunction: Function, loggedIn: boolean }) {
 
+    const [currentStatus, setCurrentStatus] = useState(userShowData?.status);
+    const otherStatuses = allStatuses?.filter((status) => status.id !== currentStatus?.id);
+    const [showOptions, setShowOptions] = useState(false);
+
     if (!loggedIn) return (<></>);
     if (userShowData === null) return (
         <div className="m-2">
@@ -20,28 +24,23 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
         </div>
     );
 
-    const [currentStatus, setCurrentStatus] = useState(userShowData.status);
-    const otherStatuses = allStatuses?.filter((status) => status.id !== currentStatus.id);
-
     async function changeCurrentStatus(status: Status) {
         console.log(`Changing status to ${status.name}`);
-        var updateResponse = await updateFunction({ updateType: UserUpdateCategory.UpdatedStatus, userId: userId, showId: showId, newValue: status });
+        let updateResponse = await updateFunction({ updateType: UserUpdateCategory.UpdatedStatus, userId: userId, showId: showId, newValue: status });
         if (updateResponse) setCurrentStatus(status);
         else console.log(`Error updating season to ${status}`);
     };
     
-    const { toast } = useToast();
+    //const { toast } = useToast(); // TODO FIXME
     async function addShowToWatchlist() {
-        var response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId, showId: showId, newValue: status });
-        if (!response) toast({variant: 'destructive',description: 'Error Adding Show to Watchlist', title: 'Failure'});
-        else toast({description: 'Please refresh page to see changes', title: 'Show Added to Watchlist'});
+        const response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId, showId: showId, newValue: status });
+        //if (!response) toast({variant: 'destructive',description: 'Error Adding Show to Watchlist', title: 'Failure'});
+        //else toast({description: 'Please refresh page to see changes', title: 'Show Added to Watchlist'});
     };
-
-    const [showOptions, setShowOptions] = useState(false);
 
     return (
         <div className="w-full">
-            <h1 className="text-2xl">Current Status: {currentStatus.name}</h1>
+            <h1 className="text-2xl">Current Status: {currentStatus?.name}</h1>
             {allStatuses && <div className="">
                 <span className="flex items-center">
                     <button onClick={() => setShowOptions(!showOptions)} className="py-1 px-2 m-1 rounded-lg outline outline-white hover:bg-white hover:text-black">

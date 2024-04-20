@@ -77,7 +77,7 @@ export default function ShowSearch(props: ShowSearchProps) {
             setFilteredShows(undefined);
             return;
         }
-        var filt: Show[] = shows ? [...shows] : [];
+        let filt: Show[] = shows ? [...shows] : [];
         if (resultsSearch && resultsSearch?.length > 0) {
             filt = filt?.filter((show) => show.name.toLowerCase().includes(resultsSearch.toLowerCase()));
         }

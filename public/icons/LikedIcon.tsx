@@ -3,7 +3,7 @@ import { RatingColors } from "@/app/models/rating";
 export const LikedIcon = (props: IconProps) => {
     const color = props.color;
     const size = props.size;
-    var colorClass = "text-";
+    let colorClass = "text-";
     if (color === 'none' || color === undefined) colorClass += "white";
     else if (color === 'default') colorClass += RatingColors.Liked;
     else colorClass += color;

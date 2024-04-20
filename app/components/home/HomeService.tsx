@@ -60,7 +60,7 @@ export async function getComingSoon({userId}: {userId: string}): Promise<ComingS
     const supabase = createClient(cookieStore);
     const { data: showData } = await supabase.from("UserShowDetails").select('show: showId (name, releaseDate, id)').match({userId: userId, status: 9});
     if (!showData) return null;
-    var output = [];
+    let output = [];
     for (const showObj of showData) {
         const show = showObj.show as unknown as Show;
         if (show.releaseDate) output.push({showId: show.id.toString(), releaseDate: show.releaseDate} as ComingSoonDTO);

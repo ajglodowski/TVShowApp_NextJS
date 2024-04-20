@@ -7,7 +7,7 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
     'use client'
     if (!userId) return null;
 
-    var statusesString = "(";
+    let statusesString = "(";
     for (const status of selectedStatuses) {
         statusesString += status.id.toString() + ",";
     }
@@ -15,7 +15,7 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
     statusesString += ")";
 
     const supabase = createClient();
-    var response = null;
+    let response = null;
     if (selectedStatuses.length === 0) response = await supabase.from("UserShowDetails").select('userId, showId, created_at, updated, currentSeason, rating, status (id, name)').match({userId: userId}).order('updated', {ascending: false}).limit(15);
     else response = await supabase.from("UserShowDetails").select('userId, showId, created_at, updated, currentSeason, rating, status (id, name)').match({userId: userId}).filter('status', 'in', statusesString).order('updated', {ascending: false}).limit(15);
     

@@ -38,8 +38,8 @@ export async function fetchShows(filters: ShowSearchFilters, searchType: ShowSea
         if (!currentUserId) return null;
         const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
         if (!showIds) return null;
-        var showIdsString = '(';
-        for (var i = 0; i < showIds.length; i++) {
+        let showIdsString = '(';
+        for (let i = 0; i < showIds.length; i++) {
             showIdsString += showIds[i];
             if (i < showIds.length - 1) {
                 showIdsString += ', ';
@@ -77,7 +77,7 @@ export async function getUserShowData({showIds, userId}: {showIds: string[], use
     if (!userId) return null;
   
     const supabase = createClient();
-    var queryBase  = supabase.from("UserShowDetails").select(UserShowDataParams)
+    let queryBase  = supabase.from("UserShowDetails").select(UserShowDataParams)
         .match({userId: userId});
 
     if (showIds.length > 0) queryBase = queryBase.in('showId', showIds);

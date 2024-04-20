@@ -13,7 +13,7 @@ export default async function Top10Row() {
             <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
                 <div className="flex">
                     {shows.map((showInfo,index) => (
-                        <div className=" bg-gray-900 rounded-md p-1 m-2">
+                        <div key={showInfo.showId} className=" bg-gray-900 rounded-md p-1 m-2">
                             <ShowTile showId={showInfo.showId.toString()} />
                             <h3 className="font-bold">#{index + 1} Most Updated</h3>
                             <p className="">{showInfo.updates} updates</p>   

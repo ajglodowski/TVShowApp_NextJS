@@ -86,7 +86,7 @@ export async function updateRating({userId, showId, newRating}: {showId: string,
     "use server";    
     const cookieStore = cookies()
     const supabase = createClient(cookieStore);
-    var error = null;
+    let error = null;
     if (newRating) {
         error = (await supabase.from("UserShowDetails").update({rating: newRating}).match({userId: userId, showId: showId})).error;
     } else {
@@ -113,8 +113,8 @@ export async function addToWatchList({userId, showId}: {showId: string, userId: 
 
 export async function updateUserShowData({updateType, userId, showId, newValue }: {updateType: UserUpdateCategory, userId: string, showId: string, newValue: number | Rating | Status | undefined }): Promise<boolean> {
     "use server";
-    var response = true;
-    var update: UserUpdate | null = null;
+    let response = true;
+    let update: UserUpdate | null = null;
     switch (updateType) {
         case UserUpdateCategory.AddedToWatchlist:
             response = await addToWatchList({userId: userId, showId: showId});
@@ -164,7 +164,7 @@ export async function insertUpdate({update}: {update: UserUpdate}): Promise<bool
     "use server";    
     const cookieStore = cookies()
     const supabase = createClient(cookieStore);
-    var updateData = update as unknown as any;
+    let updateData = update as unknown as any;
     updateData.id = undefined;
     if (updateData.updateType === UserUpdateCategory.UpdatedStatus) updateData.statusChange = updateData.statusChange.id;
 

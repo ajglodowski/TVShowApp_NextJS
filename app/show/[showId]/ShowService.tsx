@@ -53,10 +53,10 @@ export async function getAllTags(showId: string): Promise<ShowTag[] | null> {
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-  var baseURL = imageUrlBase;
+  let baseURL = imageUrlBase;
   const transformedName = showName.replace(/ /g, "%20");
   const dimensions = tile ? "200x200" : "640x640";
-  var showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
+  let showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
   return showNameURL;
 }
 
@@ -92,7 +92,7 @@ export async function getRatingCounts(showId: string): Promise<RatingCounts | nu
   const { data: ratingData } = await supabase.from("showratingcounts").select('rating, count').match({showId: showId});
   
   if (!ratingData) return null;
-  var output: Record<Rating, number> = {
+  let output: Record<Rating, number> = {
     [Rating.DISLIKED]: 0,
     [Rating.MEH]: 0,
     [Rating.LIKED]: 0,

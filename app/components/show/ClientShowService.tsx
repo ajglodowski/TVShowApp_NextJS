@@ -27,9 +27,9 @@ export async function getShow( showId: string ): Promise<Show | null> {
 
 export async function updateShow(show: Show): Promise<boolean> {
     const supabase = createClient();
-    var showData: any = { ...show };
+    let showData: any = { ...show };
     showData.service = showData.service.id;
-    var query = supabase.from("show").upsert(showData)
+    let query = supabase.from("show").upsert(showData)
     if (show.id === 0) showData.id = undefined;
     else query = query.match({id: show.id});
     const { data, error } = await query;
@@ -41,10 +41,10 @@ export async function updateShow(show: Show): Promise<boolean> {
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-    var baseURL = imageUrlBase;
+    let baseURL = imageUrlBase;
     const transformedName = showName.replace(/ /g, "%20");
     const dimensions = tile ? "200x200" : "640x640";
-    var showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
+    let showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
     return showNameURL;
 }
 
@@ -59,7 +59,7 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
         const url = await getShowImageURL(showName, tile);
         //const response = await fetch(url);
 
-        var image = new Image();
+        let image = new Image();
         image.src = "";
         image.src = url;
         //image.crossOrigin = "Anonymous";

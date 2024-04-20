@@ -11,6 +11,7 @@ import { LovedIcon } from "@/public/icons/LovedIcon";
 import { LikedIcon } from "@/public/icons/LikedIcon";
 import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
+import Image from "next/image";
 
 export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowData | undefined }) => {
 
@@ -61,7 +62,8 @@ export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, cur
                 <div className="flex space-x-2 md:w-3/4 w-full my-auto">
                     <div className="w-12 h-12">
                         {showImageUrl &&
-                            <img src={showImageUrl} alt={showData.name} className="w-12 h-12 rounded-md" />
+                            <Image src={showImageUrl} alt={showData.name} width="0"
+                            height="0" sizes="100vw" className="w-12 h-12 rounded-md" />
                         }
                         {!showImageUrl && <Skeleton className="w-12 h-12 rounded-md" />}
                     </div>

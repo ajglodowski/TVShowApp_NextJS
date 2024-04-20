@@ -38,7 +38,7 @@ export default async function Home () {
                 <h1 className="text-4xl font-bold">Welcome to TV Show App</h1>
             </div>
             {rows.map((row) => (
-                <div className="w-full overflow-x-auto">
+                <div key={row.header} className="w-full overflow-x-auto">
                     <h3 className='text-4xl font-bold'>{row.header}</h3>
                     {row.component}
                 </div>

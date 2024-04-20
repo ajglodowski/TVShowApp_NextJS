@@ -262,7 +262,7 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
               <SelectContent>
                 <SelectItem value={"None"}>None</SelectItem>
                 { Object.values(AirDate).map((airDate) => (
-                  <SelectItem value={airDate}>{airDate}</SelectItem>
+                  <SelectItem key={airDate} value={airDate}>{airDate}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

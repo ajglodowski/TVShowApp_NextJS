@@ -16,7 +16,7 @@ export default async function CurrentlyAiringRow({userId}: {userId: string}) {
     const groupedShows = (): AirDateInfo[] => {
         if (shows === null) return [];
         const days = new Set(shows?.map(show => show.airdate)) as Set<AirDate>;
-        var output: AirDateInfo[] = [];
+        let output: AirDateInfo[] = [];
         days.forEach((day) => {
             const showsForDay = shows?.filter(show => show.airdate === day);
             const dayInfo = {day: day, shows: showsForDay as Show[]};
@@ -32,11 +32,11 @@ export default async function CurrentlyAiringRow({userId}: {userId: string}) {
             <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex mb-4">
                     {groupedShows().map((airDateInfo: AirDateInfo) => (
-                        <div className="items-center border border-white rounded-lg p-1 mx-2">
+                        <div key={airDateInfo.day} className="items-center border border-white rounded-lg p-1 mx-2">
                             <h3 className="text-center text-lg font-bold"> {airDateInfo.day ? airDateInfo.day : "Unknown"} </h3>
                             <div>
                                 {airDateInfo.shows.map((show) => (
-                                    <div className="m-2">
+                                    <div key={show.id} className="m-2">
                                         <ShowTile showId={show.id.toString()} />    
                                     </div>
                                 ))} 

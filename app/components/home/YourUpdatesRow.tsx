@@ -15,7 +15,7 @@ export default async function YourUpdatesRow ({userId}: {userId: string}) {
             <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
                 <div className="flex space-x-2">
                     {updates.map((update) => (
-                        <UserUpdateTile updateId={update}/>
+                        <UserUpdateTile key={update} updateId={update}/>
                     ))}
                 </div>
                 <ScrollBar orientation="horizontal" />
