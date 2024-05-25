@@ -41,6 +41,7 @@ function LoadingShow() {
 
 export default function EditShowPage({showId}: {showId?: string|undefined}) {
 
+  const [originalShowData, setOriginalShowData] = useState<Show | null | undefined>(undefined);
   const [showData, setShowData] = useState<Show | null | undefined>(undefined);
   const [services, setServices] = useState<Service[] | null | undefined>(undefined);
 
@@ -64,7 +65,10 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
     if (showId) {
         getShow(showId).then((show) => {
             if (!show) setShowData(null);
-            else setShowData(show);
+            else {
+              setOriginalShowData(show);
+              setShowData(show);
+            }
         });
     } else {
         setShowData(NewShow);
@@ -99,7 +103,9 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
     return value as ShowLength;
   }
 
-  
+  function resetShow() {
+    if (originalShowData) setShowData(originalShowData);
+  }
 
   const ReleaseDatePicker = () => {
     return (
@@ -126,11 +132,9 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
   };
 
   const ServiceRow = () => {
-
     const findService = (id: string): Service | undefined => {
       return services?.find((service) => service.id.toString() === id);
     }
-
     return (
       <div className="">
         <Label>Service</Label>
@@ -155,20 +159,25 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
 
   return (
     <div className='w-full h-full'>
-      <button 
-        onClick={() => logFunction()}
-      >
-        Log Data
-      </button>
+      <h1 className="text-2xl font-bold mx-4">Editing {showData.name}</h1>
       <Card className="bg-black text-white m-8">
         <CardHeader>
           <CardTitle>
-            <span className="flex items-center justify-between">
+            <span className="md:flex-wrap md:flex items-center justify-between">
               <h1>Show Info</h1>
-              <span className="flex items-center space-x-2">
+              <span className="flex-wrap md:flex items-center md:space-x-2">
+                { showData !== originalShowData &&
+                  <Button
+                    variant="destructive"
+                    className= "text-xl bg-transparent"
+                    onClick={() => resetShow()}
+                  >
+                    Reset Changes
+                  </Button>
+                }
                 <Button
                   variant="ghost"
-                  className= "text-xl"
+                  className= "text-xl hover:bg-green-300"
                   onClick={() => submitChanges()}
                 >
                   Submit Changes
@@ -229,7 +238,19 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
               onChange={(e) => setShowData({...showData, totalSeasons: Number(e.target.value)})}
             />
           </div>
-          <ReleaseDatePicker />
+          <div className="flex items-center space-x-2 py-2">
+            <Label>Release Date:</Label>
+            <ReleaseDatePicker />
+            { showData.releaseDate &&
+              <Button
+                variant="destructive"
+                className= "text-xl bg-transparent"
+                onClick={() => setShowData({...showData, releaseDate: undefined})}
+              >
+                Remove Release Date
+              </Button>
+            }
+          </div>
         </CardContent>
       </Card>
 

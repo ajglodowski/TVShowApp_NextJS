@@ -28,8 +28,10 @@ export default function ShowSearch(props: ShowSearchProps) {
     const {searchType, userId} = props;
     const [filters, setFilters] = useState<ShowSearchFilters>(defaultFilters);
     const [shows, setShows] = useState<Show[]| undefined | null>(undefined);
+    const showMap = new Map(shows?.map(obj => [obj.id, obj]) ?? []);
     const [showingCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
     const [currentUserInfo, setCurrentUserInfo] = useState<UserShowDataWithUserInfo[]| undefined | null>(undefined);
+    const currnetUserInfoMap = new Map(currentUserInfo?.map(obj => [obj.showId, obj]) ?? []);
     const [resultsSearch, setResultsSearch] = useState<string | undefined>(undefined);
     const [filteredShows, setFilteredShows] = useState<Show[]| undefined | null>(undefined);
     const [currentUserFilters, setCurrentUserFilters] = useState<CurrentUserFilters>(defaultCurrentUserFilters);
@@ -58,13 +60,12 @@ export default function ShowSearch(props: ShowSearchProps) {
 
     const inUserInfo = (showId: string) => {
         if (!currentUserInfo) return false;
-        return currentUserInfo.find((s) => String(s.showId) === showId) ? true : false;
+        return currnetUserInfoMap.get(showId) ? true : false;
     }
 
     const currentUserRating = (showId: string): Rating|undefined => {
         if (!currentUserInfo) return undefined;
-        const show = currentUserInfo.find((s) => String(s.showId) === showId);
-        return show?.rating;
+        return currnetUserInfoMap.get(showId)?.rating
     }
 
     const ratingInFilters = (rating: Rating|undefined) => {
