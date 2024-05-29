@@ -1,5 +1,5 @@
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
-import { ShowSearchFilters } from "./ShowSearchHeader/ShowSearchHeader";
+import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
 import { createClient } from "@/utils/supabase/client";
 import { Service } from "@/app/models/service";
 import { UserShowData, UserShowDataParams, UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
@@ -8,7 +8,7 @@ import { Rating } from "@/app/models/rating";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { UserBasicInfo } from "@/app/models/user";
 
-export async function fetchShows(filters: ShowSearchFilters, searchType: ShowSearchType, otherUserId?: string): Promise<Show[] | null> {
+export async function fetchShows(filters: ShowSearchFiltersType, searchType: ShowSearchType, otherUserId?: string): Promise<Show[] | null> {
     const supabase = createClient();
     let queryBase = supabase.from("show").select(ShowPropertiesWithService);
 
