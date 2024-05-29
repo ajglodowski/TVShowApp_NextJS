@@ -8,9 +8,9 @@ import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ShowSearchFilters } from "./ShowSearchHeader";
+import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
-export default function ShowSearchFilters({filters, setFilters}: {filters: ShowSearchFilters, setFilters: Function}) {
+export default function ShowSearchFilters({filters, setFilters}: {filters: ShowSearchFiltersType, setFilters: Function}) {
 
     const [showFilters, setShowFilters] = useState<boolean>(false);
     const [services, setServices] = useState<Service[]|null|undefined>(undefined);

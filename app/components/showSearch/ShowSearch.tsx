@@ -1,7 +1,7 @@
 'use client'
 import { Show } from '@/app/models/show';
-import ShowSearchHeader, { ShowSearchFilters, defaultFilters } from './ShowSearchHeader/ShowSearchHeader';
-import { useEffect, useState } from 'react';
+import ShowSearchHeader, { ShowSearchFiltersType, defaultFilters } from './ShowSearchHeader/ShowSearchHeader';
+import { useEffect, useMemo, useState } from 'react';
 import ShowSearchShows from './ShowSearchShows';
 import { fetchShows, getUserShowData } from './ShowSearchService';
 import { UserShowData, UserShowDataWithUserInfo } from '@/app/models/userShowData';
@@ -13,7 +13,7 @@ import { Rating } from '@/app/models/rating';
 
 export type ShowSearchData = { // Not used yet
     shows: Show[]| undefined | null;
-    filters: ShowSearchFilters;
+    filters: ShowSearchFiltersType;
     setFilters: Function;
     showCurrentUserInfo: boolean;
     setShowCurrentUserInfo: Function;
@@ -26,7 +26,7 @@ type ShowSearchProps = {
 
 export default function ShowSearch(props: ShowSearchProps) {
     const {searchType, userId} = props;
-    const [filters, setFilters] = useState<ShowSearchFilters>(defaultFilters);
+    const [filters, setFilters] = useState<ShowSearchFiltersType>(defaultFilters);
     const [shows, setShows] = useState<Show[]| undefined | null>(undefined);
     const showMap = new Map(shows?.map(obj => [obj.id, obj]) ?? []);
     const [showingCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
@@ -36,11 +36,20 @@ export default function ShowSearch(props: ShowSearchProps) {
     const [filteredShows, setFilteredShows] = useState<Show[]| undefined | null>(undefined);
     const [currentUserFilters, setCurrentUserFilters] = useState<CurrentUserFilters>(defaultCurrentUserFilters);
 
-    useEffect(() => {
-        fetchShows(filters, searchType).then((shows) => setShows(shows));
-    }, [filters]);
+    const doFetch = async () => {
+        const shows = await fetchShows(filters, searchType);
+        setShows(shows);
+    }
 
     useEffect(() => {
+        doFetch();
+    }, []);
+
+    useMemo(() => {
+        doFetch();
+    }, [filters]);
+
+    useMemo(() => {
         const fetchUserData = async () => {
             const { data: { user }, } = await createClient().auth.getUser();
             const currentUserId = user?.id;
@@ -73,15 +82,12 @@ export default function ShowSearch(props: ShowSearchProps) {
         return currentUserFilters.ratings.includes(rating);
     }
 
-    useEffect(() => {
+    useMemo(() => {
         if ((!!!resultsSearch || resultsSearch?.length === 0) && JSON.stringify(currentUserFilters) === JSON.stringify(defaultCurrentUserFilters)) {
             setFilteredShows(undefined);
             return;
         }
         let filt: Show[] = shows ? [...shows] : [];
-        if (resultsSearch && resultsSearch?.length > 0) {
-            filt = filt?.filter((show) => show.name.toLowerCase().includes(resultsSearch.toLowerCase()));
-        }
         if (currentUserInfo) {
             if (currentUserFilters.addedToWatchlist !== undefined) {
                 filt = filt.filter((show) => currentUserFilters.addedToWatchlist === inUserInfo(String(show.id)));
@@ -89,6 +95,9 @@ export default function ShowSearch(props: ShowSearchProps) {
             if (currentUserFilters.ratings.length > 0) {
                 filt = filt.filter((s) => ratingInFilters(currentUserRating(String(s.id))));
             }
+        }
+        if (resultsSearch && resultsSearch?.length > 0) {
+            filt = filt?.filter((show) => show.name.toLowerCase().includes(resultsSearch.toLowerCase()));
         }
         filt = filt.sort((a, b) => (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0);
         setFilteredShows(filt);

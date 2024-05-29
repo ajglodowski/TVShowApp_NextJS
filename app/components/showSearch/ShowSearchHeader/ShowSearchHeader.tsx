@@ -13,7 +13,7 @@ import Divider from "../../Divider";
 import { Input } from "@/components/ui/input";
 import ShowSearchCurrentUserFilters, { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
 
-export type ShowSearchFilters = {
+export type ShowSearchFiltersType = {
     service: Service[];
     length: ShowLength[];
     airDate: AirDate[];
@@ -22,7 +22,7 @@ export type ShowSearchFilters = {
     currentlyAiring?: boolean;
 }
 
-export const defaultFilters: ShowSearchFilters = {
+export const defaultFilters: ShowSearchFiltersType = {
     service: [],
     length: [],
     airDate: [],
@@ -32,7 +32,7 @@ export const defaultFilters: ShowSearchFilters = {
 }
 
 type ShowSearchHeaderProps = {
-    filters: ShowSearchFilters;
+    filters: ShowSearchFiltersType;
     setFilters: Function; 
     showingCurrentUserInfo: boolean; 
     setShowCurrentUserInfo: Function
