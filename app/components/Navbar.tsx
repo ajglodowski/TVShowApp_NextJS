@@ -18,6 +18,11 @@ function Navbar() {
                         <Link href="/watchlist">Watchlist</Link>
                     </div>
                 </li>
+                <li key="discover" className={`${textButtonStyle}`}>
+                    <div className=''>
+                        <Link href="/discoverShows">Discover</Link>
+                    </div>
+                </li>
                 <li key="auth">
                     <AuthButton />
                 </li>

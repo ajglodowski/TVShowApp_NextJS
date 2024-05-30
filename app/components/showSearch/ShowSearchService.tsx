@@ -17,6 +17,7 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
     if (filters.limitedSeries !== undefined) queryBase = queryBase.eq('limitedSeries', filters.limitedSeries);
     if (filters.service.length > 0) queryBase = queryBase.in('service', filters.service.map((service) => service.id));
     if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
+    if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
 
     //queryBase = queryBase.limit(100);
     if (searchType === ShowSearchType.WATCHLIST) {
@@ -60,7 +61,6 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
             service: show.service as unknown as Service
         };
     });
-    
     
     return shows;
 }

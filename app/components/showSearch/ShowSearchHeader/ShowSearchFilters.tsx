@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ShowSearchFiltersType } from "./ShowSearchHeader";
+import { ShowSearchFiltersType, defaultFilters } from "./ShowSearchHeader";
 
 export default function ShowSearchFilters({filters, setFilters}: {filters: ShowSearchFiltersType, setFilters: Function}) {
 
@@ -116,18 +116,64 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
         );
     }
 
+    const LengthButtons = () => {
+        const lengths = Object.values(ShowLength);
+        const unselectLengths = lengths?.filter((lengths) => !filters.length.includes(lengths));
+        return (
+            <ScrollArea className="rounded-md overflow-auto">
+                <div className="flex py-1">
+                    {filters.length.map((length) => (
+                        <button
+                            key={length}
+                            onClick={() => setFilters({...filters, length: filters.length.filter((s) => s !== length)})}
+                            className={selectedBubbleStyle}
+                        >
+                            {length}
+                        </button>
+                    ))}
+                    {unselectLengths?.map((length) => (
+                        <button
+                            key={length}
+                            onClick={() => setFilters({...filters, length: [...filters.length, length]})}
+                            className={unselectedBubbleStyle}
+                        >
+                            {length}
+                        </button>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+        )
+    }
+
+    const LengthRow = () => {
+        return (
+            <div className="">
+                <Label>Length</Label>
+                <LengthButtons />
+            </div>
+        );
+    }
+
     return (
         <div className="text-white p-4">
             <span className="flex justify-between">
                 <h1 className="text-5xl font-bold">Search Filters</h1>
             </span>
             <div className="border-2 rounded-md p-1">
-                <div className="flex items-center space-x-2 py-2">
-                    <Label>Show Filters?</Label>
-                    <Switch 
-                        checked={showFilters} 
-                        onCheckedChange={(changed) => setShowFilters(changed)} 
-                    />
+                <div className="flex justify-between">
+                    <div className="items-center space-x-2 py-2">
+                        <Label>Show Filters?</Label>
+                        <Switch 
+                            checked={showFilters} 
+                            onCheckedChange={(changed) => setShowFilters(changed)} 
+                        />
+                    </div>
+                    <div className="my-auto mx-2">
+                        <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
+                            onClick={() => setFilters(defaultFilters)}
+                        >Reset Filters</button>
+                    </div>
                 </div>
                 {showFilters && <div>
                     <div className="flex space-x-4">
@@ -185,6 +231,9 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
                     </div>
                     <div>
                         {services && <ServicesRow />}
+                    </div>
+                    <div>
+                        <LengthRow />
                     </div>
                     <div>
                         <AirdatesRow />
