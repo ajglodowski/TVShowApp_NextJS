@@ -73,7 +73,7 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
         const [red, green, blue] = [0, 0, 0];
 
         const averageColor = `rgb(${red},${green},${blue})`;
-        return { imageUrl: url, averageColor };
+        return { imageUrl: url, averageColor: averageColor };
     } catch (error) {
         console.error(error);
         return null;
