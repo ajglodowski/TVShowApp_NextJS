@@ -5,9 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default async function ShowTile({ showId }: { showId: string }) {
+type ShowTileProps =
+    { showId: string; } | 
+    { showDto: Show; };
 
-    const showData = await getShow(showId) as Show;
+export default async function ShowTile(props: ShowTileProps) {
+
+    let showData;
+    if ('showDto' in props) showData = props.showDto;
+    else showData = await getShow(props.showId) as Show;
+    const showId = showData.id;
+
     const show = showData as Show;
     const showImageInfo = await getShowImage(show.name, true);
     const showImageUrl = showImageInfo?.imageUrl;

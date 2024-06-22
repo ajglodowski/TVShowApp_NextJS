@@ -1,26 +1,23 @@
-import { Show } from "@/app/models/show";
+import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { Status } from "@/app/models/status";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { ComingSoonDTO } from "./ComingSoonRow";
+import { UserUpdateTileDTO } from "../userUpdate/UserUpdateService";
+import { UserUpdate, UserUpdatePropertiesWithShowName } from "@/app/models/userUpdate";
+import { CurrentlyAiringDTO } from "@/app/models/airDate";
 
-export async function getWatchList({userId}: {userId: string}): Promise<number[] | null> {
-
+export async function getWatchList({userId}: {userId: string}): Promise<Show[] | null> {
     if (!userId) return null;
-  
     const cookieStore = cookies()
     const supabase = createClient(cookieStore);
-    const { data: showData } = await supabase.from("UserShowDetails").select('showId').match({userId: userId, status: 3});
-    
+    const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: 3});
     if (!showData) return null;   
-
-    const ids = showData.map((obj) => obj.showId);
-    const output = ids as unknown as number[];
-    
+    const output = showData.map((obj) => obj.show) as unknown as Show[];
     return output;
 }
 
-export async function getCurrentlyAiring({userId}: {userId: string}): Promise<any[] | null> {
+export async function getCurrentlyAiring({userId}: {userId: string}): Promise<CurrentlyAiringDTO[] | null> {
 
     if (!userId) return null;
   
@@ -28,7 +25,7 @@ export async function getCurrentlyAiring({userId}: {userId: string}): Promise<an
     const supabase = createClient(cookieStore);
     const { data: showData } = await supabase.from("UserShowDetails").select('show: showId (name, airdate, id)').match({userId: userId, status: 5});
     if (!showData) return null;
-    const output = showData.map((obj) => obj.show) as unknown as any[];
+    const output = showData.map((obj) => obj.show) as unknown as CurrentlyAiringDTO[];
     return output;
 }
 
@@ -69,11 +66,29 @@ export async function getComingSoon({userId}: {userId: string}): Promise<ComingS
     return output;
 }
 
-export async function getUserUpdates({userId, updateLimit}: {userId: string, updateLimit: number}): Promise<number[]|null> {
+function formatUpdate(updateData: any): UserUpdateTileDTO {
+    const showInfo = updateData.show as unknown as {id: number, name: string};
+    let formatted = {
+        ...updateData,
+        showId: showInfo.id as unknown as string,
+        statusChange: updateData.status as unknown as Status,
+        updateDate: new Date(updateData.updateDate),
+        status: undefined,
+    } as unknown as UserUpdate;
+
+    const update = {userUpdate: formatted, showName: showInfo.name} as unknown as UserUpdateTileDTO;
+    return update;
+}
+
+export async function getUserUpdates({userId, updateLimit}: {userId: string, updateLimit: number}): Promise<UserUpdateTileDTO[]|null> {
     const cookieStore = cookies()
     const supabase = createClient(cookieStore);
-    const { data: updateData } = await supabase.from("UserUpdate").select('id').match({userId: userId}).order('updateDate', {ascending: false}).limit(updateLimit);
+    const { data: updateData } = await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId}).order('updateDate', {ascending: false}).limit(updateLimit);
     if (!updateData) return null;
-    const updates = updateData.map((obj) => obj.id) 
-    return updates as unknown as number[];;
+    let updates = [];
+    for (const update of updateData) {
+        updates.push(formatUpdate(update));
+    }
+    return updates;
 }
+

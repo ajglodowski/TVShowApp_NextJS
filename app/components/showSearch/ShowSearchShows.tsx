@@ -27,6 +27,12 @@ export default function ShowSearchShows({ shows, currentUserInfo }: { shows: Sho
 
     return (
         <div className='px-2'>
+            <div>
+                <span className='flex my-auto space-x-2'>
+                    <h3 className='text-2xl font-bold'>Results:</h3>
+                    <h5 className='my-auto'>{shows.length} shows</h5>
+                </span>
+            </div>
             <ScrollArea className='rounded-md border-2 h-96 overflow-auto'>
                 <div className='py-2'>
                     {shows.map((show: Show) => (

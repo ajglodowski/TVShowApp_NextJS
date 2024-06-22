@@ -1,18 +1,23 @@
-import { Show } from "@/app/models/show";
-import { getShow, getShowImage } from "@/app/show/[showId]/ShowService";
+import { getShowImage } from "@/app/show/[showId]/ShowService";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { getUserUpdate } from "./UserUpdateService";
+import { UserUpdateTileDTO, getUserUpdate } from "./UserUpdateService";
 import { dateToString } from "@/utils/timeUtils";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 
-export default async function UserUpdateTile({ updateId }: { updateId: number }) {
+type UserUpdateTileProps =
+    { updateId: number; } | 
+    { updateDto: UserUpdateTileDTO; };
 
-    const updateData = await getUserUpdate(updateId);
+export default async function UserUpdateTile(props: UserUpdateTileProps) {
+
+    let updateData;
+    if ('updateDto' in props) updateData = props.updateDto;
+    else updateData = await getUserUpdate(props.updateId);
     if (!updateData) {
-        return <div key={updateId}>Error Loading update</div>
+        return <div>Error Loading update</div>
     }
     const update = updateData.userUpdate;
     const showName = updateData.showName

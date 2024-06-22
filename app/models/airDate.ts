@@ -17,3 +17,9 @@ const AirDateNumber = {
     [AirDate.FRIDAY]: 5,
     [AirDate.SATURDAY]: 6
 }
+
+export type CurrentlyAiringDTO = {
+    id: number,
+    name: number,
+    airdate: AirDate
+}

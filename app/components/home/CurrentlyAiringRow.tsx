@@ -1,7 +1,7 @@
 import { Show } from "@/app/models/show";
 import ShowTile from "../show/ShowTile";
 import { getCurrentlyAiring } from "./HomeService";
-import { AirDate } from "@/app/models/airDate";
+import { AirDate, CurrentlyAiringDTO } from "@/app/models/airDate";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default async function CurrentlyAiringRow({userId}: {userId: string}) {
@@ -10,7 +10,7 @@ export default async function CurrentlyAiringRow({userId}: {userId: string}) {
 
     type AirDateInfo = {
         day: AirDate,
-        shows: Show[]
+        shows: CurrentlyAiringDTO[]
     }
 
     const groupedShows = (): AirDateInfo[] => {
@@ -19,7 +19,7 @@ export default async function CurrentlyAiringRow({userId}: {userId: string}) {
         let output: AirDateInfo[] = [];
         days.forEach((day) => {
             const showsForDay = shows?.filter(show => show.airdate === day);
-            const dayInfo = {day: day, shows: showsForDay as Show[]};
+            const dayInfo = {day: day, shows: showsForDay};
             output.push(dayInfo);
         });
         return output;

@@ -13,9 +13,9 @@ export default async function WatchListRow ({userId}: {userId: string}) {
         <div className="flex items-center justify-center mx-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
                 <div className="flex">
-                    {shows.map((showId) => (
-                        <div key={showId} className="m-2">
-                            <ShowTile key={showId} showId={showId.toString()} />
+                    {shows.map((show) => (
+                        <div key={show.id} className="m-2">
+                            <ShowTile key={show.id} showDto={show} />
                         </div>
                     ))}
                 </div>

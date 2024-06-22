@@ -128,7 +128,7 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
                             onClick={() => setFilters({...filters, length: filters.length.filter((s) => s !== length)})}
                             className={selectedBubbleStyle}
                         >
-                            {length}
+                            {length}{length === ShowLength.NONE ? '' : 'm'}
                         </button>
                     ))}
                     {unselectLengths?.map((length) => (
@@ -137,7 +137,7 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
                             onClick={() => setFilters({...filters, length: [...filters.length, length]})}
                             className={unselectedBubbleStyle}
                         >
-                            {length}
+                            {length}{length === ShowLength.NONE ? '' : 'm'}
                         </button>
                     ))}
                 </div>
@@ -163,8 +163,9 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
             <div className="border-2 rounded-md p-1">
                 <div className="flex justify-between">
                     <div className="items-center space-x-2 py-2">
-                        <Label>Show Filters?</Label>
-                        <Switch 
+                        <Label className="my-auto">Show Filters?</Label>
+                        <Switch
+                            className="my-auto" 
                             checked={showFilters} 
                             onCheckedChange={(changed) => setShowFilters(changed)} 
                         />
