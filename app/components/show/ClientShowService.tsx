@@ -62,15 +62,15 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
         let image = new Image();
         image.src = "";
         image.src = url;
-        //image.crossOrigin = "Anonymous";
+        image.crossOrigin = "Anonymous";
 
         await new Promise((resolve) => {
             image.onload = resolve;
         });
 
-        //const colorThief = new ColorThief();
-        //const [red, green, blue] = colorThief.getColor(image);
-        const [red, green, blue] = [0, 0, 0];
+        const colorThief = new ColorThief();
+        const [red, green, blue] = colorThief.getColor(image);
+        //const [red, green, blue] = [0, 0, 0];
 
         const averageColor = `rgb(${red},${green},${blue})`;
         return { imageUrl: url, averageColor: averageColor };

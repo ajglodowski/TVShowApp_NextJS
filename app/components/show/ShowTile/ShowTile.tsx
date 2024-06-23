@@ -1,5 +1,5 @@
 import { Show } from "@/app/models/show";
-import { getShow, getShowImage } from "@/app/show/[showId]/ShowService";
+import { getShow } from "@/app/show/[showId]/ShowService";
 import Link from "next/link";
 import ShowTileContent from "./ShowTileContent";
 import ShowTileWithoutImage from "./ShowTileWithoutImage";

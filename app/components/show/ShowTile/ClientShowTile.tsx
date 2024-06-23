@@ -4,7 +4,7 @@ import { ShowImage } from "@/app/models/showImage";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getShow, getShowImage } from "./ClientShowService";
+import { getShow, getShowImage } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ClientShowTile({ showId }: { showId: string }) {

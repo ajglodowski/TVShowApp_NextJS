@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { searchShows } from './ClientSearchService';
-import ClientShowTile from '../show/ClientShowTile';
+import ClientShowTile from '../show/ShowTile/ClientShowTile';
 
 export const ClientSearch = () => {
     const [searchQuery, setSearchQuery] = useState('');

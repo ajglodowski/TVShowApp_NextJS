@@ -1,6 +1,6 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getUserUpdates } from "./HomeService";
-import UserUpdateTile from "../userUpdate/UserUpdateTile";
+import UserUpdateTile from "../userUpdate/UserUpdateTile/UserUpdateTile";
 
 export default async function YourUpdatesRow ({userId}: {userId: string}) {
 

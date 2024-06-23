@@ -1,5 +1,5 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import ShowTile from "../show/ShowTile";
+import ShowTile from "../show/ShowTile/ShowTile";
 import { getComingSoon } from "./HomeService";
 
 export type ComingSoonDTO = {

@@ -1,5 +1,5 @@
 import { Show } from "@/app/models/show";
-import ShowTile from "../show/ShowTile";
+import ShowTile from "../show/ShowTile/ShowTile";
 import { getCurrentlyAiring } from "./HomeService";
 import { AirDate, CurrentlyAiringDTO } from "@/app/models/airDate";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
