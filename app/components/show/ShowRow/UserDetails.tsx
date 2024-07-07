@@ -1,4 +1,4 @@
-import { UserShowData, UserShowDataWithUserInfo } from "@/app/models/userShowData"
+import { UserShowDataWithUserInfo } from "@/app/models/userShowData"
 import { LovedIcon } from "@/public/icons/LovedIcon";
 import { LikedIcon } from "@/public/icons/LikedIcon";
 import { MehIcon } from "@/public/icons/MehIcon";

@@ -1,4 +1,4 @@
-import { UserUpdate, UserUpdateProperties, UserUpdatePropertiesWithShowName } from "@/app/models/userUpdate";
+import { UserUpdate, UserUpdatePropertiesWithShowName } from "@/app/models/userUpdate";
 import { cookies } from "next/headers";
 import { createClient } from '@/utils/supabase/server';
 import { Status } from "@/app/models/status";
@@ -17,7 +17,7 @@ export async function getUserUpdate(updateId: number): Promise<UserUpdateTileDTO
     if (!updateData) return null;
     const showInfo = updateData.show as unknown as {id: number, name: string};
 
-    let formatted = {
+    const formatted = {
         ...updateData,
         showId: showInfo.id as unknown as string,
         statusChange: updateData.status as unknown as Status,

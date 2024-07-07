@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ShowRow } from '../show/ShowRow/ShowRow';
 import Divider from '../Divider';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { UserShowData, UserShowDataWithUserInfo } from '@/app/models/userShowData';
+import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
 
 
 export default function ShowSearchShows({ shows, currentUserInfo }: { shows: Show[] | null | undefined, currentUserInfo: UserShowDataWithUserInfo[]| undefined | null}) {

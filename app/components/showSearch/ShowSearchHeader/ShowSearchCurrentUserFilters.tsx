@@ -2,7 +2,7 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Rating } from "@/app/models/rating";

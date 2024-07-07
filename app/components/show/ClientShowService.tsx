@@ -2,11 +2,8 @@ import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowImage } from "@/app/models/showImage";
 import { createClient } from "@/utils/supabase/client";
-import { getDownloadURL, ref } from "firebase/storage";
 import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
-import { updateUserShowData } from "@/app/show/[showId]/UserShowDataService";
-import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { imageUrlBase } from "@/app/firebaseConfig";
 
 
@@ -27,12 +24,12 @@ export async function getShow( showId: string ): Promise<Show | null> {
 
 export async function updateShow(show: Show): Promise<boolean> {
     const supabase = createClient();
-    let showData: any = { ...show };
+    const showData: any = { ...show };
     showData.service = showData.service.id;
     let query = supabase.from("show").upsert(showData)
     if (show.id === 0) showData.id = undefined;
     else query = query.match({id: show.id});
-    const { data, error } = await query;
+    const { error } = await query;
     if (error) {
         console.error(error);
         return false;
@@ -41,10 +38,10 @@ export async function updateShow(show: Show): Promise<boolean> {
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-    let baseURL = imageUrlBase;
+    const baseURL = imageUrlBase;
     const transformedName = showName.replace(/ /g, "%20");
     const dimensions = tile ? "200x200" : "640x640";
-    let showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
+    const showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
     return showNameURL;
 }
 
@@ -59,7 +56,7 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
         const url = await getShowImageURL(showName, tile);
         //const response = await fetch(url);
 
-        let image = new Image();
+        const image = new Image();
         image.src = "";
         image.src = url;
         image.crossOrigin = "Anonymous";

@@ -4,11 +4,10 @@ import ShowSearchHeader, { ShowSearchFiltersType, defaultFilters } from './ShowS
 import { useEffect, useMemo, useState } from 'react';
 import ShowSearchShows from './ShowSearchShows';
 import { fetchShows, getUserShowData } from './ShowSearchService';
-import { UserShowData, UserShowDataWithUserInfo } from '@/app/models/userShowData';
+import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
 import { createClient } from '@/utils/supabase/client';
 import { ShowSearchType } from '@/app/models/showSearchType';
 import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
-import { set } from 'date-fns';
 import { Rating } from '@/app/models/rating';
 
 export type ShowSearchData = { // Not used yet

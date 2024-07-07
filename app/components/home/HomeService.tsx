@@ -68,7 +68,7 @@ export async function getComingSoon({userId}: {userId: string}): Promise<ComingS
 
 function formatUpdate(updateData: any): UserUpdateTileDTO {
     const showInfo = updateData.show as unknown as {id: number, name: string};
-    let formatted = {
+    const formatted = {
         ...updateData,
         showId: showInfo.id as unknown as string,
         statusChange: updateData.status as unknown as Status,
@@ -85,7 +85,7 @@ export async function getUserUpdates({userId, updateLimit}: {userId: string, upd
     const supabase = createClient(cookieStore);
     const { data: updateData } = await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId}).order('updateDate', {ascending: false}).limit(updateLimit);
     if (!updateData) return null;
-    let updates = [];
+    const updates = [];
     for (const update of updateData) {
         updates.push(formatUpdate(update));
     }

@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useMemo, useState } from "react";
-import { getAllStatuses, getYourShows } from "../HomeClientService";
+import { getYourShows } from "../HomeClientService";
 import ClientShowTile from "../../show/ShowTile/ClientShowTile";
 import { Status } from "@/app/models/status";
 import { UserShowData } from "@/app/models/userShowData";

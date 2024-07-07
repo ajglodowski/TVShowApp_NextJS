@@ -40,7 +40,7 @@ export async function getTags(showId: string): Promise<ShowTag[] | null> {
   return tags;
 }
 
-export async function getAllTags(showId: string): Promise<ShowTag[] | null> {
+export async function getAllTags(): Promise<ShowTag[] | null> {
   const cookieStore = cookies()
   const supabase = createClient(cookieStore);
   const { data: tagData } = await supabase.from("showTag").select('id, name, created_at');
@@ -48,15 +48,26 @@ export async function getAllTags(showId: string): Promise<ShowTag[] | null> {
   if (!tagData) return null; 
   
   const tags = tagData as ShowTag[];
+  /*
+  const TagCategoryProperties = "id, created_at, name"
+  const NestedTagProperties = `showTag (id, created_at, name, category (${TagCategoryProperties}))`
+  const { data: dummyData } = await supabase
+    .from("ShowTagRelationship")
+    .select(NestedTagProperties)
+    .eq("showId", showId)
+
+  const string = JSON.stringify(dummyData);
+  console.log(dummyData);
+  */
   
   return tags;
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-  let baseURL = imageUrlBase;
+  const baseURL = imageUrlBase;
   const transformedName = showName.replace(/ /g, "%20");
   const dimensions = tile ? "200x200" : "640x640";
-  let showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
+  const showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
   return showNameURL;
 }
 
@@ -92,7 +103,7 @@ export async function getRatingCounts(showId: string): Promise<RatingCounts | nu
   const { data: ratingData } = await supabase.from("showratingcounts").select('rating, count').match({showId: showId});
   
   if (!ratingData) return null;
-  let output: Record<Rating, number> = {
+  const output: Record<Rating, number> = {
     [Rating.DISLIKED]: 0,
     [Rating.MEH]: 0,
     [Rating.LIKED]: 0,
@@ -122,7 +133,7 @@ export async function getStatusCounts(showId: string): Promise<StatusCount[] | n
   const supabase = createClient(cookieStore);
   const { data: ratingData } = await supabase.from("showstatuscounts").select('status:status(id, name), count').match({showId: showId});
   if (!ratingData) return null;
-  let output = [];
+  const output = [];
   for (const status of ratingData) {
     output.push({
       status: status.status as unknown as Status,

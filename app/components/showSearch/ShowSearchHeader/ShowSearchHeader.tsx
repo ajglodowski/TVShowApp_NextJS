@@ -2,12 +2,6 @@
 import { AirDate } from "@/app/models/airDate";
 import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
-import { useEffect, useState } from "react";
-import { getServices } from "../ShowSearchService";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowSearchFilters from "./ShowSearchFilters";
 import Divider from "../../Divider";
 import { Input } from "@/components/ui/input";

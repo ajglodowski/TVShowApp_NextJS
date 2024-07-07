@@ -14,7 +14,7 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
     if (shows === null) return (<div>Error Loading Coming Soon</div>);
     if (shows.length === 0) return (<div>No Shows in marked as coming soon.</div>);
 
-    const daysAway = (date: Date):String =>  {
+    const daysAway = (date: Date):string =>  {
         const now = new Date();
         const releaseDate = new Date(date);
         const diff = releaseDate.getTime() - now.getTime();

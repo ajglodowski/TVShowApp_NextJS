@@ -83,6 +83,7 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
     return <ShowNotFound />
   }
 
+  /*
   function logFunction() {
     console.log(showData?.length);
     console.log(showData);
@@ -92,6 +93,7 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
     if (value === 'None') return undefined;
     return value as AirDate;
   }
+  */
 
   function getAirDateString(airdate: AirDate | undefined | null): string {
     if (!airdate) return 'None';

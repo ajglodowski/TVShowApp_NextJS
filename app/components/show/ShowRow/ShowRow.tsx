@@ -4,13 +4,8 @@ import { Show } from "@/app/models/show"
 import { useEffect, useState } from "react";
 import { getShowImage } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserShowData, UserShowDataWithUserInfo } from "@/app/models/userShowData";
-import { Rating, RatingColors } from "@/app/models/rating";
+import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import Link from "next/dist/client/link";
-import { LovedIcon } from "@/public/icons/LovedIcon";
-import { LikedIcon } from "@/public/icons/LikedIcon";
-import { MehIcon } from "@/public/icons/MehIcon";
-import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import Image from "next/image";
 import { UserDetailsDropdown } from "./UserDetailsDropdown";
 
@@ -38,23 +33,6 @@ export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, cur
     
     console.log(currentUserInfo);
     */
-
-
-    function getRatingIcon(rating: Rating) {
-        switch (rating) {
-            case Rating.LOVED:
-                return <LovedIcon color="default" />
-            case Rating.LIKED:
-                return <LikedIcon color="default" />
-            case Rating.MEH:
-                return <MehIcon color="default" />
-            case Rating.DISLIKED:
-                return <DislikedIcon color="default" />
-            default:
-                return <></>
-        }
-    }
-    
 
     if (!showData) return (<div>Loading Show</div>);
     return (

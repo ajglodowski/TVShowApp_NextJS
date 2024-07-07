@@ -5,7 +5,7 @@ import ShowTagsSection from "./components/ShowTagsSection";
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import SeasonsRow from './components/SeasonsRow';
-import { getAllStatuses, getUserShowData, getUserUpdates, updateCurrentSeason, updateUserShowData } from './UserShowDataService';
+import { getAllStatuses, getUserShowData, getUserUpdates, updateUserShowData } from './UserShowDataService';
 import ShowStatusSection from './components/ShowStatusSection';
 import Image from 'next/image';
 import UserUpdatesSection from './components/UserUpdatesSection';
@@ -41,7 +41,7 @@ export default async function ShowPage({ params }: { params: { showId: string } 
   const [showData, currentTags, allTags, userInfoData, allStatuses, ratingCounts, statusCounts, userUpdates] = await Promise.all([
     getShow(showId),
     getTags(showId),
-    getAllTags(showId),
+    getAllTags(),
     getUserShowData({ userId: currentUserId, showId: showId }),
     getAllStatuses(),
     getRatingCounts(showId),

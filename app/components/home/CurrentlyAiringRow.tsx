@@ -1,4 +1,3 @@
-import { Show } from "@/app/models/show";
 import ShowTile from "../show/ShowTile/ShowTile";
 import { getCurrentlyAiring } from "./HomeService";
 import { AirDate, CurrentlyAiringDTO } from "@/app/models/airDate";
@@ -16,7 +15,7 @@ export default async function CurrentlyAiringRow({userId}: {userId: string}) {
     const groupedShows = (): AirDateInfo[] => {
         if (shows === null) return [];
         const days = new Set(shows?.map(show => show.airdate)) as Set<AirDate>;
-        let output: AirDateInfo[] = [];
+        const output: AirDateInfo[] = [];
         days.forEach((day) => {
             const showsForDay = shows?.filter(show => show.airdate === day);
             const dayInfo = {day: day, shows: showsForDay};
