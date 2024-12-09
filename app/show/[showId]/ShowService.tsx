@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { createClient } from '@/utils/supabase/server';
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
