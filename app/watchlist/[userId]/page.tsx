@@ -1,9 +1,9 @@
 import ShowSearch from "@/app/components/showSearch/ShowSearch";
 import { ShowSearchType } from "@/app/models/showSearchType";
 
-export default async function WatchlistPage({ params }: { params: { userId: string } }) {
+export default async function WatchlistPage({ params }: { params: Promise<{ userId: string }> }) {
 
-    const userId = params.userId;
+    const userId = (await params).userId;
 
     return (
         <div className="w-full">
