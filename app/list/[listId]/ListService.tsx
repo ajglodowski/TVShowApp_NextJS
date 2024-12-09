@@ -1,6 +1,5 @@
 import { ShowList, ShowListEntry, ShowListEntryParams, ShowListParams } from "@/app/models/showList";
 import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
 export async function getList( listId: string ): Promise<ShowList | null> {
     
