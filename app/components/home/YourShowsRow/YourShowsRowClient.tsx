@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { getYourShows } from "../HomeClientService";
 import ClientShowTile from "../../show/ShowTile/ClientShowTile";
 import { Status } from "@/app/models/status";
@@ -21,15 +21,6 @@ export default function YourShowsRowClient ({userId, allStatuses}: {userId: stri
   
 
     useEffect(() => { // On page load
-
-        getYourShows({userId: userId, selectedStatuses: []}).then((shows) => {
-            if (!shows) setDisplayedShows(null);
-            else setDisplayedShows(shows);
-        });
-        
-    }, []);
-
-    useMemo(() => {
         setDisplayedShows(undefined);
         getYourShows({userId: userId, selectedStatuses: selectedStatus}).then((shows) => {
             if (!shows) setDisplayedShows(null);
@@ -37,8 +28,6 @@ export default function YourShowsRowClient ({userId, allStatuses}: {userId: stri
         });
         
     }, [selectedStatus]);
-
-
 
     function ShowRow() {
         if (displayedShows === undefined) return (<div>Loading your shows</div>);

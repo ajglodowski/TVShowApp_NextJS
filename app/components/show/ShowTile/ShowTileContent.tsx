@@ -32,8 +32,8 @@ export default async function ShowTileContent({showData}: ShowTileContentProps) 
             <div className="h-full w-full items-center text-center justify-center">
                 <div className="w-32 h-32 mx-auto items-center">
                     <ShowImage/>
+                    <ShowTileBody showData={show} />
                 </div>
-                <ShowTileBody showData={show} />
             </div>
         </div>
     );

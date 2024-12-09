@@ -1,17 +1,16 @@
-import { cookies } from "next/headers";
 import { createClient } from '@/utils/supabase/server';
 import { Status } from "@/app/models/status";
 import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
 import { Rating } from "@/app/models/rating";
-import { ChangedRatingUpdate, UserUpdate } from "@/app/models/userUpdate";
+import { UserUpdate } from "@/app/models/userUpdate";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 
 export async function getUserShowData({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserShowData | null> {
 
     if (!userId) return null;
   
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: showData } = await supabase.from("UserShowDetails").select(UserShowDataParams).match({userId: userId, showId: showId}).single();
     
     if (!showData) return null;   
@@ -27,8 +26,8 @@ export async function getUserShowData({showId, userId}: {showId: string, userId:
 
 export async function updateCurrentSeason({userId, showId, newSeason}: {showId: string, userId: string, newSeason: number}): Promise<boolean> {
     "use server";    
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { error} = await supabase.from("UserShowDetails").update({currentSeason: newSeason}).match({userId: userId, showId: showId});
     if (error) {
         console.error(error);
@@ -39,8 +38,8 @@ export async function updateCurrentSeason({userId, showId, newSeason}: {showId: 
 
 export async function updateStatus({userId, showId, newStatus}: {showId: string, userId: string, newStatus: Status}): Promise<boolean> {
     "use server";    
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { error} = await supabase.from("UserShowDetails").update({status: newStatus.id}).match({userId: userId, showId: showId});
     if (error) {
         console.error(error);
@@ -51,8 +50,8 @@ export async function updateStatus({userId, showId, newStatus}: {showId: string,
 
 export async function getAllStatuses(): Promise<Status[]|null> {
     "use server";    
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data } = await supabase.from("status").select();
     const statuses = data as unknown as Status[];
     return statuses;
@@ -61,15 +60,15 @@ export async function getAllStatuses(): Promise<Status[]|null> {
 export async function getUserUpdates({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserUpdate[]|null> {
     if (!userId) return null;
   
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: updateData } = await supabase.from("UserUpdate").select('id, userId, showId, status:statusChange(id, name), seasonChange, ratingChange, updateDate, updateType').match({userId: userId, showId: showId});
 
     if (!updateData) return null;
 
     const updates = [];
     for (const update of updateData) {
-        let formatted = {
+        const formatted = {
             ...update,
             statusChange: update.status as unknown as Status,
             updateDate: new Date(update.updateDate),
@@ -84,8 +83,8 @@ export async function getUserUpdates({showId, userId}: {showId: string, userId: 
 
 export async function updateRating({userId, showId, newRating}: {showId: string, userId: string, newRating: Rating | null}): Promise<boolean> {
     "use server";    
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     let error = null;
     if (newRating) {
         error = (await supabase.from("UserShowDetails").update({rating: newRating}).match({userId: userId, showId: showId})).error;
@@ -101,8 +100,8 @@ export async function updateRating({userId, showId, newRating}: {showId: string,
 
 export async function addToWatchList({userId, showId}: {showId: string, userId: string}): Promise<boolean> {
     "use server";    
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const error = (await supabase.from("UserShowDetails").insert({userId: userId, showId: showId, currentSeason: 1, status: 3})).error;
     if (error) {
         console.error(error);
@@ -162,8 +161,8 @@ export async function updateUserShowData({updateType, userId, showId, newValue }
 
 export async function insertUpdate({update}: {update: UserUpdate}): Promise<boolean> {
     "use server";    
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     let updateData = update as unknown as any;
     updateData.id = undefined;
     if (updateData.updateType === UserUpdateCategory.UpdatedStatus) updateData.statusChange = updateData.statusChange.id;

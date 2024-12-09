@@ -3,7 +3,6 @@ import { boolToEmoji } from '@/utils/boolToEmoji';
 import { getAllTags, getRatingCounts, getShow, getShowImage, getStatusCounts, getTags } from './ShowService';
 import ShowTagsSection from "./components/ShowTagsSection";
 import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
 import SeasonsRow from './components/SeasonsRow';
 import { getAllStatuses, getUserShowData, getUserUpdates, updateUserShowData } from './UserShowDataService';
 import ShowStatusSection from './components/ShowStatusSection';
@@ -28,12 +27,11 @@ function ShowNotFound() {
 }
 
 
-export default async function ShowPage({ params }: { params: { showId: string } }) {
-  const showId = params.showId;
+export default async function ShowPage({ params }: { params: Promise<{ showId: string }> }) {
+  const showId = (await params).showId;
 
   // User Data
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = await createClient();
   const { data: { user }, } = await supabase.auth.getUser();
   const currentUserId = user?.id;
   const loggedIn = currentUserId !== undefined;
@@ -147,7 +145,7 @@ export default async function ShowPage({ params }: { params: { showId: string } 
             <h4 className=''>Show created at: {dateToString(show.created_at)}</h4>
             <h4 className=''>Last updated: {dateToString(show.lastUpdated)}</h4>
           </span>
-          <p className='text-xs'>Show ID: {params.showId}</p>
+          <p className='text-xs'>Show ID: {showId}</p>
         </div>
       </div>
 

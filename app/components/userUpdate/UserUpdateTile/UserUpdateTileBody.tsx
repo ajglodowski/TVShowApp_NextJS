@@ -30,7 +30,7 @@ export default async function UserUpdateTileBody(props: UserUpdateTileBodyProps)
 
     return (
         <div className="p-1 w-48 whitespace-normal mx-auto my-auto">
-            <h2 className="text-xl font-bold">{showName}</h2>
+            <h2 className="text-xl font-bold truncate">{showName}</h2>
             <h2 className="text-sm text-pretty">{updateMessage()}</h2>
             <h2 className="text-sm">{dateToString(update.updateDate)}</h2>
         </div>

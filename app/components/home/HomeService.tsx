@@ -1,7 +1,6 @@
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { Status } from "@/app/models/status";
 import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 import { ComingSoonDTO } from "./ComingSoonRow";
 import { UserUpdateTileDTO } from "../userUpdate/UserUpdateService";
 import { UserUpdate, UserUpdatePropertiesWithShowName } from "@/app/models/userUpdate";
@@ -9,8 +8,8 @@ import { CurrentlyAiringDTO } from "@/app/models/airDate";
 
 export async function getWatchList({userId}: {userId: string}): Promise<Show[] | null> {
     if (!userId) return null;
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: 3});
     if (!showData) return null;   
     const output = showData.map((obj) => obj.show) as unknown as Show[];
@@ -21,8 +20,8 @@ export async function getCurrentlyAiring({userId}: {userId: string}): Promise<Cu
 
     if (!userId) return null;
   
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: showData } = await supabase.from("UserShowDetails").select('show: showId (name, airdate, id)').match({userId: userId, status: 5});
     if (!showData) return null;
     const output = showData.map((obj) => obj.show) as unknown as CurrentlyAiringDTO[];
@@ -31,8 +30,8 @@ export async function getCurrentlyAiring({userId}: {userId: string}): Promise<Cu
 
 export async function getTop10(): Promise<{showId: number, updates: number}[] | null> {
 
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: showData } = await supabase.from("top10shows").select('showId, updates');
     
     if (!showData) return null;   
@@ -42,8 +41,8 @@ export async function getTop10(): Promise<{showId: number, updates: number}[] | 
 }
 
 export async function getAllStatuses(): Promise<Status[]|null> {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data } = await supabase.from("status").select();
     const statuses = data as unknown as Status[];
     return statuses;
@@ -53,8 +52,8 @@ export async function getComingSoon({userId}: {userId: string}): Promise<ComingS
 
     if (!userId) return null;
     
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: showData } = await supabase.from("UserShowDetails").select('show: showId (name, releaseDate, id)').match({userId: userId, status: 9});
     if (!showData) return null;
     let output = [];
@@ -81,8 +80,8 @@ function formatUpdate(updateData: any): UserUpdateTileDTO {
 }
 
 export async function getUserUpdates({userId, updateLimit}: {userId: string, updateLimit: number}): Promise<UserUpdateTileDTO[]|null> {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: updateData } = await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId}).order('updateDate', {ascending: false}).limit(updateLimit);
     if (!updateData) return null;
     const updates = [];

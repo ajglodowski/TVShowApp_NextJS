@@ -1,20 +1,19 @@
 import Link from 'next/link'
-import { headers, cookies } from 'next/headers'
+import { headers } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
-export default function Login({
+export default async function Login({
   searchParams,
 }: {
-  searchParams: { message: string }
+  searchParams: Promise<{ message: string }>
 }) {
   const signIn = async (formData: FormData) => {
     'use server'
 
     const email = formData.get('email') as string
     const password = formData.get('password') as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = await createClient();
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -31,11 +30,11 @@ export default function Login({
   const signUp = async (formData: FormData) => {
     'use server'
 
-    const origin = headers().get('origin')
+    const origin = (await headers()).get('origin')
     const email = formData.get('email') as string
     const password = formData.get('password') as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    
+    const supabase = await createClient();
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -107,9 +106,9 @@ export default function Login({
         >
           Sign Up
         </button>
-        {searchParams?.message && (
+        {(await searchParams)?.message && (
           <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-            {searchParams.message}
+            {(await searchParams).message}
           </p>
         )}
       </form>
