@@ -32,8 +32,8 @@ export default async function CurrentlyAiringRow({userId}: {userId: string}) {
                 <div className="flex mb-4">
                     {groupedShows().map((airDateInfo: AirDateInfo) => (
                         <div key={airDateInfo.day} className="items-center border border-white rounded-lg p-1 mx-2">
-                            <h3 className="text-center text-lg font-bold"> {airDateInfo.day ? airDateInfo.day : "Unknown"} </h3>
-                            <div>
+                            <h3 className="text-center text-lg font-regular"> {airDateInfo.day ? airDateInfo.day : "Unknown"} </h3>
+                            <div className="flex">
                                 {airDateInfo.shows.map((show) => (
                                     <div key={show.id} className="m-2">
                                         <ShowTile showId={show.id.toString()} />    
