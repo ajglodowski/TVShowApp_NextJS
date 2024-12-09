@@ -6,12 +6,9 @@ type ShowTileContentProps =
 export default async function ShowTileBody({showData}: ShowTileContentProps) {
     const show = showData;
     return (
-        <div>
-            <h2 className="text-xl font-bold">{show.name}</h2>
-            <span className="flex justify-evenly text-lg">
-                <p>{show.length}m</p>
-                <p>{show.service.name}</p>
-            </span>
+        <div className="text-left text-ellipsis overflow-hidden px-2">
+            <h2 className="text-lg font-semibold truncate">{show.name}</h2>
+            <p className="text-sm truncate">{show.length}m · {show.service.name}</p>
         </div>
     );
 };

@@ -38,11 +38,8 @@ export default function ClientShowTile({ showId }: { showId: string }) {
 
         return(
             <>
-                <h2 className="text-xl font-bold">{show.name}</h2>
-                <span className="flex justify-evenly text-lg">
-                    <p>{show.length}m</p>
-                    <p>{show.service.name}</p>
-                </span>
+                <h2 className="text-lg font-semibold truncate">{show.name}</h2>
+                <p className="text-sm truncate">{show.length}m · {show.service.name}</p>
             </>
         )
 
@@ -65,7 +62,7 @@ export default function ClientShowTile({ showId }: { showId: string }) {
                             <Skeleton className="h-full w-full rounded-md" />
                         </div>}
                     </div>
-                    <div className="text-ellipsis overflow-hidden">
+                    <div className="text-ellipsis overflow-hidden text-left px-2">
                         <ShowInfo />
                     </div>
                 </div>

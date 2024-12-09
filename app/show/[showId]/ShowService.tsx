@@ -14,8 +14,8 @@ import { Status } from "@/app/models/status";
 import { imageUrlBase } from "@/app/firebaseConfig";
 
 export async function getShow( showId: string ): Promise<Show | null> {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: showData } = await supabase.from("show").select(ShowPropertiesWithService).match({id: showId}).single();
     
     if (!showData) return null;   
@@ -29,9 +29,16 @@ export async function getShow( showId: string ): Promise<Show | null> {
 }
 
 export async function getTags(showId: string): Promise<ShowTag[] | null> {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore);
+  
+  const supabase = await createClient();
   const { data: tagData } = await supabase.from("ShowTagRelationship").select('tag:tagId (id, name, created_at)').match({showId: showId});
+  
+  const { data: actorData } = await supabase
+            .from("ActorShowRelationship")
+            .select("showId, actor!inner(id, name)")
+            .match({"showId": showId});
+
+  console.log(actorData);
   
   if (!tagData) return null;
   
@@ -41,8 +48,8 @@ export async function getTags(showId: string): Promise<ShowTag[] | null> {
 }
 
 export async function getAllTags(): Promise<ShowTag[] | null> {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore);
+  
+  const supabase = await createClient();
   const { data: tagData } = await supabase.from("showTag").select('id, name, created_at');
   
   if (!tagData) return null; 
@@ -98,8 +105,8 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
 }
 
 export async function getRatingCounts(showId: string): Promise<RatingCounts | null> {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore);
+  
+  const supabase = await createClient();
   const { data: ratingData } = await supabase.from("showratingcounts").select('rating, count').match({showId: showId});
   
   if (!ratingData) return null;
@@ -129,8 +136,8 @@ export async function getRatingCounts(showId: string): Promise<RatingCounts | nu
 }
 
 export async function getStatusCounts(showId: string): Promise<StatusCount[] | null> {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore);
+  
+  const supabase = await createClient();
   const { data: ratingData } = await supabase.from("showstatuscounts").select('status:status(id, name), count').match({showId: showId});
   if (!ratingData) return null;
   const output = [];

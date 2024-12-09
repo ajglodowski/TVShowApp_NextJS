@@ -1,5 +1,4 @@
 import { UserUpdate, UserUpdatePropertiesWithShowName } from "@/app/models/userUpdate";
-import { cookies } from "next/headers";
 import { createClient } from '@/utils/supabase/server';
 import { Status } from "@/app/models/status";
 
@@ -10,8 +9,8 @@ export type UserUpdateTileDTO = {
 
 export async function getUserUpdate(updateId: number): Promise<UserUpdateTileDTO|null> { // TODO
   
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore);
+    
+    const supabase = await createClient();
     const { data: updateData } = await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({id: updateId}).single();
 
     if (!updateData) return null;

@@ -25,7 +25,7 @@ export default function RatingsStatsSection ({ ratingCounts }: { ratingCounts: R
         return ratingTotal / totalRatings;
     }
     const data = ():{name: string, total: number}[] => {
-        let out = [];
+        const out = [];
         for (const rating in ratingCounts) {
             out.push({name: rating, total: ratingCounts[rating as Rating]});
         }
