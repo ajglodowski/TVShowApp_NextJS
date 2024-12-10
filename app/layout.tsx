@@ -3,10 +3,9 @@ import './globals.css'
 import Navbar from './components/Navbar'
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Toaster } from '@/components/ui/toaster'
+import { baseURL } from './envConfig'
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
+const defaultUrl = baseURL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),

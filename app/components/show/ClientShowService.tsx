@@ -4,8 +4,7 @@ import { ShowImage } from "@/app/models/showImage";
 import { createClient } from "@/utils/supabase/client";
 import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
-import { imageUrlBase } from "@/app/firebaseConfig";
-
+import { baseURL } from "@/app/envConfig";
 
 export async function getShow( showId: string ): Promise<Show | null> {
     const supabase = createClient();
@@ -38,10 +37,10 @@ export async function updateShow(show: Show): Promise<boolean> {
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-    const baseURL = imageUrlBase;
+    const apiURL = `${baseURL}/api/imageFetcher?imageName=`;
     const transformedName = showName.replace(/ /g, "%20");
     const dimensions = tile ? "200x200" : "640x640";
-    const showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
+    const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
     return showNameURL;
 }
 
