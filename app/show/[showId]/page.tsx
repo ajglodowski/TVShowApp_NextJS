@@ -96,7 +96,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
       <div className=''>
         <div className='w-full'>
           {showImageUrl && <div className='w-9/12 md:4/12 max-w-xl min-w-64 mx-auto'>
-            <Image src={showImageUrl} alt={show.name} width={600} height={600} className='rounded-lg m-2 hover:shadow-2xl'/>
+            <Image unoptimized src={showImageUrl} alt={show.name} width={600} height={600} className='rounded-lg m-2 hover:shadow-2xl'/>
           </div> }
           { !showImageUrl && <div className="">
             <Skeleton className="w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] mx-auto object-contain rounded-md" />
