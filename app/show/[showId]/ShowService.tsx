@@ -10,7 +10,7 @@ import { Rating } from "@/app/models/rating";
 import { RatingCounts } from "@/app/models/ratingCounts";
 import { StatusCount } from "@/app/models/statusCount";
 import { Status } from "@/app/models/status";
-import { imageUrlBase } from "@/app/firebaseConfig";
+import { serverBaseURL } from '@/app/envConfig';
 
 export async function getShow( showId: string ): Promise<Show | null> {
     
@@ -69,12 +69,21 @@ export async function getAllTags(): Promise<ShowTag[] | null> {
   return tags;
 }
 
-export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-  const baseURL = imageUrlBase;
+export function getShowImageURL(showName: string, tile: boolean): string {
+  const apiURL = `${serverBaseURL}/api/imageFetcher?imageName=`;
   const transformedName = showName.replace(/ /g, "%20");
   const dimensions = tile ? "200x200" : "640x640";
-  const showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
+  const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
+  console.log(showNameURL);
   return showNameURL;
+}
+
+export async function fetchAverageColor(imageUrl: string): Promise<string> {
+  const apiURL = `${serverBaseURL}/api/averageColor?imageUrl=${imageUrl}`;
+  const response = await fetch(apiURL);
+  if (response.status !== 200) return "rbg(0,0,0)";
+  const { averageColor } = await response.json();
+  return averageColor;
 }
 
 export async function getShowImage(showName: string, tile: boolean): Promise<ShowImage | null> {
@@ -84,11 +93,11 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
   //const imageRef = ref(storage, `showImages/resizedImages/${showName}_640x640.jpeg`);
   try {
     //const url = await getDownloadURL(imageRef);
+    // Timestamp for performance testing
     const url = await getShowImageURL(showName, tile);
     const response = await fetch(url);
     if (response.status !== 200) return null;
     const imageBuffer = await response.arrayBuffer();
-
     // Use sharp to resize the image to 1x1 and get the RGB values
     const { data } = await sharp(Buffer.from(imageBuffer))
       .resize(1, 1)
@@ -96,6 +105,7 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
       .toBuffer({ resolveWithObject: true });
 
     const averageColor = `rgb(${data[0]},${data[1]},${data[2]})`;
+    // Timestamp for performance testing
     return { imageUrl: url, averageColor };
   } catch (error) {
     console.error(error);

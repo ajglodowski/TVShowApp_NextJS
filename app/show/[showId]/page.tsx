@@ -1,6 +1,6 @@
 import type { Show } from '@/app/models/show';
 import { boolToEmoji } from '@/utils/boolToEmoji';
-import { getAllTags, getRatingCounts, getShow, getShowImage, getStatusCounts, getTags } from './ShowService';
+import { fetchAverageColor, getAllTags, getRatingCounts, getShow, getShowImage, getShowImageURL, getStatusCounts, getTags } from './ShowService';
 import ShowTagsSection from "./components/ShowTagsSection";
 import { createClient } from '@/utils/supabase/server';
 import SeasonsRow from './components/SeasonsRow';
@@ -52,9 +52,10 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   }
   const show = showData as Show;
 
-  const showImageInfo = await getShowImage(show.name, false);
-  const showImageUrl = showImageInfo?.imageUrl;
-  const backgroundColor = showImageInfo?.averageColor;
+  //const showImageInfo = await getShowImage(show.name, false);
+  const showImageUrl = getShowImageURL(show.name, false);
+  //const backgroundColor = showImageInfo?.averageColor;
+  const backgroundColor = await fetchAverageColor(showImageUrl);
   const RGBAToHexA = (rgba: string, forceRemoveAlpha = false) => {
     return "#" + rgba.replace(/^rgba?\(|\s+|\)$/g, '') // Get's rgba / rgb string values
       .split(',') // splits them at ","

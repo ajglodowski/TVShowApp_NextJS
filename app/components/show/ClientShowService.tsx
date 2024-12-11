@@ -4,8 +4,7 @@ import { ShowImage } from "@/app/models/showImage";
 import { createClient } from "@/utils/supabase/client";
 import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
-import { imageUrlBase } from "@/app/firebaseConfig";
-
+import { apiRoute, clientBaseURL } from "@/app/envConfig";
 
 export async function getShow( showId: string ): Promise<Show | null> {
     const supabase = createClient();
@@ -37,14 +36,22 @@ export async function updateShow(show: Show): Promise<boolean> {
     return true;
 }
 
-export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-    const baseURL = imageUrlBase;
+export function getShowImageURL(showName: string, tile: boolean): string {
+    const apiURL = `${apiRoute}/api/imageFetcher?imageName=`;
     const transformedName = showName.replace(/ /g, "%20");
     const dimensions = tile ? "200x200" : "640x640";
-    const showNameURL = `${baseURL}${transformedName}_${dimensions}.jpeg?alt=media`;
+    const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
     return showNameURL;
 }
 
+export async function fetchAverageColor(imageUrl: string): Promise<string> {
+    const apiURL = `${apiRoute}/api/averageColor?imageUrl=${clientBaseURL}${imageUrl}`;
+    const response = await fetch(apiURL);
+    const { averageColor } = await response.json();
+    return averageColor;
+}
+
+const colorCache: { [showName: string]: string } = {};
 
 export async function getShowImage(showName: string, tile: boolean): Promise<ShowImage | null> {
     //const storage = firebaseStorage;
@@ -53,7 +60,12 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
     //const imageRef = ref(storage, `showImages/resizedImages/${showName}_200x200.jpeg`);
     try {
         //const url = await getDownloadURL(imageRef);
-        const url = await getShowImageURL(showName, tile);
+        
+        const url = getShowImageURL(showName, tile);
+        if (colorCache[showName]) {
+            console.log("Using cache");
+            return { imageUrl: url, averageColor: colorCache[showName] };
+        }
         //const response = await fetch(url);
 
         const image = new Image();
@@ -70,6 +82,7 @@ export async function getShowImage(showName: string, tile: boolean): Promise<Sho
         //const [red, green, blue] = [0, 0, 0];
 
         const averageColor = `rgb(${red},${green},${blue})`;
+        colorCache[showName] = averageColor;
         return { imageUrl: url, averageColor: averageColor };
     } catch (error) {
         console.error(error);
