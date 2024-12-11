@@ -69,12 +69,20 @@ export async function getAllTags(): Promise<ShowTag[] | null> {
   return tags;
 }
 
-export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
+export function getShowImageURL(showName: string, tile: boolean): string {
   const apiURL = `${serverBaseURL}/api/imageFetcher?imageName=`;
   const transformedName = showName.replace(/ /g, "%20");
   const dimensions = tile ? "200x200" : "640x640";
   const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
   return showNameURL;
+}
+
+export async function fetchAverageColor(imageUrl: string): Promise<string> {
+  const apiURL = `${serverBaseURL}/api/averageColor?imageUrl=${imageUrl}`;
+  const response = await fetch(apiURL);
+  if (response.status !== 200) return "rbg(0,0,0)";
+  const { averageColor } = await response.json();
+  return averageColor;
 }
 
 export async function getShowImage(showName: string, tile: boolean): Promise<ShowImage | null> {

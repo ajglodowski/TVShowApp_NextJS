@@ -4,7 +4,7 @@ import { ShowImage } from "@/app/models/showImage";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getShow, getShowImage } from "../ClientShowService";
+import { fetchAverageColor, getShow, getShowImage, getShowImageURL } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ClientShowTile({ showId }: { showId: string }) {
@@ -24,9 +24,10 @@ export default function ClientShowTile({ showId }: { showId: string }) {
 
     useEffect(() => {
         if (!show) return;
-        getShowImage(show.name, true).then((showImageInfo) => {
-            if (!showImageInfo) setShowImageInfo(null);
-            else setShowImageInfo(showImageInfo as ShowImage);
+        const imageUrl = getShowImageURL(show.name, true);
+        fetchAverageColor(imageUrl).then((averageColor) => {
+            if (!averageColor) setShowImageInfo(null);
+            else setShowImageInfo({imageUrl,averageColor} as ShowImage);
         });
     },[showData]);
     

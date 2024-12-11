@@ -2,7 +2,7 @@ import { Show } from "@/app/models/show";
 import Image from "next/image";
 import ShowTileBody from "./ShowTileBody";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
-import { getShowImage } from "@/app/show/[showId]/ShowService";
+import { fetchAverageColor, getShowImage, getShowImageURL } from "@/app/show/[showId]/ShowService";
 
 type ShowTileContentProps = 
     { showData: Show; };
@@ -10,9 +10,11 @@ type ShowTileContentProps =
 export default async function ShowTileContent({showData}: ShowTileContentProps) {
     const showId = showData.id;
     const show = showData;
-    const showImageInfo = await getShowImage(show.name, true);
-    const showImageUrl = showImageInfo?.imageUrl;
-    const backgroundColor = showImageInfo?.averageColor;
+    //const showImageInfo = await getShowImage(show.name, true);
+    const showImageUrl = getShowImageURL(show.name, true);
+    //const showImageUrl = showImageInfo?.imageUrl;
+    //const backgroundColor = showImageInfo?.averageColor;
+    const backgroundColor = await fetchAverageColor(showImageUrl);
 
     const ShowImage = () => {
         if (!showImageUrl) return <LoadingImageSkeleton />;
