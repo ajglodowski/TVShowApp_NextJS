@@ -37,7 +37,7 @@ export async function updateShow(show: Show): Promise<boolean> {
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-    const apiURL = `${baseURL}/api/imageFetcher?imageName=`;
+    const apiURL = `/api/imageFetcher?imageName=`;
     const transformedName = showName.replace(/ /g, "%20");
     const dimensions = tile ? "200x200" : "640x640";
     const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
