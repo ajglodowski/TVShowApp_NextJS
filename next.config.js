@@ -4,9 +4,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    env: {
-        NEXT_PUBLIC_VERCEL_URL: process.env.VERCEL_URL,
-    },
     async headers() {
         return [
             {

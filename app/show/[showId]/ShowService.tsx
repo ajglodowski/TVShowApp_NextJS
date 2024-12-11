@@ -10,7 +10,7 @@ import { Rating } from "@/app/models/rating";
 import { RatingCounts } from "@/app/models/ratingCounts";
 import { StatusCount } from "@/app/models/statusCount";
 import { Status } from "@/app/models/status";
-import { baseURL } from '@/app/envConfig';
+import { serverBaseURL } from '@/app/envConfig';
 
 export async function getShow( showId: string ): Promise<Show | null> {
     
@@ -70,7 +70,7 @@ export async function getAllTags(): Promise<ShowTag[] | null> {
 }
 
 export async function getShowImageURL(showName: string, tile: boolean): Promise<string> {
-  const apiURL = `${baseURL}/api/imageFetcher?imageName=`;
+  const apiURL = `${serverBaseURL}/api/imageFetcher?imageName=`;
   const transformedName = showName.replace(/ /g, "%20");
   const dimensions = tile ? "200x200" : "640x640";
   const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;

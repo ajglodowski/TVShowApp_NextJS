@@ -4,7 +4,6 @@ import { ShowImage } from "@/app/models/showImage";
 import { createClient } from "@/utils/supabase/client";
 import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
-import { baseURL } from "@/app/envConfig";
 
 export async function getShow( showId: string ): Promise<Show | null> {
     const supabase = createClient();
