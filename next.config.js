@@ -22,7 +22,7 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'tv-show-app-next-js.vercel.app',
+                hostname: '**.vercel.app',
                 port: '',
                 pathname: '/**/*',
             },
