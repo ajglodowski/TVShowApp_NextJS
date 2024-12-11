@@ -54,6 +54,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
 
   //const showImageInfo = await getShowImage(show.name, false);
   const showImageUrl = getShowImageURL(show.name, false);
+  console.log(showImageUrl);
   //const backgroundColor = showImageInfo?.averageColor;
   const backgroundColor = await fetchAverageColor(showImageUrl);
   const RGBAToHexA = (rgba: string, forceRemoveAlpha = false) => {
