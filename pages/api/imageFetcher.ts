@@ -28,7 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Read the response as a buffer to calculate Content-Length
-        const buffer = await response.buffer();
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
         const contentType = response.headers.get('content-type') || 'application/octet-stream';
 
         // Set appropriate headers
