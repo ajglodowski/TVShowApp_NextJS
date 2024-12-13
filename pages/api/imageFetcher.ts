@@ -37,6 +37,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.setHeader('Content-Length', buffer.length.toString());
         res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600, stale-while-revalidate=120'); // Optional: Add caching for performance
 
+        console.log('Image fetched:', imageName);
+
         // Send the buffer
         res.status(200).send(buffer);
     } catch (error) {
