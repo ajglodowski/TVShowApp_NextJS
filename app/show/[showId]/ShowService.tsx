@@ -74,7 +74,6 @@ export function getShowImageURL(showName: string, tile: boolean): string {
   const transformedName = showName.replace(/ /g, "%20");
   const dimensions = tile ? "200x200" : "640x640";
   const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
-  console.log(showNameURL);
   return showNameURL;
 }
 
