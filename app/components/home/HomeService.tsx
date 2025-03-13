@@ -5,12 +5,13 @@ import { ComingSoonDTO } from "./ComingSoonRow";
 import { UserUpdateTileDTO } from "../userUpdate/UserUpdateService";
 import { UserUpdate, UserUpdatePropertiesWithShowName } from "@/app/models/userUpdate";
 import { CurrentlyAiringDTO } from "@/app/models/airDate";
+import { cache } from "react";
 
 export async function getWatchList({userId}: {userId: string}): Promise<Show[] | null> {
     if (!userId) return null;
     
     const supabase = await createClient();
-    const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: 3});
+    const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: 3}).limit(10);
     if (!showData) return null;   
     const output = showData.map((obj) => obj.show) as unknown as Show[];
     return output;
@@ -40,13 +41,13 @@ export async function getTop10(): Promise<{showId: number, updates: number}[] | 
     return output;
 }
 
-export async function getAllStatuses(): Promise<Status[]|null> {
+export const getAllStatuses = cache(async function (): Promise<Status[] | null> {
     
     const supabase = await createClient();
     const { data } = await supabase.from("status").select();
     const statuses = data as unknown as Status[];
     return statuses;
-}
+});
 
 export async function getComingSoon({userId}: {userId: string}): Promise<ComingSoonDTO[] | null> {
 
@@ -79,7 +80,7 @@ function formatUpdate(updateData: any): UserUpdateTileDTO {
     return update;
 }
 
-export async function getUserUpdates({userId, updateLimit}: {userId: string, updateLimit: number}): Promise<UserUpdateTileDTO[]|null> {
+export async function getUserUpdates({userId, updateLimit, fetchHidden}: {userId: string, updateLimit: number, fetchHidden: boolean}): Promise<UserUpdateTileDTO[]|null> {
     
     const supabase = await createClient();
     const { data: updateData } = await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId}).order('updateDate', {ascending: false}).limit(updateLimit);

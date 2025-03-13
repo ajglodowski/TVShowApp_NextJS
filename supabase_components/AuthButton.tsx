@@ -32,8 +32,8 @@ export default async function AuthButton() {
         >
           <Image
             src="/images/placeholder-user.jpg"
-            width={36}
-            height={36}
+            width={40}
+            height={40}
             alt="Avatar"
             className="overflow-hidden rounded-full"
           />
@@ -57,7 +57,7 @@ export default async function AuthButton() {
 
 
   return user && userInfo ? (
-    <div className="m-2">
+    <div className="flex justify-center items-center p-1 m-2">
       <ActiveUser />
     </div>
   ) : (

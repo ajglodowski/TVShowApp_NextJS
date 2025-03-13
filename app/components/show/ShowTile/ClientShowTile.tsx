@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchAverageColor, getShow, getShowImage, getShowImageURL } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Clock } from "lucide-react";
+import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 
 export default function ClientShowTile({ showId }: { showId: string }) {
 
@@ -25,10 +27,13 @@ export default function ClientShowTile({ showId }: { showId: string }) {
     useEffect(() => {
         if (!show) return;
         const imageUrl = getShowImageURL(show.name, true);
+        setShowImageInfo({imageUrl,averageColor: "rgb(0,0,0)"} as ShowImage);
+        /*
         fetchAverageColor(imageUrl).then((averageColor) => {
             if (!averageColor) setShowImageInfo(null);
             else setShowImageInfo({imageUrl,averageColor} as ShowImage);
         });
+        */
     },[showData]);
     
     const ShowInfo = () => {
@@ -38,30 +43,48 @@ export default function ClientShowTile({ showId }: { showId: string }) {
         if (showData === null){ console.log(showId); console.log(showData); return <div>Show not found</div> }
 
         return(
-            <>
-                <h2 className="text-lg font-semibold truncate">{show.name}</h2>
-                <p className="text-sm truncate">{show.length}m · {show.service.name}</p>
-            </>
+            <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent p-3">
+                <h3 className="font-medium text-sm line-clamp-1">{show.name}</h3>
+                {(show.length || show.service.name) && (
+                <div className="flex items-center gap-2 mt-1">
+                    {show.length && (
+                    <div className="flex items-center text-xs text-white/60">
+                        <Clock className="mr-1 h-3 w-3" />
+                        {show.length}m
+                    </div>
+                    )}
+                    {show.service && <div className="text-xs text-white/60">{show.service.name}</div>}
+                </div>
+                )}
+            </div>
         )
-
     }
+
+    const ShowImage = () => {
+            if (!showImageUrl) return <LoadingImageSkeleton />;
+            return (
+                <div className="relative w-full h-full">
+                    <Image 
+                        src={showImageUrl || "/placeholder.svg"} 
+                        alt={show.name}
+                        fill
+                        sizes="128px"
+                        className="object-cover rounded-lg shadow-md"
+                    />
+                </div>
+            );
+        }
 
 
     return (
         <Link href={`show/${showId}`}>
-            <div key={showId} className="inline-block rounded-lg w-32 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}>
+            {/* <div key={showId} className="inline-block rounded-lg w-32 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}> */}
+            <div
+                className="group w-48 h-48 overflow-hidden rounded-lg bg-white/5 transition-all hover:bg-white/10 cursor-pointer relative"
+            >
                 <div className="h-full w-full items-center text-center justify-center">
-                    <div className="w-32 h-32 mx-auto items-center">
-                        {showImageUrl && <div className="relative">
-                            <Image src={showImageUrl} alt={show.name} width="0"
-                                height="0"
-                                sizes="100vw"
-                                className="w-full h-full rounded-lg shadow-md"
-                            />
-                        </div>}
-                        { !showImageUrl && <div className="w-full h-full">
-                            <Skeleton className="h-full w-full rounded-md" />
-                        </div>}
+                    <div className="aspect-square overflow-hidden">
+                        <ShowImage/>
                     </div>
                     <div className="text-ellipsis overflow-hidden text-left px-2">
                         <ShowInfo />

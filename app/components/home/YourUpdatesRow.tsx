@@ -4,7 +4,7 @@ import UserUpdateTile from "../userUpdate/UserUpdateTile/UserUpdateTile";
 
 export default async function YourUpdatesRow ({userId}: {userId: string}) {
 
-    const updates = await getUserUpdates({userId: userId, updateLimit: 10});
+    const updates = await getUserUpdates({userId: userId, updateLimit: 10, fetchHidden: false});
 
     if (updates === null) return (<div>Error loading your updates</div>);
     if (updates.length === 0) return (<div>No Updates. Log some updates</div>);

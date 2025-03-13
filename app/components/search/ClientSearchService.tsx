@@ -4,7 +4,7 @@ export async function searchShows({searchQuery}: {searchQuery: string}): Promise
     'use client'
     const supabase = createClient();
 
-    const { data } = await supabase.from('show').select('id').textSearch('name', `'${searchQuery}'`);
+    const { data } = await supabase.from('show').select('id').ilike('name', `%${searchQuery}%`).limit(5);
     
     if (!data) return null;
     const showIds = data.map((obj) => obj.id);

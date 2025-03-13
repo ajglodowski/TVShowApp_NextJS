@@ -4,6 +4,7 @@ import Link from "next/link";
 import ShowTileContent from "./ShowTileContent";
 import ShowTileWithoutImage from "./ShowTileWithoutImage";
 import { Suspense } from "react";
+import ShowTileContentNew from "./ShowTileNew";
 
 type ShowTileProps =
     { showId: string; } | 
@@ -20,6 +21,7 @@ export default async function ShowTile(props: ShowTileProps) {
         showData = await getShow(props.showId) as Show; 
         showId = props.showId;
     }
+    
 
     if (!showData) {
         return <div key={showId}>Show not found</div>
@@ -27,9 +29,12 @@ export default async function ShowTile(props: ShowTileProps) {
 
     return (
         <Link key={showId} href={`show/${showId}`}>
+            {/*
             <Suspense fallback={<ShowTileWithoutImage showData={showData} />}>
-                <ShowTileContent showData={showData} />
+                <ShowTileContentNew showData={showData} />
             </Suspense>
+            */}
+            <ShowTileContentNew showData={showData} />
         </Link>
     );
 };

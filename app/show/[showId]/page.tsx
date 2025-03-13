@@ -44,7 +44,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
     getAllStatuses(),
     getRatingCounts(showId),
     getStatusCounts(showId),
-    getUserUpdates({ showId: showId, userId: currentUserId })
+    getUserUpdates({ showId: showId, userId: currentUserId}),
   ]);
 
   if (!showData) {

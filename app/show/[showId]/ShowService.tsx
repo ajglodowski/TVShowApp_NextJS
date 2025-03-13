@@ -11,6 +11,7 @@ import { RatingCounts } from "@/app/models/ratingCounts";
 import { StatusCount } from "@/app/models/statusCount";
 import { Status } from "@/app/models/status";
 import { serverBaseURL } from '@/app/envConfig';
+import { cache } from 'react';
 
 export async function getShow( showId: string ): Promise<Show | null> {
     
@@ -46,28 +47,18 @@ export async function getTags(showId: string): Promise<ShowTag[] | null> {
   return tags;
 }
 
-export async function getAllTags(): Promise<ShowTag[] | null> {
-  
+export const getAllTags = cache(async function (): Promise<ShowTag[] | null> {
   const supabase = await createClient();
-  const { data: tagData } = await supabase.from("showTag").select('id, name, created_at');
-  
-  if (!tagData) return null; 
-  
-  const tags = tagData as ShowTag[];
-  /*
-  const TagCategoryProperties = "id, created_at, name"
-  const NestedTagProperties = `showTag (id, created_at, name, category (${TagCategoryProperties}))`
-  const { data: dummyData } = await supabase
-    .from("ShowTagRelationship")
-    .select(NestedTagProperties)
-    .eq("showId", showId)
+  const { data: tagData } = await supabase
+    .from('showTag')
+    .select('id, name, created_at');
 
-  const string = JSON.stringify(dummyData);
-  console.log(dummyData);
-  */
-  
+  if (!tagData) return null;
+
+  const tags = tagData as ShowTag[];
   return tags;
-}
+});
+
 
 export function getShowImageURL(showName: string, tile: boolean): string {
   const apiURL = `${serverBaseURL}/api/imageFetcher?imageName=`;
@@ -77,13 +68,13 @@ export function getShowImageURL(showName: string, tile: boolean): string {
   return showNameURL;
 }
 
-export async function fetchAverageColor(imageUrl: string): Promise<string> {
+export const fetchAverageColor = cache(async function (imageUrl: string):  Promise<string> {
   const apiURL = `${serverBaseURL}/api/averageColor?imageUrl=${imageUrl}`;
   const response = await fetch(apiURL);
   if (response.status !== 200) return "rbg(0,0,0)";
   const { averageColor } = await response.json();
   return averageColor;
-}
+});
 
 export async function getShowImage(showName: string, tile: boolean): Promise<ShowImage | null> {
   //const storage = firebaseStorage;
