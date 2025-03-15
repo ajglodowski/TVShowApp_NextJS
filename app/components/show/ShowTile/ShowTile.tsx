@@ -1,14 +1,12 @@
 import { Show } from "@/app/models/show";
 import { getShow } from "@/app/show/[showId]/ShowService";
 import Link from "next/link";
-import ShowTileContent from "./ShowTileContent";
-import ShowTileWithoutImage from "./ShowTileWithoutImage";
-import { Suspense } from "react";
-import ShowTileContentNew from "./ShowTileNew";
+import ShowTileContent, { ShowTileBadgeProps } from "./ShowTileContent";
 
-type ShowTileProps =
-    { showId: string; } | 
-    { showDto: Show; };
+type ShowTileProps = 
+    | { showId: string; badges?: ShowTileBadgeProps[] }
+    | { showDto: Show; badges?: ShowTileBadgeProps[] };
+
 
 export default async function ShowTile(props: ShowTileProps) {
 
@@ -29,12 +27,7 @@ export default async function ShowTile(props: ShowTileProps) {
 
     return (
         <Link key={showId} href={`show/${showId}`}>
-            {/*
-            <Suspense fallback={<ShowTileWithoutImage showData={showData} />}>
-                <ShowTileContentNew showData={showData} />
-            </Suspense>
-            */}
-            <ShowTileContentNew showData={showData} />
+            <ShowTileContent showData={showData} badges={props.badges}/>
         </Link>
     );
 };

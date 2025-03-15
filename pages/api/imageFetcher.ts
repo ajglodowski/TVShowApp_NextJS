@@ -7,16 +7,10 @@ const BASE_URL = imageUrlBase;
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     // time stamp for request start
     const imageName = req.query.imageName as unknown as string;
+    const path = req.query.path as unknown as string;
+    const fullPath = `${path}/${imageName}`;
 
-    // Validate the image name to prevent misuse
-    /*
-    if (!imageName || typeof imageName !== 'string' || /[<>:"/\\|?*]/.test(imageName)) {
-        res.status(400).json({ error: 'Invalid image name' });
-        return;
-    }
-        */
-
-    const imageUrl = `${BASE_URL}${encodeURIComponent(imageName)}`;
+    const imageUrl = `${BASE_URL}${encodeURIComponent(fullPath)}`;
 
     try {
         // Fetch the image from the constructed URL

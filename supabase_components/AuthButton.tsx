@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { getUser } from '@/utils/userService'
+import { getUser, getUserImageURL } from '@/utils/userService'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import Image from "next/image";
@@ -21,6 +21,31 @@ export default async function AuthButton() {
     return redirect('/login')
   }
 
+  const ProfilePic = () => {
+    if (userInfo && userInfo.profilePhotoURL) {
+      const profilePhotoURL = getUserImageURL(userInfo.profilePhotoURL);
+      return (
+        <Image
+          src={profilePhotoURL}
+          width={40}
+          height={40}
+          alt="Avatar"
+          className="overflow-hidden rounded-full"
+        />
+      )
+    } else {
+      return (
+        <Image
+          src="/images/placeholder-user.jpg"
+          width={40}
+          height={40}
+          alt="Avatar"
+          className="overflow-hidden rounded-full"
+        />
+      )
+    }
+  }
+
   const ActiveUser = () => {
     return (
     <DropdownMenu>
@@ -30,13 +55,7 @@ export default async function AuthButton() {
           size="icon"
           className="overflow-hidden rounded-full"
         >
-          <Image
-            src="/images/placeholder-user.jpg"
-            width={40}
-            height={40}
-            alt="Avatar"
-            className="overflow-hidden rounded-full"
-          />
+          <ProfilePic />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className='bg-black text-white'>

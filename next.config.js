@@ -27,8 +27,6 @@ const nextConfig = {
             {
                 protocol: 'http',
                 hostname: 'localhost',
-                port: '3000',
-                pathname: '/**/*',
             },
         ],
         minimumCacheTTL: 60 * 60 * 24 * 1, // 1 day

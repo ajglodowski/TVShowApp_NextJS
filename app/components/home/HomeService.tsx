@@ -17,18 +17,6 @@ export async function getWatchList({userId}: {userId: string}): Promise<Show[] |
     return output;
 }
 
-export async function getCurrentlyAiring({userId}: {userId: string}): Promise<CurrentlyAiringDTO[] | null> {
-
-    if (!userId) return null;
-  
-    
-    const supabase = await createClient();
-    const { data: showData } = await supabase.from("UserShowDetails").select('show: showId (name, airdate, id)').match({userId: userId, status: 5});
-    if (!showData) return null;
-    const output = showData.map((obj) => obj.show) as unknown as CurrentlyAiringDTO[];
-    return output;
-}
-
 export async function getTop10(): Promise<{showId: number, updates: number}[] | null> {
 
     

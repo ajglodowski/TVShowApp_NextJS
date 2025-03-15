@@ -1,3 +1,4 @@
+import { UserFollowRelationship } from "../models/userFollowRelationship";
 
 
 export function getUserImageURL(username: string): string {
@@ -23,4 +24,14 @@ export async function getProfilePic (username: string): Promise<string|null> {
         console.error(error);
         return null;
     }
+}
+
+export async function followUser(userToFollow: string, userFollowing: string): Promise<Boolean> {
+    //TODO
+    return false;
+}
+
+export async function unfollowUser(userToUnfollow: string, userUnfollowing: string): Promise<UserFollowRelationship | null> {
+    //TODO
+    return null;
 }

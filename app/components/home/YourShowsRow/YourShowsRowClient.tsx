@@ -73,20 +73,18 @@ export default function YourShowsRowClient({ userId, allStatuses }: { userId: st
               </Button>
 
               {selectedStatus.map((status) => (
-                <Badge
+                <button
                   key={status.id}
-                  variant="secondary"
-                  className="flex font-medium items-center gap-1 h-8 px-3 bg-white text-black"
+                  onClick={() => handleStatusChange(status)}
                 >
-                  {status.name}
-                  <button
-                    onClick={() => handleStatusChange(status)}
-                    className="ml-1 rounded-full hover:bg-gray-200 p-0.5"
-                    aria-label={`Remove ${status.name} filter`}
+                  <Badge
+                    variant="secondary"
+                    className="flex font-medium items-center gap-1 h-8 px-3 bg-white text-black rounded-lg"
                   >
+                    {status.name}
                     <X className="h-3 w-3" />
-                  </button>
-                </Badge>
+                  </Badge>
+                </button>
               ))}
             </>
           )}
@@ -95,7 +93,7 @@ export default function YourShowsRowClient({ userId, allStatuses }: { userId: st
         <div className="relative">
           <Tabs defaultValue="all" className="w-full ">
             <ScrollArea className="w-full">
-              <TabsList className="h-9 bg-transparent">
+              <TabsList className="bg-white/5 text-white h-auto w-auto gap-1 p-1">
                 {allStatuses.map((status) => (
                   <TabsTrigger
                     key={status.id}
@@ -103,8 +101,8 @@ export default function YourShowsRowClient({ userId, allStatuses }: { userId: st
                     onClick={() => handleStatusChange(status)}
                     className={
                       selectedStatus.includes(status)
-                        ? "data-[state=active]:bg-white data-[state=active]:text-black hover:bg-gray-200 hover:text-black"
-                        : "bg-white/5 text-white hover:bg-white hover:text-black"
+                        ? "data-[state=active]:bg-white data-[state=active]:text-black hover:bg-gray-200 hover:text-black rounded-lg"
+                        : " text-white hover:bg-white hover:text-black rounded-lg"
                     }
                     data-state={selectedStatus.includes(status) ? "active" : "inactive"}
                   >
@@ -122,7 +120,7 @@ export default function YourShowsRowClient({ userId, allStatuses }: { userId: st
 
   return (
     <div className="w-full">
-      <div className="mb-6">
+      <div className="mb-2">
         <StatusFilters />
       </div>
       <ShowRow />

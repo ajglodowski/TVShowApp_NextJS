@@ -21,13 +21,13 @@ export default async function Home () {
     }
 
     const rows = [
-        {header: "Search:", component: <ClientSearch/>}, 
-        {header: "Your Recent Updates:", component: <YourUpdatesRow userId={currentUserId}/>},
-        {header: "Your shows:", component: <YourShowsRow userId={currentUserId}/>}, 
-        {header: "Currently Airing:", component: <CurrentlyAiringRow userId={currentUserId}/>}, 
-        {header: "Top 10 this week:", component: <Top10Row/>},
-        {header: "Coming Soon:", component: <ComingSoonRow userId={currentUserId}/>}, 
-        {header: "Shows for you to start:", component: <WatchListRow userId={currentUserId}/>}, 
+        {header: "Search", component: <ClientSearch/>}, 
+        {header: "Your Recent Updates", component: <YourUpdatesRow userId={currentUserId}/>},
+        {header: "Your shows", component: <YourShowsRow userId={currentUserId}/>}, 
+        {header: "Currently Airing", component: <CurrentlyAiringRow userId={currentUserId}/>}, 
+        {header: "Top 10 this week", component: <Top10Row/>},
+        {header: "Coming Soon", component: <ComingSoonRow userId={currentUserId}/>}, 
+        {header: "Shows for you to start", component: <WatchListRow userId={currentUserId}/>}, 
     ]
 
     return (
@@ -35,7 +35,7 @@ export default async function Home () {
             <WelcomeBanner />
             {rows.map((row) => (
                 <div key={row.header} className="w-full overflow-x-auto">
-                    <h3 className='text-4xl font-bold'>{row.header}</h3>
+                    <h3 className='text-xl font-bold mt-1'>{row.header}</h3>
                     {row.component}
                 </div>
             ))}
