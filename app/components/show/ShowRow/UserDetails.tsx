@@ -4,9 +4,9 @@ import { LikedIcon } from "@/public/icons/LikedIcon";
 import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import { Rating } from "@/app/models/rating";
-import { getProfilePic } from "@/app/user/UserService";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { getProfilePic } from "@/app/user/UserServiceClient";
 export const UserDetails = ({ userInfo }: { userInfo: UserShowDataWithUserInfo }) => {
     
     const [profilePicUrl, setProfilePicUrl] = useState<string | undefined | null>(undefined);
