@@ -13,20 +13,16 @@ import { Status } from "@/app/models/status";
 import { serverBaseURL } from '@/app/envConfig';
 import { cache } from 'react';
 
-export async function getShow( showId: string ): Promise<Show | null> {
-    
-    const supabase = await createClient();
-    const { data: showData } = await supabase.from("show").select(ShowPropertiesWithService).match({id: showId}).single();
-    
-    if (!showData) return null;   
-
-    const show: Show = {
-      ...showData,
-      service: showData.service as unknown as Service,
-    };
-    
-    return show;
-}
+export const getShow = cache(async (showId: string): Promise<Show | null> => {
+  const supabase = await createClient();
+  const { data: showData } = await supabase.from("show").select(ShowPropertiesWithService).match({id: showId}).single();
+  if (!showData) return null;
+  const show: Show = {
+    ...showData,
+    service: showData.service as unknown as Service,
+  };
+  return show;
+});
 
 export async function getTags(showId: string): Promise<ShowTag[] | null> {
   

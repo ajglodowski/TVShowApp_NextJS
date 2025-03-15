@@ -1,7 +1,4 @@
-export function getUserImageURL(username: string): string {
-    return `https://storage.googleapis.com/tv-show-app-602d7.appspot.com/profilePics/${username}.jpg`
-}
-
+import { getUserImageURL } from "@/utils/userService";
 
 export async function getProfilePic (username: string): Promise<string|null> {
     try {

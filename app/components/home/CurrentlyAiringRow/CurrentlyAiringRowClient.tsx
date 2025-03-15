@@ -2,17 +2,15 @@
 import { useEffect, useState } from "react"
 import type { AirDate, CurrentlyAiringDTO } from "@/app/models/airDate"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getCurrentlyAiring } from "./HomeClientService"
-import ClientShowTile from "../show/ShowTile/ClientShowTile"
+import ClientShowTile from "../../show/ShowTile/ClientShowTile"
 
 type AirDateInfo = {
   day: AirDate
   shows: CurrentlyAiringDTO[]
 }
 
-export default function CurrentlyAiringRow({ userId }: { userId: string }) {
-  const [shows, setShows] = useState<CurrentlyAiringDTO[] | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { currentlyAiringShows: CurrentlyAiringDTO[] | null }) {
+  const shows = currentlyAiringShows;
   const [activeDay, setActiveDay] = useState<AirDate | null>(null);
 
   const dayToAirdate = (day: number): AirDate => {
@@ -36,28 +34,12 @@ export default function CurrentlyAiringRow({ userId }: { userId: string }) {
     }
   }
 
-  const today = dayToAirdate(new Date().getDay())
-
+  const today = dayToAirdate(new Date().getDay());
+  const hasShowsToday = shows?.some((show) => show.airdate === today);
   useEffect(() => {
-    async function fetchShows() {
-      try {
-        const data = await getCurrentlyAiring({ userId: userId })
-        setShows(data)
-        const hasShowsToday = data?.some((show) => show.airdate === today)
-        if (hasShowsToday) {
-          setActiveDay(today)
-        } else if (data && data.length > 0) {
-          setActiveDay(data[0].airdate)
-        }
-      } catch (error) {
-        console.error("Error fetching shows:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchShows()
-  }, [userId])
+    if (hasShowsToday) setActiveDay(today);
+    else if (shows && shows.length > 0) setActiveDay(shows[0].airdate);
+  }, [hasShowsToday, shows, today]);
 
   const groupedShows = (): AirDateInfo[] => {
     if (shows === null) return []
@@ -71,9 +53,6 @@ export default function CurrentlyAiringRow({ userId }: { userId: string }) {
     return output
   }
 
-
-
-  if (loading) return <div className="p-4">Loading currently airing shows...</div>
   if (shows === null) return <div className="p-4">Error Loading Currently Airing</div>
   if (shows.length === 0) return <div className="p-4">No shows currently airing</div>
 

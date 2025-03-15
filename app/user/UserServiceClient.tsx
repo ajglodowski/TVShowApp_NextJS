@@ -1,8 +1,12 @@
+import { apiRoute } from "../envConfig";
 import { UserFollowRelationship } from "../models/userFollowRelationship";
 
-
 export function getUserImageURL(username: string): string {
-    return `https://storage.googleapis.com/tv-show-app-602d7.appspot.com/profilePics/${username}.jpg`
+  const apiURL = `${apiRoute}/api/imageFetcher?path=profilePics&imageName=`;
+  const transformedName = username.replace(/ /g, "%20");
+  //const dimensions = tile ? "200x200" : "640x640";
+  const showNameURL = `${apiURL}${transformedName}`;
+  return showNameURL;
 }
 
 

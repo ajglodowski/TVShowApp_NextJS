@@ -1,4 +1,3 @@
-import { CurrentlyAiringDTO } from "@/app/models/airDate";
 import { Rating } from "@/app/models/rating";
 import { Status } from "@/app/models/status";
 import { UserShowData } from "@/app/models/userShowData";
@@ -50,12 +49,3 @@ export async function getAllStatuses(): Promise<Status[]|null> {
     return statuses;
 }
 
-export async function getCurrentlyAiring({userId}: {userId: string}): Promise<CurrentlyAiringDTO[] | null> {
-
-    if (!userId) return null;
-    const supabase = await createClient();
-    const { data: showData } = await supabase.from("UserShowDetails").select('show: showId (name, airdate, id)').match({userId: userId, status: 5});
-    if (!showData) return null;
-    const output = showData.map((obj) => obj.show) as unknown as CurrentlyAiringDTO[];
-    return output;
-}

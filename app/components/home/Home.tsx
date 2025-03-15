@@ -4,7 +4,7 @@ import WatchListRow from './WatchlistRow';
 import Top10Row from './Top10Row';
 import YourShowsRow from './YourShowsRow/YourShowsRow';
 import { ClientSearch } from '../search/ClientSearch';
-import CurrentlyAiringRow from './CurrentlyAiringRow';
+import CurrentlyAiringRow from './CurrentlyAiringRow/CurrentlyAiringRow';
 import ComingSoonRow from './ComingSoonRow';
 import YourUpdatesRow from './YourUpdatesRow';
 import WelcomeBanner from './WelcomeBanner';

@@ -2,17 +2,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getShowsLogged, getUser, getUserFollowRelationship, getUserImageURL } from "@/utils/userService"
+import { getShowsLogged, getUser, getUserFollowRelationship, getUserImageURL, getUserTopTags } from "@/utils/userService"
 import { BookMarked, Film, Heart, ListChecks, MessageSquare, Star, Tv, Users } from "lucide-react"
 import Image from "next/image"
 import FollowButton from "./components/FollowButton"
 import { createClient } from "@/utils/supabase/server"
-
+import TagCountCard from "./components/TagCountCard"
+import UserStatsCard from "./components/UserStatsCard/UserStatsCard"
+import ShowsListTile from "../components/showList/ShowListTile"
 
 export default async function UserProfile() {
 
     const userId = 'c52a052a-4944-4257-ad77-34f2f002104c';
     const user = await getUser(userId);
+
+    
 
     const UserNotFound = () => {
         return (
@@ -40,6 +44,8 @@ export default async function UserProfile() {
         following: 843,
     };
 
+    const showLists: number[] = [1];
+
     const profilePicUrl = user.profilePhotoURL ? getUserImageURL(user.profilePhotoURL) : "/images/placeholder-user.jpg";
 
     const supabase = await createClient();
@@ -48,6 +54,8 @@ export default async function UserProfile() {
     const loggedIn = currentUserId !== undefined;
 
     const followRelationship = loggedIn ? await getUserFollowRelationship(userId, currentUserId!) : null;
+
+    const tagData = await getUserTopTags(userId);
 
     const Header = () => {
         return(
@@ -110,166 +118,9 @@ export default async function UserProfile() {
                 </Button>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Must-Watch Sci-Fi</CardTitle>
-                    <CardDescription>My favorite science fiction shows of all time</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex -space-x-4 mb-4">
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <div className="flex items-center justify-center w-[60px] h-[60px] rounded-md bg-muted border border-border text-sm font-medium">
-                        +12
-                      </div>
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Film className="mr-1 h-4 w-4" />
-                      <span>15 shows</span>
-                      <Heart className="ml-3 mr-1 h-4 w-4" />
-                      <span>24 likes</span>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Underrated Gems</CardTitle>
-                    <CardDescription>Shows that deserve more attention</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex -space-x-4 mb-4">
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <div className="flex items-center justify-center w-[60px] h-[60px] rounded-md bg-muted border border-border text-sm font-medium">
-                        +8
-                      </div>
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Film className="mr-1 h-4 w-4" />
-                      <span>11 shows</span>
-                      <Heart className="ml-3 mr-1 h-4 w-4" />
-                      <span>17 likes</span>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Comfort Watches</CardTitle>
-                    <CardDescription>Shows I return to again and again</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex -space-x-4 mb-4">
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <div className="flex items-center justify-center w-[60px] h-[60px] rounded-md bg-muted border border-border text-sm font-medium">
-                        +5
-                      </div>
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Film className="mr-1 h-4 w-4" />
-                      <span>8 shows</span>
-                      <Heart className="ml-3 mr-1 h-4 w-4" />
-                      <span>32 likes</span>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">To Watch</CardTitle>
-                    <CardDescription>My ever-growing watchlist</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex -space-x-4 mb-4">
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <Image
-                        src="/placeholder.svg?height=60&width=60"
-                        alt="Show poster"
-                        width={60}
-                        height={60}
-                        className="rounded-md border border-border"
-                      />
-                      <div className="flex items-center justify-center w-[60px] h-[60px] rounded-md bg-muted border border-border text-sm font-medium">
-                        +23
-                      </div>
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Film className="mr-1 h-4 w-4" />
-                      <span>26 shows</span>
-                      <BookMarked className="ml-3 mr-1 h-4 w-4" />
-                      <span>Updated 2d ago</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                {showLists.map((listId) => (
+                  <ShowsListTile key={listId} listId={listId}/>
+                ))}
               </div>
             </TabsContent>
             <TabsContent value="watched" className="space-y-4 mt-6">
@@ -357,86 +208,8 @@ export default async function UserProfile() {
         </div>
 
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Stats</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Shows Watched</span>
-                <span className="font-medium">312</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Movies Watched</span>
-                <span className="font-medium">547</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Hours Watched</span>
-                <span className="font-medium">1,248</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Reviews Written</span>
-                <span className="font-medium">86</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Lists Created</span>
-                <span className="font-medium">14</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Genres</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Sci-Fi</span>
-                  <span className="text-xs text-muted-foreground">87 shows</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-primary h-2 rounded-full" style={{ width: "80%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2 mt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Drama</span>
-                  <span className="text-xs text-muted-foreground">64 shows</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-primary h-2 rounded-full" style={{ width: "60%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2 mt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Comedy</span>
-                  <span className="text-xs text-muted-foreground">52 shows</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-primary h-2 rounded-full" style={{ width: "45%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2 mt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Thriller</span>
-                  <span className="text-xs text-muted-foreground">41 shows</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-primary h-2 rounded-full" style={{ width: "35%" }}></div>
-                </div>
-              </div>
-              <div className="space-y-2 mt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Documentary</span>
-                  <span className="text-xs text-muted-foreground">38 shows</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-primary h-2 rounded-full" style={{ width: "30%" }}></div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <UserStatsCard userId={userId} />
+          <TagCountCard tagData={tagData}/>
         </div>
       </div>
     </div>
