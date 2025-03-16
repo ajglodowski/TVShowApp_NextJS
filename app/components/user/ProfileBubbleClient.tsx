@@ -2,7 +2,7 @@
 import { LoadingImageSkeleton } from "../image/LoadingImageSkeleton";
 import Image from 'next/image';
 import { User } from "@/app/models/user";
-import { getUserImageURL } from "@/app/user/UserServiceClient";
+import { getUserImageURL } from "@/app/profile/UserServiceClient";
 
 type ProfileBubbleProps = { user: User | null, userId: string; };
 
@@ -13,7 +13,7 @@ export default function ProfileBubbleClient({ user, userId }: ProfileBubbleProps
     return (
             <button 
                 className="flex flex-row items-center space-x-2 rounded-full  border-neutral-800 bg-neutral-800/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-800/60 h-6 max-w-32 pe-2"
-                onClick={() => {window.location.href = `/user/${username}`}}
+                onClick={() => {window.location.href = `/profile/${username}`}}
             >
                 <div className="w-6 h-6 rounded-full relative overflow-hidden">
                 {userImage == undefined && <LoadingImageSkeleton />}

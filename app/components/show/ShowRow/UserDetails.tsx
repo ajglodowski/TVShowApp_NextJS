@@ -6,7 +6,7 @@ import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import { Rating } from "@/app/models/rating";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { getProfilePic } from "@/app/user/UserServiceClient";
+import { getProfilePic } from "@/app/profile/UserServiceClient";
 export const UserDetails = ({ userInfo }: { userInfo: UserShowDataWithUserInfo }) => {
     
     const [profilePicUrl, setProfilePicUrl] = useState<string | undefined | null>(undefined);

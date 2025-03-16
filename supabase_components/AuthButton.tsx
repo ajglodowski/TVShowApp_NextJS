@@ -62,7 +62,7 @@ export default async function AuthButton() {
         <DropdownMenuLabel>Hey {userInfo?.username}!</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href="/user">
+          <Link href="/profile">
             Your Profile
           </Link>
         </DropdownMenuItem>

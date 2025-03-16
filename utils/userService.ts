@@ -12,6 +12,13 @@ export const getUser = cache(async (userId: string): Promise<User | null> => {
   return userData as User;
 });
 
+export const getUserByUsername = cache(async (username: string): Promise<User | null> => {
+    const supabase = await createClient();
+    const { data: userData } = await supabase.from("user").select().match({username: username}).single();
+    if (!userData) return null;
+    return userData as User;
+  });
+
 export async function getShowsLogged( userId: string ): Promise<number | null> {
     const supabase = await createClient();
     const { count: count } = await supabase.from("UserShowDetails").select('*', { count: 'exact', head: true }).match({userId: userId});

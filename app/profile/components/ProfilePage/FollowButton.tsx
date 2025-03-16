@@ -1,7 +1,7 @@
 'use client';
 import { UserFollowRelationship } from "@/app/models/userFollowRelationship";
 import { Button } from "@/components/ui/button";
-import { followUser, unfollowUser } from "../UserServiceClient";
+import { followUser, unfollowUser } from "../../UserServiceClient";
 import { useState } from "react";
 
 export default function FollowButton({ currentUserId, followRelationship, userId }: { currentUserId: string | undefined, followRelationship: UserFollowRelationship|null, userId: string }) {

@@ -2,21 +2,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getShowsLogged, getUser, getUserFollowRelationship, getUserImageURL, getUserTopTags } from "@/utils/userService"
-import { BookMarked, Film, Heart, ListChecks, MessageSquare, Star, Tv, Users } from "lucide-react"
+import { getShowsLogged, getUser, getUserByUsername, getUserFollowRelationship, getUserImageURL, getUserTopTags } from "@/utils/userService"
+import { Heart, ListChecks, MessageSquare, Star, Tv, Users } from "lucide-react"
 import Image from "next/image"
-import FollowButton from "./components/FollowButton"
+import FollowButton from "./FollowButton"
 import { createClient } from "@/utils/supabase/server"
-import TagCountCard from "./components/TagCountCard"
-import UserStatsCard from "./components/UserStatsCard/UserStatsCard"
-import ShowsListTile from "../components/showList/ShowListTile"
+import TagCountCard from "./TagCountCard"
+import UserStatsCard from "./UserStatsCard/UserStatsCard"
+import ShowsListTile from "../../../components/showList/ShowListTile"
+import { backdropTabs, backdropTabsTrigger } from "@/utils/stylingConstants"
 
-export default async function UserProfile() {
+export default async function UserProfile({username}: {username: string}) {
 
-    const userId = 'c52a052a-4944-4257-ad77-34f2f002104c';
-    const user = await getUser(userId);
-
-    
+    const user = await getUserByUsername(username);
 
     const UserNotFound = () => {
         return (
@@ -28,16 +26,7 @@ export default async function UserProfile() {
     }
 
     if (!user) return <UserNotFound />;
-
-    /*
-    const user = {
-        username: "ajglodo",
-        name: "AJ Glodowski",
-        profilePicUrl: "ajglodo.jpg",
-        bio: "Film enthusiast, TV show binger, and collector of obscure documentaries. Always looking for new recommendations!",
-    }
-    */
-    //const showsLogged = 312
+    const userId = user.id;
     const showsLogged = getShowsLogged(userId);
     const followInfo = {
         followers: 1248,
@@ -103,16 +92,16 @@ export default async function UserProfile() {
                 </CardContent>
             </Card>
 
-          <Tabs defaultValue="lists" className="w-full">
-            <TabsList className="grid grid-cols-3 w-full md:w-[400px]">
-              <TabsTrigger value="lists">Lists</TabsTrigger>
-              <TabsTrigger value="watched">Watched</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+          <Tabs defaultValue="lists" className={` w-full`}>
+            <TabsList className={`grid grid-cols-3 w-full md:w-[400px] ${backdropTabs}`}>
+              <TabsTrigger value="lists" className={`${backdropTabsTrigger}`}>Lists</TabsTrigger>
+              <TabsTrigger value="watched" className={`${backdropTabsTrigger}`}>Watched</TabsTrigger>
+              <TabsTrigger value="reviews" className={`${backdropTabsTrigger}`}>Reviews</TabsTrigger>
             </TabsList>
             <TabsContent value="lists" className="space-y-4 mt-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">My Lists</h2>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" className={`${backdropTabs}`} size="sm">
                   <ListChecks className="mr-2 h-4 w-4" />
                   Create List
                 </Button>
