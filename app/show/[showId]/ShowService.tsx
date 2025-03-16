@@ -58,7 +58,7 @@ export const getAllTags = cache(async function (): Promise<ShowTag[] | null> {
 
 export function getShowImageURL(showName: string, tile: boolean): string {
   const apiURL = `${serverBaseURL}/api/imageFetcher?path=showImages/resizedImages&imageName=`;
-  const transformedName = showName.replace(/ /g, "%20");
+  const transformedName = encodeURIComponent(showName);
   const dimensions = tile ? "200x200" : "640x640";
   const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
   return showNameURL;

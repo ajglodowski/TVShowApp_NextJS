@@ -30,7 +30,7 @@ export async function getShowsLogged( userId: string ): Promise<number | null> {
 
 export function getUserImageURL(username: string): string {
   const apiURL = `${serverBaseURL}/api/imageFetcher?path=profilePics&imageName=`;
-  const transformedName = username.replace(/ /g, "%20");
+  const transformedName = encodeURIComponent(username);
   //const dimensions = tile ? "200x200" : "640x640";
   const showNameURL = `${apiURL}${transformedName}`;
   return showNameURL;
