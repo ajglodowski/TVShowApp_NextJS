@@ -10,4 +10,5 @@ export type User = {
 export type UserBasicInfo = {
     id: string;
     username: string;
+    profilePhotoURL: string;
 }

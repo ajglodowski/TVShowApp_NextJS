@@ -11,6 +11,7 @@ import TagCountCard from "./TagCountCard"
 import UserStatsCard from "./UserStatsCard/UserStatsCard"
 import ShowsListTile from "../../../components/showList/ShowListTile"
 import { backdropTabs, backdropTabsTrigger } from "@/utils/stylingConstants"
+import YourUpdatesRow from "@/app/components/home/YourUpdatesRow"
 
 export default async function UserProfile({username}: {username: string}) {
 
@@ -93,9 +94,9 @@ export default async function UserProfile({username}: {username: string}) {
             </Card>
 
           <Tabs defaultValue="lists" className={` w-full`}>
-            <TabsList className={`grid grid-cols-3 w-full md:w-[400px] ${backdropTabs}`}>
+            <TabsList className={`grid grid-cols-3 w-full md:w-[400px] rounded-lg ${backdropTabs}`}>
               <TabsTrigger value="lists" className={`${backdropTabsTrigger}`}>Lists</TabsTrigger>
-              <TabsTrigger value="watched" className={`${backdropTabsTrigger}`}>Watched</TabsTrigger>
+              <TabsTrigger value="updates" className={`${backdropTabsTrigger}`}>Updates</TabsTrigger>
               <TabsTrigger value="reviews" className={`${backdropTabsTrigger}`}>Reviews</TabsTrigger>
             </TabsList>
             <TabsContent value="lists" className="space-y-4 mt-6">
@@ -112,32 +113,9 @@ export default async function UserProfile({username}: {username: string}) {
                 ))}
               </div>
             </TabsContent>
-            <TabsContent value="watched" className="space-y-4 mt-6">
-              <h2 className="text-xl font-semibold">Recently Watched</h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <Card key={i}>
-                    <div className="relative">
-                      <Image
-                        src={`/placeholder.svg?height=200&width=350`}
-                        alt="Show poster"
-                        width={350}
-                        height={200}
-                        className="w-full h-[200px] object-cover rounded-t-lg"
-                      />
-                      <div className="absolute bottom-2 right-2 bg-background/80 rounded-md px-2 py-1 text-xs font-medium backdrop-blur-sm">
-                        Watched 3d ago
-                      </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold">Show Title {i}</h3>
-                      <div className="flex items-center mt-1 text-sm text-muted-foreground">
-                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
-                        <span>4.{i} / 5</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+            <TabsContent value="updates" className="flex flex-wrap w-64 overflow-hidden">
+              <div className="flex flex-wrap overflow-x-hidden">
+                <YourUpdatesRow userId={userId} />
               </div>
             </TabsContent>
             <TabsContent value="reviews" className="space-y-4 mt-6">

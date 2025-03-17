@@ -2,7 +2,7 @@
 
 import { Show } from "@/app/models/show"
 import { useEffect, useState } from "react";
-import { getShowImage } from "../ClientShowService";
+import { getShowImageURL } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import Link from "next/dist/client/link";
@@ -11,20 +11,15 @@ import { UserDetailsDropdown } from "./UserDetailsDropdown";
 
 export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowDataWithUserInfo | undefined }) => {
 
-    const [showData, setShowData] = useState<Show | undefined>(show as Show | undefined);
-    const [showImageUrl, setShowImageUrl] = useState<string | undefined>(undefined);
+    //const [showData, setShowData] = useState<Show | undefined>(show as Show | undefined);
+    const showData = show;
+    const showImageUrl = showData ? getShowImageURL(showData?.name as string, true) : undefined;
 
-    useEffect(() => {
-        if (showData) return;
-        setShowData(show);
-    }, []);
-
-    useEffect(() => {
-        if (!showData) return;
-        getShowImage(showData.name, true).then((res) => {
-            if (res) setShowImageUrl(res.imageUrl);
-        });
-    }, [showData]);
+    
+    // useEffect(() => {
+    //     if (showData) return;
+    //     setShowData(show);
+    // }, []);
 
     /*
     useEffect(() => {

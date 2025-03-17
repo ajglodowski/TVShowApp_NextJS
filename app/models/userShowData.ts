@@ -23,4 +23,4 @@ export type UserShowDataWithUserInfo = {
 }
 
 export const UserShowDataParams = 'userId, showId, created_at, updated, currentSeason, rating, status (id, name)';
-export const UserShowDataWithUserInfoParams = 'user (id, username), showId, created_at, updated, currentSeason, rating, status (id, name)';
+export const UserShowDataWithUserInfoParams = 'user (id, username, profilePhotoURL), showId, created_at, updated, currentSeason, rating, status (id, name)';

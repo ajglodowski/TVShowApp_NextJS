@@ -22,7 +22,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const imageName = Array.isArray(req.query.imageName) 
         ? req.query.imageName[0] 
         : req.query.imageName as string;
-  console.log(imageName);
   const path = req.query.path as unknown as string;
   const fullPath = `${path}/${imageName}`;
   
@@ -31,8 +30,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Get a reference to the bucket and file
     const bucket = storage.bucket(bucketName);
-    console.log(fullPath)
-    console.log(bucketName)
     const file = bucket.file(fullPath);
     
     // Check if the file exists

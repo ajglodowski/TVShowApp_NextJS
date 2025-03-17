@@ -3,27 +3,27 @@ import sharp from 'sharp';
 
 const colorCache = new Map<string, string>();
 
-async function getAverageColor(imageUrl: string): Promise<string> {
-    if (colorCache.has(imageUrl)) {
-        return colorCache.get(imageUrl) as string;
-    }
+async function getAverageColor(imageUrl: string, imageName: string): Promise<string> {
+    const url = `${imageUrl}&imageName=${imageName}`;
+    console.log("URL: " + url);
     const defaultColor = 'rgb(0,0,0)';
-    const response = await fetch(imageUrl);
+    const response = await fetch(url);
     if (response.status !== 200) return defaultColor;
     const imageBuffer = await response.arrayBuffer();
-    // Use sharp to resize the image to 1x1 and get the RGB values
     const { data } = await sharp(Buffer.from(imageBuffer))
       .resize(1, 1)
       .raw()
       .toBuffer({ resolveWithObject: true });
     const averageColor = `rgb(${data[0]},${data[1]},${data[2]})`;
-    colorCache.set(imageUrl, averageColor);
+    console.log("Average color: " + averageColor);
+    colorCache.set(url, averageColor);
     return averageColor;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     const imageUrl = req.query.imageUrl as unknown as string;
-    const averageColor = await getAverageColor(imageUrl);
+    const imageName = req.query.imageName as unknown as string;
+    const averageColor = await getAverageColor(imageUrl, imageName);
     res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600, stale-while-revalidate=120');
     res.status(200).json({ averageColor });
 }

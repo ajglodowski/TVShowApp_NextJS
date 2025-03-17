@@ -7,7 +7,7 @@ import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
 
 
-export default function ShowSearchShows({ shows, currentUserInfo }: { shows: Show[] | null | undefined, currentUserInfo: UserShowDataWithUserInfo[]| undefined | null}) {
+export default function ShowSearchShows({ shows, currentUserInfo, totalShowsCount }: { shows: Show[] | null | undefined, currentUserInfo: UserShowDataWithUserInfo[]| undefined | null, totalShowsCount: number}) {
 
     if (shows === null) {
         return (
@@ -30,7 +30,7 @@ export default function ShowSearchShows({ shows, currentUserInfo }: { shows: Sho
             <div>
                 <span className='flex my-auto space-x-2'>
                     <h3 className='text-2xl font-bold'>Results:</h3>
-                    <h5 className='my-auto'>{shows.length} shows</h5>
+                    <h5 className='my-auto'>{totalShowsCount} shows</h5>
                 </span>
             </div>
             <ScrollArea className='rounded-md border-2 h-96 overflow-auto'>

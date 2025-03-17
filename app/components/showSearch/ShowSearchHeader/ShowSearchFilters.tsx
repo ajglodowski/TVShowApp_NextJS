@@ -9,11 +9,15 @@ import { useEffect, useState } from "react";
 import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ShowSearchFiltersType, defaultFilters } from "./ShowSearchHeader";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Filter } from "lucide-react";
+import { backdropBackground } from "@/utils/stylingConstants";
 
-export default function ShowSearchFilters({filters, setFilters}: {filters: ShowSearchFiltersType, setFilters: Function}) {
+export default function ShowSearchFilters({ filters, setFilters }: { filters: ShowSearchFiltersType, setFilters: Function }) {
 
     const [showFilters, setShowFilters] = useState<boolean>(false);
-    const [services, setServices] = useState<Service[]|null|undefined>(undefined);
+    const [services, setServices] = useState<Service[] | null | undefined>(undefined);
 
     function fetchServices() {
         getServices().then((services) => {
@@ -36,42 +40,39 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
     }
 
     const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black'
-    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black bg-black text-white'
+    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black text-white'
 
     function ServiceButtons() {
         if (!services) return (<></>);
         const unselectedStatuses = services?.filter((service) => !filters.service.includes(service));
         return (
-            <ScrollArea className="rounded-md overflow-auto">
-                <div className="flex py-1">
-                    {filters.service.map((service) => (
-                        <button
-                            key={service.id}
-                            onClick={() => setFilters({...filters, service: filters.service.filter((s) => s !== service)})}
-                            className={selectedBubbleStyle}
-                        >
-                            {service.name}
-                        </button>
-                    ))}
-                    {unselectedStatuses?.map((service) => (
-                        <button
-                            key={service.id}
-                            onClick={() => setFilters({...filters, service: [...filters.service, service]})}
-                            className={unselectedBubbleStyle}
-                        >
-                            {service.name}
-                        </button>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            <div className="grid grid-cols-2 gap-2">
+                {filters.service.map((service) => (
+                    <button
+                        key={service.id}
+                        onClick={() => setFilters({ ...filters, service: filters.service.filter((s) => s !== service) })}
+                        className={selectedBubbleStyle}
+                    >
+                        {service.name}
+                    </button>
+                ))}
+                {unselectedStatuses?.map((service) => (
+                    <button
+                        key={service.id}
+                        onClick={() => setFilters({ ...filters, service: [...filters.service, service] })}
+                        className={unselectedBubbleStyle}
+                    >
+                        {service.name}
+                    </button>
+                ))}
+            </div>
         )
     }
 
     const ServicesRow = () => {
         return (
             <div className="">
-                <Label>Services</Label>
+                <Label className="font-medium text-sm">Services</Label>
                 <ServiceButtons />
             </div>
         );
@@ -81,12 +82,11 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
         const airdates = Object.values(AirDate);
         const unselectedAirdates = airdates?.filter((airdate) => !filters.airDate.includes(airdate));
         return (
-            <ScrollArea className="rounded-md overflow-auto">
-                <div className="flex py-1">
+                <div className="grid grid-cols-2 gap-2">
                     {filters.airDate.map((airdate) => (
                         <button
                             key={airdate}
-                            onClick={() => setFilters({...filters, airDate: filters.airDate.filter((s) => s !== airdate)})}
+                            onClick={() => setFilters({ ...filters, airDate: filters.airDate.filter((s) => s !== airdate) })}
                             className={selectedBubbleStyle}
                         >
                             {airdate}
@@ -95,15 +95,13 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
                     {unselectedAirdates?.map((airdate) => (
                         <button
                             key={airdate}
-                            onClick={() => setFilters({...filters, airDate: [...filters.airDate, airdate]})}
+                            onClick={() => setFilters({ ...filters, airDate: [...filters.airDate, airdate] })}
                             className={unselectedBubbleStyle}
                         >
                             {airdate}
                         </button>
                     ))}
                 </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
         )
     }
 
@@ -120,12 +118,11 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
         const lengths = Object.values(ShowLength);
         const unselectLengths = lengths?.filter((lengths) => !filters.length.includes(lengths));
         return (
-            <ScrollArea className="rounded-md overflow-auto">
-                <div className="flex py-1">
+                <div className="grid grid-cols-2 gap-2">
                     {filters.length.map((length) => (
                         <button
                             key={length}
-                            onClick={() => setFilters({...filters, length: filters.length.filter((s) => s !== length)})}
+                            onClick={() => setFilters({ ...filters, length: filters.length.filter((s) => s !== length) })}
                             className={selectedBubbleStyle}
                         >
                             {length}{length === ShowLength.NONE ? '' : 'm'}
@@ -134,15 +131,13 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
                     {unselectLengths?.map((length) => (
                         <button
                             key={length}
-                            onClick={() => setFilters({...filters, length: [...filters.length, length]})}
+                            onClick={() => setFilters({ ...filters, length: [...filters.length, length] })}
                             className={unselectedBubbleStyle}
                         >
                             {length}{length === ShowLength.NONE ? '' : 'm'}
                         </button>
                     ))}
                 </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
         )
     }
 
@@ -155,6 +150,75 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
         );
     }
 
+    const FilterRows = () => {
+        return (
+            <div>
+                <div className="flex space-x-4">
+                    <div className="items-center space-x-2 py-2">
+                        <Label>Running?</Label>
+                        <RadioGroup value={String(filters.running)} defaultValue="compact" onValueChange={(value) => setFilters({ ...filters, running: getBoolFromString(value) })}>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="undefined" id="r1" />
+                                <Label htmlFor="r1">Not Applied</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="true" id="r2" />
+                                <Label htmlFor="r2">Yes</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="false" id="r3" />
+                                <Label htmlFor="r3">No</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                    <div className="items-center space-x-2 py-2">
+                        <Label>Limited Series?</Label>
+                        <RadioGroup value={String(filters.limitedSeries)} defaultValue="compact" onValueChange={(value) => setFilters({ ...filters, limitedSeries: getBoolFromString(value) })}>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="undefined" id="l1" />
+                                <Label htmlFor="l1">Not Applied</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="true" id="l2" />
+                                <Label htmlFor="l2">Yes</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="false" id="l3" />
+                                <Label htmlFor="l3">No</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                    <div className="items-center space-x-2 py-2">
+                        <Label>Currently Airing?</Label>
+                        <RadioGroup value={String(filters.currentlyAiring)} defaultValue="compact" onValueChange={(value) => setFilters({ ...filters, currentlyAiring: getBoolFromString(value) })}>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="undefined" id="c1" />
+                                <Label htmlFor="c1">Not Applied</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="true" id="c2" />
+                                <Label htmlFor="c2">Yes</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="false" id="c3" />
+                                <Label htmlFor="c3">No</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                </div>
+                <div>
+                    {services && <ServicesRow />}
+                </div>
+                <div>
+                    <LengthRow />
+                </div>
+                <div>
+                    <AirdatesRow />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="text-white p-4">
             <span className="flex justify-between">
@@ -162,84 +226,41 @@ export default function ShowSearchFilters({filters, setFilters}: {filters: ShowS
             </span>
             <div className="border-2 rounded-md p-1">
                 <div className="flex justify-between">
-                    <div className="items-center space-x-2 py-2">
-                        <Label className="my-auto">Show Filters?</Label>
-                        <Switch
-                            className="my-auto" 
-                            checked={showFilters} 
-                            onCheckedChange={(changed) => setShowFilters(changed)} 
-                        />
-                    </div>
                     <div className="my-auto mx-2">
                         <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
                             onClick={() => setFilters(defaultFilters)}
                         >Reset Filters</button>
                     </div>
                 </div>
-                {showFilters && <div>
-                    <div className="flex space-x-4">
-                        <div className="items-center space-x-2 py-2">
-                            <Label>Running?</Label>
-                            <RadioGroup value={String(filters.running)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, running: getBoolFromString(value)})}>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="undefined" id="r1" />
-                                    <Label htmlFor="r1">Not Applied</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="true" id="r2" />
-                                    <Label htmlFor="r2">Yes</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="false" id="r3" />
-                                    <Label htmlFor="r3">No</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                        <div className="items-center space-x-2 py-2">
-                            <Label>Limited Series?</Label>
-                            <RadioGroup value={String(filters.limitedSeries)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, limitedSeries: getBoolFromString(value)})}>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="undefined" id="l1" />
-                                    <Label htmlFor="l1">Not Applied</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="true" id="l2" />
-                                    <Label htmlFor="l2">Yes</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="false" id="l3" />
-                                    <Label htmlFor="l3">No</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                        <div className="items-center space-x-2 py-2">
-                            <Label>Currently Airing?</Label>
-                            <RadioGroup value={String(filters.currentlyAiring)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, currentlyAiring: getBoolFromString(value)})}>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="undefined" id="c1" />
-                                    <Label htmlFor="c1">Not Applied</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="true" id="c2" />
-                                    <Label htmlFor="c2">Yes</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="false" id="c3" />
-                                    <Label htmlFor="c3">No</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                    </div>
-                    <div>
-                        {services && <ServicesRow />}
-                    </div>
-                    <div>
-                        <LengthRow />
-                    </div>
-                    <div>
-                        <AirdatesRow />
-                    </div>
-                </div>}
+
+                <Sheet>
+                    <SheetTrigger asChild>
+                        <Button variant="outline" className={`${backdropBackground} outline-white hover:bg-white hover:text-black`}>
+                            <Filter className="h-4 w-4 mr-2" />
+                            Filters
+                        </Button>
+                    </SheetTrigger>
+
+                    <SheetContent className={`${backdropBackground} h-full pb-32`}>
+                        <SheetHeader className="my-1">
+                            <SheetTitle className="text-white">
+                                <span className="flex justify-between my-auto items-center">
+                                    Filter Shows
+                                    <div className="my-auto mx-2">
+                                        <Button className={`${backdropBackground} outline outline-white hover:bg-white hover:text-black`}
+                                            onClick={() => setFilters(defaultFilters)}
+                                        >Reset Filters</Button>
+                                    </div>
+                                </span>
+                            </SheetTitle>
+                            <SheetDescription className="text-white/80">Apply filters to find shows that match your preferences.</SheetDescription>
+                        </SheetHeader>
+                        <ScrollArea className="h-full">
+                            <FilterRows />
+                            <ScrollBar orientation="vertical" />
+                        </ScrollArea>
+                    </SheetContent>
+                </Sheet>
             </div>
         </div>
     );

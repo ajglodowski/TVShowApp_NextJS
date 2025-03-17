@@ -6,6 +6,9 @@ import ShowSearchFilters from "./ShowSearchFilters";
 import Divider from "../../Divider";
 import { Input } from "@/components/ui/input";
 import ShowSearchCurrentUserFilters, { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
+import { Search, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { backdropBackground } from "@/utils/stylingConstants";
 
 export type ShowSearchFiltersType = {
     service: Service[];
@@ -46,15 +49,27 @@ export default function ShowSearchHeader(props: ShowSearchHeaderProps) {
                     <h1 className="text-5xl font-bold">Result Filters</h1>
                 </span>
                 <ShowSearchCurrentUserFilters showingCurrentUserInfo={props.showingCurrentUserInfo} filters={props.currentUserFilters} setFilters={props.setCurrentUserFilters} setShowCurrentUserInfo={props.setShowCurrentUserInfo}/>
-                <div className="flex items-center space-x-2 py-2">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2  h-4 w-4" />
                     <Input
-                        className="bg-black"
+                        className={`pl-10 bg-white/5 text-white`}
                         type="text"
                         placeholder="Search through results" 
                         value={props.searchResults} 
                         onChange={(e) => props.setSearchResults(e.target.value)}
                     />
+                    {props.searchResults && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6"
+                            onClick={() => props.setSearchResults('')}
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    )}
                 </div>
+
             </div>
             <Divider />
         </div>

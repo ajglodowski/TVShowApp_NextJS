@@ -5,33 +5,25 @@ import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import { Rating } from "@/app/models/rating";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { getProfilePic } from "@/app/profile/UserServiceClient";
 export const UserDetails = ({ userInfo }: { userInfo: UserShowDataWithUserInfo }) => {
     
-    const [profilePicUrl, setProfilePicUrl] = useState<string | undefined | null>(undefined);
+    const profilePicUrl = getProfilePic(userInfo.user.profilePhotoURL);
 
-    useEffect(() => {
-        getProfilePic(userInfo.user.username).then((res) => {
-            if (res) setProfilePicUrl(res);
-            else setProfilePicUrl(null);
-        });
-    }, []);
-
-    function getRatingIcon(rating: Rating) {
+    const RatingIcon = ({rating}: {rating: Rating}) => {
         switch (rating) {
             case Rating.LOVED:
-                return <LovedIcon color="default" />
+                return <LovedIcon color="default" />;
             case Rating.LIKED:
-                return <LikedIcon color="default" />
+                return <LikedIcon color="default" />;
             case Rating.MEH:
-                return <MehIcon color="default" />
+                return <MehIcon color="default" />;
             case Rating.DISLIKED:
-                return <DislikedIcon color="default" />
+                return <DislikedIcon color="default" />;
             default:
-                return <></>
+                return <></>;
         }
-    }
+    };
 
     const ProfilePic = () => {
         const source = profilePicUrl ? profilePicUrl : "/images/placeholder-user.jpg";
@@ -58,7 +50,7 @@ export const UserDetails = ({ userInfo }: { userInfo: UserShowDataWithUserInfo }
                 <p>Status: {userInfo.status.name}</p>
             </div>
             {userInfo.rating && <div className="my-auto">
-                    {getRatingIcon(userInfo.rating)}
+                    <RatingIcon rating={userInfo.rating} />
                 </div>}
         </span>
     );
