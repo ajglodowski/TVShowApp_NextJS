@@ -57,28 +57,24 @@ export default function ShowSearch(props: ShowSearchProps) {
         doFetch();
     }, [doFetch]);
 
-    // Function to check if show is in user info - memoized
     const inUserInfo = useCallback((showId: string) => {
         if (!currentUserInfo) return false;
         return currentUserInfoMap.has(Number(showId));
     }, [currentUserInfo, currentUserInfoMap]);
 
-    // Function to get user rating - memoized
     const currentUserRating = useCallback((showId: string): Rating|undefined => {
         if (!currentUserInfo) return undefined;
         return currentUserInfoMap.get(Number(showId))?.rating;
     }, [currentUserInfo, currentUserInfoMap]);
 
-    // Function to check if rating is in filters - memoized
     const ratingInFilters = useCallback((rating: Rating|undefined) => {
         if (!rating) return false;
         return currentUserFilters.ratings.includes(rating);
     }, [currentUserFilters.ratings]);
 
-    // Fetch user data when needed
     useEffect(() => {
         const fetchUserData = async () => {
-            if (!showingCurrentUserInfo || !shows || shows.length === 0) return;
+            if (!shows || shows.length === 0) return;
             
             const { data: { user } } = await createClient().auth.getUser();
             const currentUserId = user?.id;
@@ -90,7 +86,7 @@ export default function ShowSearch(props: ShowSearchProps) {
         };
 
         fetchUserData();
-    }, [shows, showingCurrentUserInfo]);
+    }, [shows]);
 
     // Filter shows based on search and user filters
     const filteredShows = useMemo(() => {

@@ -4,7 +4,6 @@ import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -14,9 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
 import { backdropBackground } from "@/utils/stylingConstants";
 
-export default function ShowSearchFilters({ filters, setFilters }: { filters: ShowSearchFiltersType, setFilters: Function }) {
+export default function ShowSearchFilterButton({ filters, setFilters }: { filters: ShowSearchFiltersType, setFilters: Function }) {
 
-    const [showFilters, setShowFilters] = useState<boolean>(false);
     const [services, setServices] = useState<Service[] | null | undefined>(undefined);
 
     function fetchServices() {
@@ -82,26 +80,26 @@ export default function ShowSearchFilters({ filters, setFilters }: { filters: Sh
         const airdates = Object.values(AirDate);
         const unselectedAirdates = airdates?.filter((airdate) => !filters.airDate.includes(airdate));
         return (
-                <div className="grid grid-cols-2 gap-2">
-                    {filters.airDate.map((airdate) => (
-                        <button
-                            key={airdate}
-                            onClick={() => setFilters({ ...filters, airDate: filters.airDate.filter((s) => s !== airdate) })}
-                            className={selectedBubbleStyle}
-                        >
-                            {airdate}
-                        </button>
-                    ))}
-                    {unselectedAirdates?.map((airdate) => (
-                        <button
-                            key={airdate}
-                            onClick={() => setFilters({ ...filters, airDate: [...filters.airDate, airdate] })}
-                            className={unselectedBubbleStyle}
-                        >
-                            {airdate}
-                        </button>
-                    ))}
-                </div>
+            <div className="grid grid-cols-2 gap-2">
+                {filters.airDate.map((airdate) => (
+                    <button
+                        key={airdate}
+                        onClick={() => setFilters({ ...filters, airDate: filters.airDate.filter((s) => s !== airdate) })}
+                        className={selectedBubbleStyle}
+                    >
+                        {airdate}
+                    </button>
+                ))}
+                {unselectedAirdates?.map((airdate) => (
+                    <button
+                        key={airdate}
+                        onClick={() => setFilters({ ...filters, airDate: [...filters.airDate, airdate] })}
+                        className={unselectedBubbleStyle}
+                    >
+                        {airdate}
+                    </button>
+                ))}
+            </div>
         )
     }
 
@@ -118,26 +116,26 @@ export default function ShowSearchFilters({ filters, setFilters }: { filters: Sh
         const lengths = Object.values(ShowLength);
         const unselectLengths = lengths?.filter((lengths) => !filters.length.includes(lengths));
         return (
-                <div className="grid grid-cols-2 gap-2">
-                    {filters.length.map((length) => (
-                        <button
-                            key={length}
-                            onClick={() => setFilters({ ...filters, length: filters.length.filter((s) => s !== length) })}
-                            className={selectedBubbleStyle}
-                        >
-                            {length}{length === ShowLength.NONE ? '' : 'm'}
-                        </button>
-                    ))}
-                    {unselectLengths?.map((length) => (
-                        <button
-                            key={length}
-                            onClick={() => setFilters({ ...filters, length: [...filters.length, length] })}
-                            className={unselectedBubbleStyle}
-                        >
-                            {length}{length === ShowLength.NONE ? '' : 'm'}
-                        </button>
-                    ))}
-                </div>
+            <div className="grid grid-cols-2 gap-2">
+                {filters.length.map((length) => (
+                    <button
+                        key={length}
+                        onClick={() => setFilters({ ...filters, length: filters.length.filter((s) => s !== length) })}
+                        className={selectedBubbleStyle}
+                    >
+                        {length}{length === ShowLength.NONE ? '' : 'm'}
+                    </button>
+                ))}
+                {unselectLengths?.map((length) => (
+                    <button
+                        key={length}
+                        onClick={() => setFilters({ ...filters, length: [...filters.length, length] })}
+                        className={unselectedBubbleStyle}
+                    >
+                        {length}{length === ShowLength.NONE ? '' : 'm'}
+                    </button>
+                ))}
+            </div>
         )
     }
 
@@ -220,49 +218,34 @@ export default function ShowSearchFilters({ filters, setFilters }: { filters: Sh
     }
 
     return (
-        <div className="text-white p-4">
-            <span className="flex justify-between">
-                <h1 className="text-5xl font-bold">Search Filters</h1>
-            </span>
-            <div className="border-2 rounded-md p-1">
-                <div className="flex justify-between">
-                    <div className="my-auto mx-2">
-                        <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
-                            onClick={() => setFilters(defaultFilters)}
-                        >Reset Filters</button>
-                    </div>
-                </div>
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button variant="outline" className={`${backdropBackground} outline-white hover:bg-white hover:text-black`}>
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filters
+                </Button>
+            </SheetTrigger>
 
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button variant="outline" className={`${backdropBackground} outline-white hover:bg-white hover:text-black`}>
-                            <Filter className="h-4 w-4 mr-2" />
-                            Filters
-                        </Button>
-                    </SheetTrigger>
-
-                    <SheetContent className={`${backdropBackground} h-full pb-32`}>
-                        <SheetHeader className="my-1">
-                            <SheetTitle className="text-white">
-                                <span className="flex justify-between my-auto items-center">
-                                    Filter Shows
-                                    <div className="my-auto mx-2">
-                                        <Button className={`${backdropBackground} outline outline-white hover:bg-white hover:text-black`}
-                                            onClick={() => setFilters(defaultFilters)}
-                                        >Reset Filters</Button>
-                                    </div>
-                                </span>
-                            </SheetTitle>
-                            <SheetDescription className="text-white/80">Apply filters to find shows that match your preferences.</SheetDescription>
-                        </SheetHeader>
-                        <ScrollArea className="h-full">
-                            <FilterRows />
-                            <ScrollBar orientation="vertical" />
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
-            </div>
-        </div>
+            <SheetContent className={`${backdropBackground} h-full pb-32`}>
+                <SheetHeader className="my-1">
+                    <SheetTitle className="text-white">
+                        <span className="flex justify-between my-auto items-center">
+                            Filter Shows
+                            <div className="my-auto mx-2">
+                                <Button className={`${backdropBackground} me-2 outline outline-white hover:bg-white hover:text-black`}
+                                    onClick={() => setFilters(defaultFilters)}
+                                >Reset Filters</Button>
+                            </div>
+                        </span>
+                    </SheetTitle>
+                    <SheetDescription className="text-white/80">Apply filters to find shows that match your preferences.</SheetDescription>
+                </SheetHeader>
+                <ScrollArea className="h-full">
+                    <FilterRows />
+                    <ScrollBar orientation="vertical" />
+                </ScrollArea>
+            </SheetContent>
+        </Sheet>
     );
 
 };

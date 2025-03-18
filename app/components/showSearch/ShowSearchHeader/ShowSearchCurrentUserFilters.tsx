@@ -2,11 +2,15 @@
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Rating } from "@/app/models/rating";
 import { Status } from "@/app/models/status";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Trash2, User, X } from "lucide-react";
+import { backdropBackground } from "@/utils/stylingConstants";
 
 export type CurrentUserFilters = {
     addedToWatchlist?: boolean;
@@ -23,13 +27,10 @@ export const defaultCurrentUserFilters: CurrentUserFilters = {
 type ShowSearchCurrentUserFiltersProps = {
     filters: CurrentUserFilters;
     setFilters: Function;
-    showingCurrentUserInfo: boolean; 
-    setShowCurrentUserInfo: Function
 }
 
 export default function ShowSearchCurrentUserFilters(props: ShowSearchCurrentUserFiltersProps) {
     const { filters, setFilters } = props;
-    const { showingCurrentUserInfo, setShowCurrentUserInfo } = props;
 
     function fetchServices() {
         getServices().then((services) => {
@@ -54,90 +55,157 @@ export default function ShowSearchCurrentUserFilters(props: ShowSearchCurrentUse
     const getStringFromBool = (bool: boolean | undefined): string => {
         if (bool === true) return 'true';
         if (bool === false) return 'false';
-        return 'None';
+        return 'undefined';
     }
 
+    const clearUserFilters = () => {
+        setFilters(defaultCurrentUserFilters);
+    };
+
+    const hasActiveUserFilters = () => {
+        return Object.values(filters).some(value => 
+            (Array.isArray(value) && value.length > 0) || 
+            (typeof value === 'boolean' && value)
+        );
+    };
+
     const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black'
-    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black bg-black text-white'
+    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black text-white'
 
     const RatingButtons = () => {
-        const ratings = Object.values(Rating);
-        const unselectedRatings = ratings.filter((r) => !filters.ratings.includes(r));
+        const allRatings = Object.values(Rating);
+        const unselectedRatings = allRatings.filter((rating) => !filters.ratings.includes(rating));
+
         return (
-            <ScrollArea className="rounded-md overflow-auto">
-                <div className="flex py-1">
-                    {filters.ratings.map((r) => (
-                        <button
-                            key={r}
-                            onClick={() => setFilters({...filters, ratings: filters.ratings.filter((s) => s !== r)})}
-                            className={selectedBubbleStyle}
-                        >
-                            {r}
-                        </button>
-                    ))}
-                    {unselectedRatings?.map((r) => (
-                        <button
-                            key={r}
-                            onClick={() => setFilters({...filters, ratings: [...filters.ratings, r]})}
-                            className={unselectedBubbleStyle}
-                        >
-                            {r}
-                        </button>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            <div className="grid grid-cols-2 gap-2">
+                {filters.ratings.map((rating) => (
+                    <button
+                        key={rating}
+                        className={selectedBubbleStyle}
+                        onClick={() => setFilters({ ...filters, ratings: filters.ratings.filter((r) => r !== rating) })}
+                    >
+                        {rating}
+                    </button>
+                ))}
+
+                {unselectedRatings.map((rating) => (
+                    <button
+                        key={rating}
+                        className={unselectedBubbleStyle}
+                        onClick={() => setFilters({ ...filters, ratings: [...filters.ratings, rating] })}
+                    >
+                        {rating}
+                    </button>
+                ))}
+            </div>
         )
     }
 
     const RatingsRow = () => {
         return (
-            <div className="">
-                <Label>Ratings</Label>
+            <div className="p-6 pb-0">
+                <div className="text-lg font-medium">Filter by Rating</div>
                 <RatingButtons />
             </div>
-        );
+        )
+    }
+
+    const StatusButtons = () => {
+        const allStatuses: Status[] = [];
+        const unselectedStatuses = allStatuses.filter((status) => !filters.statuses.includes(status));
+
+        return (
+            <div className="grid grid-cols-2 gap-2">
+                {filters.statuses.map((status) => (
+                    <button
+                        key={status.name}
+                        className={selectedBubbleStyle}
+                        onClick={() => setFilters({ ...filters, statuses: filters.statuses.filter((s) => s !== status) })}
+                    >
+                        {status.name}
+                    </button>
+                ))}
+
+                {unselectedStatuses.map((status) => (
+                    <button
+                        key={status.name}
+                        className={unselectedBubbleStyle}
+                        onClick={() => setFilters({ ...filters, statuses: [...filters.statuses, status] })}
+                    >
+                        {status.name}
+                    </button>
+                ))}
+            </div>
+        )
+    }
+
+    const StatusesRow = () => {
+        return (
+            <div className="p-6 pb-0">
+                <div className="text-lg font-medium">Filter by Status</div>
+                <StatusButtons />
+            </div>
+        )
+    }
+
+    const WatchListRow = () => {
+        return (
+            <div className="p-6 pb-0">
+                <div className="text-lg font-medium">Filter by Watch List</div>
+                <RadioGroup defaultValue={getStringFromBool(filters.addedToWatchlist)}
+                     onValueChange={(value) => {
+                        setFilters({ ...filters, addedToWatchlist: getBoolFromString(value) })
+                     }}
+                >
+                    <div className="flex items-center space-x-2 mt-2">
+                        <RadioGroupItem value="undefined" id="all" />
+                        <Label htmlFor="all">All</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="true" id="inWatchlist" />
+                        <Label htmlFor="inWatchlist">In My Watch List</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="false" id="notInWatchlist" />
+                        <Label htmlFor="notInWatchlist">Not In My Watch List</Label>
+                    </div>
+                </RadioGroup>
+            </div>
+        )
     }
 
     return (
-        <div className="text-white">
-            <div className="">
-                <span className="flex justify-between">
-                    <div className="items-center space-x-2 py-2">
-                        <Label>Show Your Info?</Label>
-                        <Switch 
-                            checked={showingCurrentUserInfo} 
-                            onCheckedChange={(changed) => setShowCurrentUserInfo(changed)} 
-                        />
+        <>
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="outline" className={`${backdropBackground} text-white`}>
+                        <User className="mr-2 h-4 w-4" />
+                        Your Filters
+                    </Button>
+                </SheetTrigger>
+                <SheetContent className={`${backdropBackground} text-white`}>
+                    <SheetHeader>
+                        <span className="flex justify-between items-center">
+                            <SheetTitle className="text-white">My Show Filters</SheetTitle>
+                            <Button 
+                                    variant="outline" 
+                                    className={`${backdropBackground} text-white me-2 hover:bg-white hover:text-black`}
+                                    onClick={clearUserFilters}
+                                >
+                                    Reset Filters
+                            </Button>
+                        </span>
+                        <SheetDescription className="text-white/70">
+                            Filter shows based on your personal data.
+                        </SheetDescription>
+                    </SheetHeader>
+                    <div className="grid gap-4 py-4">
+                        <RatingsRow />
+                        <StatusesRow />
+                        <WatchListRow />
                     </div>
-                    <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
-                        onClick={() => setFilters(defaultCurrentUserFilters)}
-                    >Reset Filters</button>
-                </span>
-                {showingCurrentUserInfo && <div>
-                    <div className="flex space-x-4">
-                        <div className="items-center space-x-2 py-2">
-                            <Label>Added to your Watchlist?</Label>
-                            <RadioGroup value={String(filters.addedToWatchlist)} defaultValue="compact" onValueChange={(value) => setFilters({...filters, addedToWatchlist: getBoolFromString(value)})}>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="undefined" id="r1" />
-                                    <Label htmlFor="r1">Not Applied</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="true" id="r2" />
-                                    <Label htmlFor="r2">Yes</Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="false" id="r3" />
-                                    <Label htmlFor="r3">No</Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                    </div>
-                    <RatingsRow />
-                </div>}
-            </div>
-        </div>
-    );
-
-};
+                </SheetContent>
+            </Sheet>
+        </>
+    )
+}
