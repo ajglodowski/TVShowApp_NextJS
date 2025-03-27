@@ -11,40 +11,29 @@ import { UserDetailsDropdown } from "./UserDetailsDropdown";
 
 export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowDataWithUserInfo | undefined }) => {
 
-    //const [showData, setShowData] = useState<Show | undefined>(show as Show | undefined);
     const showData = show;
     const showImageUrl = showData ? getShowImageURL(showData?.name as string, true) : undefined;
-
-    
-    // useEffect(() => {
-    //     if (showData) return;
-    //     setShowData(show);
-    // }, []);
-
-    /*
-    useEffect(() => {
-        console.log(currentUserInfo);
-    }, [currentUserInfo])
-    
-    console.log(currentUserInfo);
-    */
 
     if (!showData) return (<div>Loading Show</div>);
     return (
         <Link href={`/show/${showData.id}`}>
-            <div className="flex flex-wrap md:flex-nowrap justify-between">
-                <div className="flex space-x-2 md:w-3/4 w-full my-auto justify-center md:justify-start">
-                    <div className="w-12 h-12">
-                        {showImageUrl &&
-                            <Image src={showImageUrl} alt={showData.name} width="0"
-                            height="0" sizes="100vw" className="w-12 h-12 rounded-md" />
-                        }
-                        {!showImageUrl && <Skeleton className="w-12 h-12 rounded-md" />}
+            <div className="flex flex-nowrap justify-between">
+                <div className="relative overflow-hidden flex space-x-2 md:w-3/4 w-full my-auto justify-start">
+                    <div className="relative w-16 h-16 my-auto">
+                        <div className="absolute inset-0">
+                            {showImageUrl &&
+                                <Image src={showImageUrl} 
+                                alt={showData.name} 
+                                fill 
+                                className="rounded-md object-cover" />
+                            }
+                            {!showImageUrl && <Skeleton className="w-12 h-12 rounded-md" />}
+                        </div>
                     </div>
-                    <div>
-                        <h2 className=" font-bold text-xl">{showData.name}</h2>
-                        <span className="flex space-x-2 items-center">
-                            <p>{showData.length}m</p>
+                    <div className="flex flex-col justify-center">
+                        <h2 className="font-bold text-md">{showData.name}</h2>
+                        <span className="flex md:flex-row flex-col md:space-x-2 md:items-center items-start text-xs text-white/80">
+                            <p className="text-sm">{showData.service.name}</p>
                             {showData.limitedSeries && <p className="">Limited</p>}
                             <p className="">{showData.totalSeasons} Seasons</p>
                         </span>

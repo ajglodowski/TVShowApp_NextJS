@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Link from 'next/link';
 import AuthButton from '@/supabase_components/AuthButton';
@@ -8,7 +7,7 @@ function Navbar() {
     const textButtonStyle = ' my-auto text-white p-1 outline rounded-md m-1 hover:text-black hover:bg-white hover:shadow-md transition duration-300 ease-in-out';
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-neutral-800 bg-neutral-800/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-800/60">
+        <header className="sticky top-0 z-50 w-full border-b border-neutral-800 bg-neutral-800/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-800/60 overflow-x-hidden">
             <div className="container flex h-14 items-center">
                 <div className="flex w-64 text-center">
                     <Link href="/" className="mr-6 flex items-center space-x-2">

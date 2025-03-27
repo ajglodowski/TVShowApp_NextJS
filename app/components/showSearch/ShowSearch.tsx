@@ -30,7 +30,7 @@ export default function ShowSearch(props: ShowSearchProps) {
     const {searchType, userId} = props;
     const [filters, setFilters] = useState<ShowSearchFiltersType>(defaultFilters);
     const [shows, setShows] = useState<Show[]| undefined | null>(undefined);
-    const [showingCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(false);
+    const [showingCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(true);
     const [currentUserInfo, setCurrentUserInfo] = useState<UserShowDataWithUserInfo[]| undefined | null>(undefined);
     const [resultsSearch, setResultsSearch] = useState<string | undefined>(undefined);
     const [currentUserFilters, setCurrentUserFilters] = useState<CurrentUserFilters>(defaultCurrentUserFilters);
@@ -144,7 +144,7 @@ export default function ShowSearch(props: ShowSearchProps) {
     const currentUserInfoDetails = showingCurrentUserInfo ? currentUserInfo : undefined;
 
     return (
-        <div className='w-full'>
+        <div className='w-full overflow-x-hidden'>
             <ShowSearchHeader 
                 filters={filters} 
                 setFilters={setFilters} 
@@ -155,7 +155,7 @@ export default function ShowSearch(props: ShowSearchProps) {
                 currentUserFilters={currentUserFilters} 
                 setCurrentUserFilters={setCurrentUserFilters}
             />
-            <div className=''>
+            <div className='w-full overflow-x-hidden'>
                 
                 <ShowSearchShows 
                     shows={paginatedData}
