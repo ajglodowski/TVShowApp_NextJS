@@ -32,7 +32,7 @@ export default function ShowSearch(props: ShowSearchProps) {
     const [shows, setShows] = useState<Show[]| undefined | null>(undefined);
     const [showingCurrentUserInfo, setShowCurrentUserInfo] = useState<boolean>(true);
     const [currentUserInfo, setCurrentUserInfo] = useState<UserShowDataWithUserInfo[]| undefined | null>(undefined);
-    const [resultsSearch, setResultsSearch] = useState<string | undefined>(undefined);
+    const [resultsSearch, setResultsSearch] = useState<string>("");
     const [currentUserFilters, setCurrentUserFilters] = useState<CurrentUserFilters>(defaultCurrentUserFilters);
     
     // Pagination state
@@ -90,7 +90,7 @@ export default function ShowSearch(props: ShowSearchProps) {
 
     // Filter shows based on search and user filters
     const filteredShows = useMemo(() => {
-        if ((!!!resultsSearch || resultsSearch?.length === 0) && 
+        if ((resultsSearch.length === 0) && 
             JSON.stringify(currentUserFilters) === JSON.stringify(defaultCurrentUserFilters)) {
             return undefined;
         }
@@ -109,7 +109,7 @@ export default function ShowSearch(props: ShowSearchProps) {
             }
         }
         
-        if (resultsSearch && resultsSearch.length > 0) {
+        if (resultsSearch.length > 0) {
             filtered = filtered.filter((show) => 
                 show.name.toLowerCase().includes(resultsSearch.toLowerCase()));
         }
