@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
 import { apiRoute, clientBaseURL } from "@/app/envConfig";
+import { cache } from "react";
 
 export async function getShow( showId: string ): Promise<Show | null> {
     const supabase = createClient();
@@ -43,6 +44,18 @@ export function getShowImageURL(showName: string, tile: boolean): string {
     const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
     return showNameURL;
 }
+
+export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
+    const apiURL = `${apiRoute}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
+    const transformedName = encodeURIComponent(showName);
+    const dimensions = tile ? "200x200" : "640x640";
+    const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
+
+    const response = await fetch(showNameURL);
+    if (response.status !== 200) return null;
+    const data = await response.json();
+    return data.url;
+});
 
 export async function fetchAverageColor(imageUrl: string): Promise<string> {
     const apiURL = `${apiRoute}/api/averageColor?imageUrl=${clientBaseURL}${imageUrl}`;

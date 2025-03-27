@@ -2,7 +2,7 @@
 
 import { Show } from "@/app/models/show"
 import { useEffect, useState } from "react";
-import { getShowImageURL } from "../ClientShowService";
+import { getPresignedShowImageURL, getShowImageURL } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import Link from "next/dist/client/link";
@@ -12,8 +12,17 @@ import { UserDetailsDropdown } from "./UserDetailsDropdown";
 export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowDataWithUserInfo | undefined }) => {
 
     const showData = show;
-    const showImageUrl = showData ? getShowImageURL(showData?.name as string, true) : undefined;
-
+    //const showImageUrl = showData ? getShowImageURL(showData?.name as string, true) : undefined;
+    const [showImageUrl, setShowImageUrl] = useState<string | null>(null);
+    useEffect(() => {
+        const fetchImageUrl = async () => {
+            if (!showData) return;
+            const url = await getPresignedShowImageURL(showData.name, true);
+            setShowImageUrl(url);   
+        };
+        fetchImageUrl();
+    }, [showData]);
+    
     if (!showData) return (<div>Loading Show</div>);
     return (
         <Link href={`/show/${showData.id}`}>

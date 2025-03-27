@@ -7,8 +7,12 @@ async function getAverageColor(imageUrl: string, imageName: string): Promise<str
     const url = `${imageUrl}&imageName=${imageName}`;
     console.log("URL: " + url);
     const defaultColor = 'rgb(0,0,0)';
+    console.log("Fetching image from: " + url);
     const response = await fetch(url);
-    if (response.status !== 200) return defaultColor;
+    if (response.status !== 200) {
+      console.log("Error: " + response.status);
+      return defaultColor;
+    }
     const imageBuffer = await response.arrayBuffer();
     const { data } = await sharp(Buffer.from(imageBuffer))
       .resize(1, 1)

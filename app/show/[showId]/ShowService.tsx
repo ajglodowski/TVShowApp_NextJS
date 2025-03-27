@@ -55,14 +55,25 @@ export const getAllTags = cache(async function (): Promise<ShowTag[] | null> {
   return tags;
 });
 
-
-export function getShowImageURL(showName: string, tile: boolean): string {
+export const getShowImageURL = cache((showName: string, tile: boolean): string => {
   const apiURL = `${serverBaseURL}/api/imageFetcher?path=showImages/resizedImages&imageName=`;
   const transformedName = encodeURIComponent(showName);
   const dimensions = tile ? "200x200" : "640x640";
   const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
   return showNameURL;
-}
+});
+
+export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
+  const apiURL = `${serverBaseURL}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
+  const transformedName = encodeURIComponent(showName);
+  const dimensions = tile ? "200x200" : "640x640";
+  const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
+
+  const response = await fetch(showNameURL);
+  if (response.status !== 200) return null;
+  const data = await response.json();
+  return data.url;
+});
 
 export const fetchAverageColor = cache(async function (imageUrl: string):  Promise<string> {
   const apiURL = `${serverBaseURL}/api/averageColor?imageUrl=${imageUrl}`;

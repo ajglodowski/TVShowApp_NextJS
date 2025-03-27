@@ -1,7 +1,7 @@
 import { Show } from "@/app/models/show";
 import Image from "next/image";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
-import { getShowImageURL } from "@/app/show/[showId]/ShowService";
+import { getPresignedShowImageURL, getShowImageURL } from "@/app/show/[showId]/ShowService";
 import { Clock, LucideIcon } from 'lucide-react';
 
 export type ShowTileContentProps = {
@@ -17,7 +17,7 @@ export type ShowTileBadgeProps = {
 
 export default async function ShowTileContent({showData, badges}: ShowTileContentProps) {
     const show = showData;
-    const showImageUrl = getShowImageURL(show.name, true);
+    const showImageUrl = await getPresignedShowImageURL(show.name, true);
 
     const ShowImage = () => {
         if (!showImageUrl) return <LoadingImageSkeleton />;

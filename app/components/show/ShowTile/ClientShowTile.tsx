@@ -4,7 +4,7 @@ import { ShowImage } from "@/app/models/showImage";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { fetchAverageColor, getShow, getShowImage, getShowImageURL } from "../ClientShowService";
+import { fetchAverageColor, getPresignedShowImageURL, getShow, getShowImage, getShowImageURL } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock } from "lucide-react";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
@@ -25,16 +25,20 @@ export default function ClientShowTile({ showId }: { showId: string }) {
     },[]);
 
     useEffect(() => {
-        if (!show) return;
-        const imageUrl = getShowImageURL(show.name, true);
-        setShowImageInfo({imageUrl,averageColor: "rgb(0,0,0)"} as ShowImage);
-        /*
-        fetchAverageColor(imageUrl).then((averageColor) => {
-            if (!averageColor) setShowImageInfo(null);
-            else setShowImageInfo({imageUrl,averageColor} as ShowImage);
-        });
-        */
-    },[showData]);
+        const fetchImageUrl = async () => {
+            if (!show) return;
+            const imageUrl = await getPresignedShowImageURL(show.name, true);
+            setShowImageInfo({ imageUrl, averageColor: "rgb(0,0,0)" } as ShowImage);
+            /*
+            fetchAverageColor(imageUrl).then((averageColor) => {
+                if (!averageColor) setShowImageInfo(null);
+                else setShowImageInfo({ imageUrl, averageColor } as ShowImage);
+            });
+            */
+        };
+
+        fetchImageUrl();
+    }, [showData]);
     
     const ShowInfo = () => {
 

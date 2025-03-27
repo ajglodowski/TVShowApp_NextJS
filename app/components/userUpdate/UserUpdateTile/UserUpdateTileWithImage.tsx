@@ -1,4 +1,4 @@
-import { fetchAverageColor, getShowImage, getShowImageURL } from "@/app/show/[showId]/ShowService";
+import { fetchAverageColor, getPresignedShowImageURL, getShowImage, getShowImageURL } from "@/app/show/[showId]/ShowService";
 import Image from "next/image";
 import { Suspense } from "react";
 import { UserUpdateTileDTO } from "../UserUpdateService";
@@ -11,7 +11,7 @@ export default async function UserUpdateTileWithImage(props: UserUpdateTileProps
 
     const updateData = props.updateDto;
     const showName = updateData.showName
-    const showImageUrl = getShowImageURL(showName, true);
+    const showImageUrl = await getPresignedShowImageURL(showName, true);
 
     const ShowImage = () => {
         if (!showImageUrl) return <LoadingImageSkeleton />;
