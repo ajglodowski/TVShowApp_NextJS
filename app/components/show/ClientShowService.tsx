@@ -45,15 +45,39 @@ export function getShowImageURL(showName: string, tile: boolean): string {
     return showNameURL;
 }
 
+export const getImageURLFromCache = (fullPath: string): string | null => {
+    const sessionStorageValue = JSON.parse(sessionStorage.getItem(fullPath) || "{}");
+    if (sessionStorageValue.timestamp > Date.now() - 60 * 10) { // 10 minutes
+        return sessionStorageValue.url;
+    } else {
+        sessionStorage.removeItem(fullPath);
+        return null;
+    }
+}
+
+export const setImageURLInCache = (fullPath: string, url: string): void => {
+    const sessionStorageItem = JSON.stringify({ url, timestamp: Date.now() });
+    sessionStorage.setItem(fullPath, sessionStorageItem);
+}
+
 export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
     const apiURL = `${apiRoute}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
     const transformedName = encodeURIComponent(showName);
     const dimensions = tile ? "200x200" : "640x640";
     const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
 
-    const response = await fetch(showNameURL);
+    if (getImageURLFromCache(showNameURL)) {
+        return getImageURLFromCache(showNameURL);
+    }
+
+    const response = await fetch(showNameURL, {
+        next: {
+            revalidate: 60 * 5 // 5 minutes
+        }
+    });
     if (response.status !== 200) return null;
     const data = await response.json();
+    setImageURLInCache(showNameURL, data.url);
     return data.url;
 });
 

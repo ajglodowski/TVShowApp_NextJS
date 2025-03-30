@@ -20,10 +20,27 @@ const getGCPCredentials = () => {
 const storage = new Storage(getGCPCredentials());
 // const storage = new Storage({
 //     projectId: "tv-show-app-602d7",
-//     keyFilename:"gcpCreds.json"
+//     keyFilename: "gcpCreds.json"
 // });
 
+
+type ImageUrlCacheEntry = {
+    url: string;
+    timestamp: number;
+}
+
+const urlCache = new Map<string, ImageUrlCacheEntry>();
+
 export async function generatePresignedUrl(fileName: string) {
+    const cachedEntry = urlCache.get(fileName);
+    if (cachedEntry) {
+        if (cachedEntry.timestamp > Date.now() - 60 * 60 * 1000) {
+            return cachedEntry.url;
+        } else {
+            urlCache.delete(fileName);
+        }
+    }
+
   const bucketName = process.env.GCP_BUCKET_NAME || "";
   const bucket = storage.bucket(bucketName);
   const file = bucket.file(fileName);
@@ -34,6 +51,7 @@ export async function generatePresignedUrl(fileName: string) {
     expires: Date.now() + 60 * 60 * 1000, // 1 hour
   });
 
+  urlCache.set(fileName, { url, timestamp: Date.now() });
   return url;
 }
 
@@ -45,6 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const path = req.query.path as unknown as string;
     const fullPath = `${path}/${imageName}`;
     
+    res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600, stale-while-revalidate=120');
     const presignedUrl = await generatePresignedUrl(fullPath);
     res.status(200).json({ url: presignedUrl });
   } catch (error) {

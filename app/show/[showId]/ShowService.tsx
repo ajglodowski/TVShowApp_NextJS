@@ -12,6 +12,7 @@ import { StatusCount } from "@/app/models/statusCount";
 import { Status } from "@/app/models/status";
 import { serverBaseURL } from '@/app/envConfig';
 import { cache } from 'react';
+import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 
 export const getShow = cache(async (showId: string): Promise<Show | null> => {
   const supabase = await createClient();
@@ -25,7 +26,6 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
 });
 
 export async function getTags(showId: string): Promise<ShowTag[] | null> {
-  
   const supabase = await createClient();
   const { data: tagData } = await supabase.from("ShowTagRelationship").select('tag:tagId (id, name, created_at)').match({showId: showId});
   
@@ -43,7 +43,7 @@ export async function getTags(showId: string): Promise<ShowTag[] | null> {
   return tags;
 }
 
-export const getAllTags = cache(async function (): Promise<ShowTag[] | null> {
+export const getAllTags = async function (): Promise<ShowTag[] | null> {
   const supabase = await createClient();
   const { data: tagData } = await supabase
     .from('showTag')
@@ -53,7 +53,7 @@ export const getAllTags = cache(async function (): Promise<ShowTag[] | null> {
 
   const tags = tagData as ShowTag[];
   return tags;
-});
+};
 
 export const getShowImageURL = cache((showName: string, tile: boolean): string => {
   const apiURL = `${serverBaseURL}/api/imageFetcher?path=showImages/resizedImages&imageName=`;
@@ -64,12 +64,22 @@ export const getShowImageURL = cache((showName: string, tile: boolean): string =
 });
 
 export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
+  "use cache";
+  cacheLife({
+    stale: 300, // 5 minutes
+    revalidate: 300, // 5 minutes
+    expire: 600, // 10 minutes
+  });
   const apiURL = `${serverBaseURL}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
   const transformedName = encodeURIComponent(showName);
   const dimensions = tile ? "200x200" : "640x640";
   const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
 
-  const response = await fetch(showNameURL);
+  const response = await fetch(showNameURL, {
+    next: {
+      revalidate: 60 * 5 // 5 minutes
+    }
+  });
   if (response.status !== 200) return null;
   const data = await response.json();
   return data.url;

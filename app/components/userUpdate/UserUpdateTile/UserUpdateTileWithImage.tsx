@@ -11,7 +11,10 @@ export default async function UserUpdateTileWithImage(props: UserUpdateTileProps
 
     const updateData = props.updateDto;
     const showName = updateData.showName
-    const showImageUrl = await getPresignedShowImageURL(showName, true);
+    let showImageUrl = null;
+    if (updateData.showPictureUrl) {
+        showImageUrl = await getPresignedShowImageURL(updateData.showPictureUrl, true);
+    }
 
     const ShowImage = () => {
         if (!showImageUrl) return <LoadingImageSkeleton />;

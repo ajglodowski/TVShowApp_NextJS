@@ -1,6 +1,6 @@
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { Service } from "@/app/models/service";
 import { UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
 import { Status } from "@/app/models/status";
@@ -8,8 +8,8 @@ import { Rating } from "@/app/models/rating";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { UserBasicInfo } from "@/app/models/user";
 
-export async function fetchShows(filters: ShowSearchFiltersType, searchType: ShowSearchType, otherUserId?: string): Promise<Show[] | null> {
-    const supabase = createClient();
+export async function fetchShows(filters: ShowSearchFiltersType, searchType: ShowSearchType, otherUserId?: string, currentUserId?: string): Promise<Show[] | null> {
+    const supabase = await createClient();
     let queryBase = supabase.from("show").select(ShowPropertiesWithService);
 
     if (filters.currentlyAiring !== undefined) queryBase = queryBase.eq('currentlyAiring', filters.currentlyAiring);
@@ -21,8 +21,6 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
 
     //queryBase = queryBase.limit(100);
     if (searchType === ShowSearchType.WATCHLIST) {
-        const { data: { user }, } = await supabase.auth.getUser();
-        const currentUserId = user?.id;
         if (!currentUserId) return null;
         const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
         if (!showIds) return null;
@@ -35,8 +33,6 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
         queryBase = queryBase.in('id', showIds);
     }
     if (searchType === ShowSearchType.DISCOVER_NEW) {
-        const { data: { user }, } = await supabase.auth.getUser();
-        const currentUserId = user?.id;
         if (!currentUserId) return null;
         const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
         if (!showIds) return null;
@@ -55,7 +51,7 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
     
     if (!showData) return null;
 
-    const shows: Show[] = showData.map((show) => {
+    const shows: Show[] = showData.map((show: any) => {
         return {
             ...show,
             service: show.service as unknown as Service
@@ -66,7 +62,7 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
 }
 
 export async function getServices(): Promise<Service[] | null> {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: serviceData } = await supabase.from("service").select();
     if (!serviceData) return null;
     const services: Service[] = serviceData;
@@ -77,8 +73,8 @@ export async function getUserShowData({showIds, userId}: {showIds: string[], use
 
     if (!userId) return null;
   
-    const supabase = createClient();
-    let queryBase  = supabase.from("UserShowDetails").select(UserShowDataWithUserInfoParams)
+    const supabase = await createClient();
+    let queryBase = supabase.from("UserShowDetails").select(UserShowDataWithUserInfoParams)
         .match({userId: userId});
 
     if (showIds.length > 0) queryBase = queryBase.in('showId', showIds);

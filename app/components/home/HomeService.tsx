@@ -64,7 +64,7 @@ function formatUpdate(updateData: any): UserUpdateTileDTO {
         status: undefined,
     } as unknown as UserUpdate;
 
-    const update = {userUpdate: formatted, showName: showInfo.name} as unknown as UserUpdateTileDTO;
+    const update = {userUpdate: formatted, showName: showInfo.name, showPictureUrl: showInfo.pictureUrl} as unknown as UserUpdateTileDTO;
     return update;
 }
 

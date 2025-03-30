@@ -15,10 +15,11 @@ export type Show = {
     totalSeasons: number;
     airdate: AirDate | undefined;
     releaseDate: Date | undefined;
+    pictureUrl: string | null;
 }
 
 export const ShowProperties = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service, totalSeasons, airdate, releaseDate';
-export const ShowPropertiesWithService = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service (id, name), totalSeasons, airdate, releaseDate';
+export const ShowPropertiesWithService = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service (id, name), totalSeasons, airdate, releaseDate, pictureUrl';
 
 export const NewShow: Show = {
     id: 0,
@@ -32,5 +33,6 @@ export const NewShow: Show = {
     service: OtherService,
     totalSeasons: 1,
     airdate: undefined,
-    releaseDate: undefined
+    releaseDate: undefined,
+    pictureUrl: null
 }

@@ -5,6 +5,7 @@ import { Status } from "@/app/models/status";
 export type UserUpdateTileDTO = {
     userUpdate: UserUpdate,
     showName: string,
+    showPictureUrl: string | null,
 }
 
 export async function getUserUpdate(updateId: number): Promise<UserUpdateTileDTO|null> { // TODO
@@ -14,7 +15,7 @@ export async function getUserUpdate(updateId: number): Promise<UserUpdateTileDTO
     const { data: updateData } = await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({id: updateId}).single();
 
     if (!updateData) return null;
-    const showInfo = updateData.show as unknown as {id: number, name: string};
+    const showInfo = updateData.show as unknown as {id: number, name: string, pictureUrl: string | null};
 
     const formatted = {
         ...updateData,
@@ -24,7 +25,7 @@ export async function getUserUpdate(updateId: number): Promise<UserUpdateTileDTO
         status: undefined,
     } as unknown as UserUpdate;
 
-    const update = {userUpdate: formatted, showName: showInfo.name};
+    const update = {userUpdate: formatted, showName: showInfo.name, showPictureUrl: showInfo.pictureUrl};
    
     return update as unknown as UserUpdateTileDTO;
 }

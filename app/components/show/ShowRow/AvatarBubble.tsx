@@ -1,15 +1,15 @@
 import { Rating } from "@/app/models/rating";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
-import { getProfilePic } from "@/app/profile/UserServiceClient";
 import { LikedIcon } from "@/public/icons/LikedIcon";
 import { LovedIcon } from "@/public/icons/LovedIcon";
 import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import Image from "next/image";
 import { backdropBackground } from "@/utils/stylingConstants";
-export const AvatarBubble = ({ userInfo }: { userInfo: UserShowDataWithUserInfo }) => {
+import { getPresignedUserImageURL } from "@/app/profile/UserService";
+export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
 
-    const profilePicUrl = getProfilePic(userInfo.user.profilePhotoURL);
+    const profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
     const source = profilePicUrl ? profilePicUrl : "/images/placeholder-user.jpg";
 
     const RatingIcon = ({rating}: {rating: Rating}) => {

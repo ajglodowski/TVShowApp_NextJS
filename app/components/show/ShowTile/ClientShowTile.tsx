@@ -27,8 +27,10 @@ export default function ClientShowTile({ showId }: { showId: string }) {
     useEffect(() => {
         const fetchImageUrl = async () => {
             if (!show) return;
-            const imageUrl = await getPresignedShowImageURL(show.name, true);
-            setShowImageInfo({ imageUrl, averageColor: "rgb(0,0,0)" } as ShowImage);
+            if (show.pictureUrl) {
+                const imageUrl = await getPresignedShowImageURL(show.pictureUrl, true);
+                setShowImageInfo({ imageUrl, averageColor: "rgb(0,0,0)" } as ShowImage);
+            }
             /*
             fetchAverageColor(imageUrl).then((averageColor) => {
                 if (!averageColor) setShowImageInfo(null);

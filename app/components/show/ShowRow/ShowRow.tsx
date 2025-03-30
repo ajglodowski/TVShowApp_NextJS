@@ -1,29 +1,21 @@
-'use client'
-
 import { Show } from "@/app/models/show"
-import { useEffect, useState } from "react";
-import { getPresignedShowImageURL, getShowImageURL } from "../ClientShowService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import Link from "next/dist/client/link";
 import Image from "next/image";
 import { UserDetailsDropdown } from "./UserDetailsDropdown";
-
-export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowDataWithUserInfo | undefined }) => {
+import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
+import { Suspense } from "react";
+import ShowRowSkeleton from "./ShowRowSkeleton";
+export default async function ShowRow({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowDataWithUserInfo | undefined }) {
 
     const showData = show;
-    //const showImageUrl = showData ? getShowImageURL(showData?.name as string, true) : undefined;
-    const [showImageUrl, setShowImageUrl] = useState<string | null>(null);
-    useEffect(() => {
-        const fetchImageUrl = async () => {
-            if (!showData) return;
-            const url = await getPresignedShowImageURL(showData.name, true);
-            setShowImageUrl(url);   
-        };
-        fetchImageUrl();
-    }, [showData]);
+    if (!showData) return <ShowRowSkeleton />;
+    let showImageUrl = null;
+    if (showData.pictureUrl) {
+        showImageUrl =  await getPresignedShowImageURL(showData?.name as string, true);
+    }
     
-    if (!showData) return (<div>Loading Show</div>);
     return (
         <Link href={`/show/${showData.id}`}>
             <div className="flex flex-nowrap justify-between">
@@ -48,7 +40,9 @@ export const ShowRow = ({ show, currentUserInfo }: { show: Show | undefined, cur
                         </span>
                     </div>
                 </div>
-                {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo, currentUserInfo]}/>}
+                <Suspense fallback={<Skeleton className="w-16 h-16 rounded-md" />}>
+                    {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo, currentUserInfo]}/>}
+                </Suspense>
             </div>
         </Link>
     );

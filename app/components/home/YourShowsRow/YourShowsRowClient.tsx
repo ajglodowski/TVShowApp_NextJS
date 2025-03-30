@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { X } from "lucide-react"
+import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton"
 
 export default function YourShowsRowClient({ userId, allStatuses }: { userId: string; allStatuses: Status[] | null }) {
   const [selectedStatus, setSelectedStatus] = useState<Status[]>([])
@@ -35,10 +36,27 @@ export default function YourShowsRowClient({ userId, allStatuses }: { userId: st
     })
   }, [selectedStatus, userId])
 
+  const LoadingShows = () => {
+    return (
+      <div className="flex items-center justify-center mx-2">
+        <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+          <div className="flex">
+          {Array.from({ length: 10 }).map((_, index) => (
+            <div key={index} className="m-2">
+              <ShowTileSkeleton />
+            </div>
+          ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </div>
+    )
+  }
+
   function ShowRow() {
-    if (displayedShows === undefined) return <div>Loading your shows</div>
-    if (displayedShows === null) return <div>Error Loading your shows</div>
-    if (displayedShows.length === 0) return <div>No Shows match this criteria</div>
+    if (displayedShows === undefined) return <LoadingShows />;
+    if (displayedShows === null) return <div>Error Loading your shows</div>;
+    if (displayedShows.length === 0) return <div>No Shows match this criteria</div>;
     return (
       <div className="flex items-center justify-center mx-2">
         <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">

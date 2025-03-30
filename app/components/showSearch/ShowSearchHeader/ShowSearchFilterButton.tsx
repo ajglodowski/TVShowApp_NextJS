@@ -4,64 +4,157 @@ import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useEffect, useState } from "react";
-import { getServices } from "../ShowSearchService";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ShowSearchFiltersType, defaultFilters } from "./ShowSearchHeader";
+import { ShowSearchFiltersType } from "./ShowSearchHeader";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
 import { backdropBackground } from "@/utils/stylingConstants";
+import { useRouter } from "next/navigation";
+import { use, useOptimistic, useTransition } from "react";
 
-export default function ShowSearchFilterButton({ filters, setFilters }: { filters: ShowSearchFiltersType, setFilters: Function }) {
+type ShowSearchFilterButtonProps = {
+    filters: ShowSearchFiltersType;
+    pathname: string;
+    getServicesFunction: Promise<Service[] | null>;
+}
 
-    const [services, setServices] = useState<Service[] | null | undefined>(undefined);
+export default function ShowSearchFilterButton({ 
+    filters, 
+    pathname, 
+    getServicesFunction
+}: ShowSearchFilterButtonProps) {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+    const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
+        filters,
+        (state, update: Partial<ShowSearchFiltersType>) => ({
+            ...state,
+            ...update
+        })
+    );
 
-    function fetchServices() {
-        getServices().then((services) => {
-            setServices(services);
+    const createFilterURL = (updatedFilters: ShowSearchFiltersType) => {
+        const url = new URL(pathname, "http://localhost");
+        
+        if (updatedFilters.service.length > 0) {
+            url.searchParams.set('service', updatedFilters.service.map(s => s.id).join(','));
+        }
+        
+        if (updatedFilters.length.length > 0) {
+            url.searchParams.set('length', updatedFilters.length.join(','));
+        }
+        
+        if (updatedFilters.airDate.length > 0) {
+            url.searchParams.set('airDate', updatedFilters.airDate.join(','));
+        }
+        
+        if (updatedFilters.limitedSeries !== undefined) {
+            url.searchParams.set('limitedSeries', updatedFilters.limitedSeries.toString());
+        }
+        
+        if (updatedFilters.running !== undefined) {
+            url.searchParams.set('running', updatedFilters.running.toString());
+        }
+        
+        if (updatedFilters.currentlyAiring !== undefined) {
+            url.searchParams.set('currentlyAiring', updatedFilters.currentlyAiring.toString());
+        }
+        
+        return pathname + url.search;
+    };
+
+    const handleAddService = (service: Service) => {
+        const newServices = [...optimisticFilters.service, service];
+        const updatedFilters = { ...optimisticFilters, service: newServices };
+        startTransition(() => {
+            updateOptimisticFilters({ service: newServices });
+            router.push(createFilterURL(updatedFilters));
         });
-    }
+    };
 
-    function fetchFilterData() {
-        fetchServices();
-    }
+    const handleAddLength = (length: ShowLength) => {
+        const newLengths = [...optimisticFilters.length, length];
+        const updatedFilters = { ...optimisticFilters, length: newLengths };
+        startTransition(() => {
+            updateOptimisticFilters({ length: newLengths });
+            router.push(createFilterURL(updatedFilters));
+        });
+    };
 
-    useEffect(() => {
-        fetchFilterData();
-    }, []);
+    const handleAddAirDate = (airDate: AirDate) => {
+        const newAirDates = [...optimisticFilters.airDate, airDate];
+        const updatedFilters = { ...optimisticFilters, airDate: newAirDates };
+        startTransition(() => {
+            updateOptimisticFilters({ airDate: newAirDates });
+            router.push(createFilterURL(updatedFilters));
+        });
+    };
 
-    const getBoolFromString = (str: string): boolean | undefined => {
-        if (str === 'true') return true;
-        if (str === 'false') return false;
-        return undefined;
-    }
+    const handleRemoveService = (service: Service) => {
+        const newServices = optimisticFilters.service.filter(s => s.id !== service.id);
+        const updatedFilters = { ...optimisticFilters, service: newServices };
+        startTransition(() => {
+            updateOptimisticFilters({ service: newServices });
+            router.push(createFilterURL(updatedFilters));
+        });
+    };
 
-    const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black'
-    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black text-white'
+    const handleRemoveLength = (length: ShowLength) => {
+        const newLengths = optimisticFilters.length.filter(l => l !== length);
+        const updatedFilters = { ...optimisticFilters, length: newLengths };
+        startTransition(() => {
+            updateOptimisticFilters({ length: newLengths });
+            router.push(createFilterURL(updatedFilters));
+        });
+    };
 
-    function ServiceButtons() {
+    const handleRemoveAirDate = (airDate: AirDate) => {
+        const newAirDates = optimisticFilters.airDate.filter(a => a !== airDate);
+        const updatedFilters = { ...optimisticFilters, airDate: newAirDates };
+        startTransition(() => {
+            updateOptimisticFilters({ airDate: newAirDates });
+            router.push(createFilterURL(updatedFilters));
+        });
+    };
+
+    const handleSetFilter = (key: 'running' | 'limitedSeries' | 'currentlyAiring', value: boolean | undefined) => {
+        const updatedFilters = { ...optimisticFilters, [key]: value };
+        startTransition(() => {
+            updateOptimisticFilters({ [key]: value });
+            router.push(createFilterURL(updatedFilters));
+        });
+    };
+
+    const services = use(getServicesFunction);
+
+    const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black text-center cursor-pointer'
+    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black text-white text-center cursor-pointer'
+
+    const ServiceButtons = () => {
         if (!services) return (<></>);
-        const unselectedStatuses = services?.filter((service) => !filters.service.includes(service));
+        const unselectedStatuses = services?.filter((service) => !optimisticFilters.service.map(s => s.id).includes(service.id));
         return (
             <div className="grid grid-cols-2 gap-2">
-                {filters.service.map((service) => (
-                    <button
-                        key={service.id}
-                        onClick={() => setFilters({ ...filters, service: filters.service.filter((s) => s !== service) })}
-                        className={selectedBubbleStyle}
-                    >
-                        {service.name}
-                    </button>
+                {optimisticFilters.service.map((service) => (
+                    <div key={service.id}>
+                        <div 
+                            className={selectedBubbleStyle}
+                            onClick={() => handleRemoveService(service)}
+                        >
+                            {service.name}
+                        </div>
+                    </div>
                 ))}
                 {unselectedStatuses?.map((service) => (
-                    <button
-                        key={service.id}
-                        onClick={() => setFilters({ ...filters, service: [...filters.service, service] })}
-                        className={unselectedBubbleStyle}
-                    >
-                        {service.name}
-                    </button>
+                    <div key={service.id}>
+                        <div 
+                            className={unselectedBubbleStyle}
+                            onClick={() => handleAddService(service)}
+                        >
+                            {service.name}
+                        </div>
+                    </div>
                 ))}
             </div>
         )
@@ -78,26 +171,26 @@ export default function ShowSearchFilterButton({ filters, setFilters }: { filter
 
     const AirdateButtons = () => {
         const airdates = Object.values(AirDate);
-        const unselectedAirdates = airdates?.filter((airdate) => !filters.airDate.includes(airdate));
+        const unselectedAirdates = airdates?.filter((airdate) => !optimisticFilters.airDate.includes(airdate));
         return (
             <div className="grid grid-cols-2 gap-2">
-                {filters.airDate.map((airdate) => (
-                    <button
+                {optimisticFilters.airDate.map((airdate) => (
+                    <div
                         key={airdate}
-                        onClick={() => setFilters({ ...filters, airDate: filters.airDate.filter((s) => s !== airdate) })}
                         className={selectedBubbleStyle}
+                        onClick={() => handleRemoveAirDate(airdate)}
                     >
                         {airdate}
-                    </button>
+                    </div>
                 ))}
                 {unselectedAirdates?.map((airdate) => (
-                    <button
+                    <div
                         key={airdate}
-                        onClick={() => setFilters({ ...filters, airDate: [...filters.airDate, airdate] })}
                         className={unselectedBubbleStyle}
+                        onClick={() => handleAddAirDate(airdate)}
                     >
                         {airdate}
-                    </button>
+                    </div>
                 ))}
             </div>
         )
@@ -114,26 +207,26 @@ export default function ShowSearchFilterButton({ filters, setFilters }: { filter
 
     const LengthButtons = () => {
         const lengths = Object.values(ShowLength);
-        const unselectLengths = lengths?.filter((lengths) => !filters.length.includes(lengths));
+        const unselectLengths = lengths?.filter((length) => !optimisticFilters.length.includes(length));
         return (
             <div className="grid grid-cols-2 gap-2">
-                {filters.length.map((length) => (
-                    <button
+                {optimisticFilters.length.map((length) => (
+                    <div
                         key={length}
-                        onClick={() => setFilters({ ...filters, length: filters.length.filter((s) => s !== length) })}
                         className={selectedBubbleStyle}
+                        onClick={() => handleRemoveLength(length)}
                     >
                         {length}{length === ShowLength.NONE ? '' : 'm'}
-                    </button>
+                    </div>
                 ))}
                 {unselectLengths?.map((length) => (
-                    <button
+                    <div
                         key={length}
-                        onClick={() => setFilters({ ...filters, length: [...filters.length, length] })}
                         className={unselectedBubbleStyle}
+                        onClick={() => handleAddLength(length)}
                     >
                         {length}{length === ShowLength.NONE ? '' : 'm'}
-                    </button>
+                    </div>
                 ))}
             </div>
         )
@@ -154,7 +247,14 @@ export default function ShowSearchFilterButton({ filters, setFilters }: { filter
                 <div className="flex space-x-4">
                     <div className="items-center space-x-2 py-2">
                         <Label>Running?</Label>
-                        <RadioGroup value={String(filters.running)} defaultValue="compact" onValueChange={(value) => setFilters({ ...filters, running: getBoolFromString(value) })}>
+                        <RadioGroup 
+                            value={optimisticFilters.running === undefined ? "undefined" : String(optimisticFilters.running)} 
+                            defaultValue="compact"
+                            onValueChange={(value) => {
+                                const boolValue = value === "undefined" ? undefined : value === "true";
+                                handleSetFilter('running', boolValue);
+                            }}
+                        >
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="undefined" id="r1" />
                                 <Label htmlFor="r1">Not Applied</Label>
@@ -171,7 +271,14 @@ export default function ShowSearchFilterButton({ filters, setFilters }: { filter
                     </div>
                     <div className="items-center space-x-2 py-2">
                         <Label>Limited Series?</Label>
-                        <RadioGroup value={String(filters.limitedSeries)} defaultValue="compact" onValueChange={(value) => setFilters({ ...filters, limitedSeries: getBoolFromString(value) })}>
+                        <RadioGroup 
+                            value={optimisticFilters.limitedSeries === undefined ? "undefined" : String(optimisticFilters.limitedSeries)} 
+                            defaultValue="compact"
+                            onValueChange={(value) => {
+                                const boolValue = value === "undefined" ? undefined : value === "true";
+                                handleSetFilter('limitedSeries', boolValue);
+                            }}
+                        >
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="undefined" id="l1" />
                                 <Label htmlFor="l1">Not Applied</Label>
@@ -188,7 +295,14 @@ export default function ShowSearchFilterButton({ filters, setFilters }: { filter
                     </div>
                     <div className="items-center space-x-2 py-2">
                         <Label>Currently Airing?</Label>
-                        <RadioGroup value={String(filters.currentlyAiring)} defaultValue="compact" onValueChange={(value) => setFilters({ ...filters, currentlyAiring: getBoolFromString(value) })}>
+                        <RadioGroup 
+                            value={optimisticFilters.currentlyAiring === undefined ? "undefined" : String(optimisticFilters.currentlyAiring)} 
+                            defaultValue="compact"
+                            onValueChange={(value) => {
+                                const boolValue = value === "undefined" ? undefined : value === "true";
+                                handleSetFilter('currentlyAiring', boolValue);
+                            }}
+                        >
                             <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="undefined" id="c1" />
                                 <Label htmlFor="c1">Not Applied</Label>
@@ -232,9 +346,24 @@ export default function ShowSearchFilterButton({ filters, setFilters }: { filter
                         <span className="flex justify-between my-auto items-center">
                             Filter Shows
                             <div className="my-auto mx-2">
-                                <Button className={`${backdropBackground} me-2 outline outline-white hover:bg-white hover:text-black`}
-                                    onClick={() => setFilters(defaultFilters)}
-                                >Reset Filters</Button>
+                                <Button 
+                                    onClick={() => {
+                                        startTransition(() => {
+                                            updateOptimisticFilters({
+                                                service: [],
+                                                length: [],
+                                                airDate: [],
+                                                running: undefined,
+                                                limitedSeries: undefined,
+                                                currentlyAiring: undefined
+                                            });
+                                            router.push(pathname); // Reset filters
+                                        });
+                                    }}
+                                    className={`${backdropBackground} me-2 outline outline-white hover:bg-white hover:text-black px-4 py-2 rounded-md`}
+                                >
+                                    Reset Filters
+                                </Button>
                             </div>
                         </span>
                     </SheetTitle>
@@ -247,5 +376,4 @@ export default function ShowSearchFilterButton({ filters, setFilters }: { filter
             </SheetContent>
         </Sheet>
     );
-
-};
+}

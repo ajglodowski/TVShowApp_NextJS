@@ -1,5 +1,7 @@
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
-import { AvatarBubble } from "./AvatarBubble";
+import AvatarBubble from "./AvatarBubble";
+import AvatarBubbleLoading from "./AvatarBubbleLoading";
+import { Suspense } from "react";
 export const AvatarsBubbleRow = ({ currentUserInfo, otherUsersInfo }: { currentUserInfo: UserShowDataWithUserInfo, otherUsersInfo: UserShowDataWithUserInfo[] }) => {
     
     const users = [currentUserInfo, ...otherUsersInfo];
@@ -14,6 +16,9 @@ export const AvatarsBubbleRow = ({ currentUserInfo, otherUsersInfo }: { currentU
                     }}
                 >
                     <AvatarBubble userInfo={user} />
+                    {/* <Suspense fallback={<AvatarBubbleLoading />}>
+                        <AvatarBubble userInfo={user} />
+                    </Suspense> */}
                 </div>
             ))}
         </div>

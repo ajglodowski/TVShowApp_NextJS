@@ -13,7 +13,7 @@ export type UserUpdateBase = {
 }
 
 export const UserUpdateProperties = 'id, userId, showId, status:statusChange(id, name), seasonChange, ratingChange, updateDate, updateType';
-export const UserUpdatePropertiesWithShowName = 'id, userId, showId, show:showId(id, name), status:statusChange(id, name), seasonChange, ratingChange, updateDate, updateType';
+export const UserUpdatePropertiesWithShowName = 'id, userId, showId, show:showId(id, name, pictureUrl), status:statusChange(id, name), seasonChange, ratingChange, updateDate, updateType';
 
 export interface AddedToWatchlistUpdate extends UserUpdateBase {
     updateType: UserUpdateCategory.AddedToWatchlist;
