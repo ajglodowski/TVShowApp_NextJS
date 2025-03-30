@@ -41,16 +41,17 @@ export default async function ShowSearchShows({
     nextPageUrl
 }: ShowSearchShowsProps) {
     // Fetch shows based on filters
-    const startTime = performance.now();    
     let shows = await fetchShows(filters, searchType, userId, currentUserId);
-    const endTime = performance.now();
-    console.log(`Time taken to fetch shows: ${endTime - startTime} milliseconds`);
     
     // Fetch current user info if needed
     let currentUserInfo: UserShowDataWithUserInfo[] | undefined | null = undefined;
+    let currenUserInfoMap: Map<number, UserShowDataWithUserInfo> = new Map();
     if (currentUserId && shows) {
         const showIds = shows.map((show) => String(show.id));
         currentUserInfo = await getUserShowData({showIds, userId: currentUserId});
+        currentUserInfo?.forEach((info) => {
+            currenUserInfoMap.set(Number(info.showId), info);
+        });
     }
     
     // Filter shows based on search and user filters if necessary
@@ -108,10 +109,6 @@ export default async function ShowSearchShows({
         );
     }
 
-    const getCurrentUserInfo = (showId: number) => {
-        return currentUserInfo?.find((item) => Number(item.showId) === showId);
-    }
-
     return (
         <div className='px-2'>
             <div>
@@ -125,7 +122,7 @@ export default async function ShowSearchShows({
                     {paginatedData.map((show: Show) => (
                         <div className='px-4' key={show.id}>
                             <Suspense fallback={<ShowRowSkeleton />}>
-                                <ShowRow show={show} currentUserInfo={getCurrentUserInfo(show.id)}/>
+                                <ShowRow show={show} currentUserInfo={currenUserInfoMap.get(show.id)}/>
                             </Suspense>
                             <Divider />
                         </div>

@@ -1,23 +1,25 @@
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
-import { createClient } from "@/app/utils/supabase/server";
+import { createClient, publicClient } from "@/app/utils/supabase/server";
 import { Service } from "@/app/models/service";
 import { UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
 import { Status } from "@/app/models/status";
 import { Rating } from "@/app/models/rating";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { UserBasicInfo } from "@/app/models/user";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 export async function fetchShows(filters: ShowSearchFiltersType, searchType: ShowSearchType, otherUserId?: string, currentUserId?: string): Promise<Show[] | null> {
     const supabase = await createClient();
     let queryBase = supabase.from("show").select(ShowPropertiesWithService);
-
+    
     if (filters.currentlyAiring !== undefined) queryBase = queryBase.eq('currentlyAiring', filters.currentlyAiring);
     if (filters.running !== undefined) queryBase = queryBase.eq('running', filters.running);
     if (filters.limitedSeries !== undefined) queryBase = queryBase.eq('limitedSeries', filters.limitedSeries);
     if (filters.service.length > 0) queryBase = queryBase.in('service', filters.service.map((service) => service.id));
     if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
     if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
+    
 
     //queryBase = queryBase.limit(100);
     if (searchType === ShowSearchType.WATCHLIST) {
@@ -62,7 +64,9 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
 }
 
 export async function getServices(): Promise<Service[] | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('days');
+    const supabase = await publicClient();
     const { data: serviceData } = await supabase.from("service").select();
     if (!serviceData) return null;
     const services: Service[] = serviceData;

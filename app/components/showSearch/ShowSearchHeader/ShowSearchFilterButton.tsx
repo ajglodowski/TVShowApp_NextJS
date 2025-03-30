@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
 import { backdropBackground } from "@/app/utils/stylingConstants";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { use, useOptimistic, useTransition } from "react";
 
 type ShowSearchFilterButtonProps = {
@@ -25,6 +25,8 @@ export default function ShowSearchFilterButton({
     getServicesFunction
 }: ShowSearchFilterButtonProps) {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const currentPathname = usePathname();
     const [isPending, startTransition] = useTransition();
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
         filters,
@@ -34,34 +36,63 @@ export default function ShowSearchFilterButton({
         })
     );
 
-    const createFilterURL = (updatedFilters: ShowSearchFiltersType) => {
-        const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
+    // Helper function to safely update URL
+    const updateURL = (updatedFilters: ShowSearchFiltersType) => {
+        // Create a new query string manually
+        let query = '';
+        let params: Record<string, string> = {};
         
+        // Preserve non-filter params
+        if (searchParams) {
+            // Get pagination and search params
+            const page = searchParams.get('page');
+            const search = searchParams.get('search');
+            const ratings = searchParams.get('ratings');
+            const statuses = searchParams.get('statuses');
+            const addedToWatchlist = searchParams.get('addedToWatchlist');
+            
+            if (page !== null) params.page = page;
+            if (search !== null) params.search = search;
+            if (ratings !== null) params.ratings = ratings;
+            if (statuses !== null) params.statuses = statuses;
+            if (addedToWatchlist !== null) params.addedToWatchlist = addedToWatchlist;
+        }
+        
+        // Add filter params
         if (updatedFilters.service.length > 0) {
-            url.searchParams.set('service', updatedFilters.service.map(s => s.id).join(','));
+            params.service = updatedFilters.service.map(s => s.id).join(',');
         }
         
         if (updatedFilters.length.length > 0) {
-            url.searchParams.set('length', updatedFilters.length.join(','));
+            params.length = updatedFilters.length.join(',');
         }
         
         if (updatedFilters.airDate.length > 0) {
-            url.searchParams.set('airDate', updatedFilters.airDate.join(','));
+            params.airDate = updatedFilters.airDate.join(',');
         }
         
         if (updatedFilters.limitedSeries !== undefined) {
-            url.searchParams.set('limitedSeries', updatedFilters.limitedSeries.toString());
+            params.limitedSeries = updatedFilters.limitedSeries.toString();
         }
         
         if (updatedFilters.running !== undefined) {
-            url.searchParams.set('running', updatedFilters.running.toString());
+            params.running = updatedFilters.running.toString();
         }
         
         if (updatedFilters.currentlyAiring !== undefined) {
-            url.searchParams.set('currentlyAiring', updatedFilters.currentlyAiring.toString());
+            params.currentlyAiring = updatedFilters.currentlyAiring.toString();
         }
         
-        return pathname + url.search;
+        // Build query string
+        const queryParts = Object.entries(params).map(([key, value]) => 
+            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        );
+        
+        if (queryParts.length > 0) {
+            query = '?' + queryParts.join('&');
+        }
+        
+        return `${currentPathname}${query}`;
     };
 
     const handleAddService = (service: Service) => {
@@ -69,7 +100,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, service: newServices };
         startTransition(() => {
             updateOptimisticFilters({ service: newServices });
-            router.push(createFilterURL(updatedFilters));
+            router.replace(updateURL(updatedFilters));
         });
     };
 
@@ -78,7 +109,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, length: newLengths };
         startTransition(() => {
             updateOptimisticFilters({ length: newLengths });
-            router.push(createFilterURL(updatedFilters));
+            router.replace(updateURL(updatedFilters));
         });
     };
 
@@ -87,7 +118,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, airDate: newAirDates };
         startTransition(() => {
             updateOptimisticFilters({ airDate: newAirDates });
-            router.push(createFilterURL(updatedFilters));
+            router.replace(updateURL(updatedFilters));
         });
     };
 
@@ -96,7 +127,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, service: newServices };
         startTransition(() => {
             updateOptimisticFilters({ service: newServices });
-            router.push(createFilterURL(updatedFilters));
+            router.replace(updateURL(updatedFilters));
         });
     };
 
@@ -105,7 +136,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, length: newLengths };
         startTransition(() => {
             updateOptimisticFilters({ length: newLengths });
-            router.push(createFilterURL(updatedFilters));
+            router.replace(updateURL(updatedFilters));
         });
     };
 
@@ -114,7 +145,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, airDate: newAirDates };
         startTransition(() => {
             updateOptimisticFilters({ airDate: newAirDates });
-            router.push(createFilterURL(updatedFilters));
+            router.replace(updateURL(updatedFilters));
         });
     };
 
@@ -122,7 +153,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, [key]: value };
         startTransition(() => {
             updateOptimisticFilters({ [key]: value });
-            router.push(createFilterURL(updatedFilters));
+            router.replace(updateURL(updatedFilters));
         });
     };
 
@@ -357,7 +388,7 @@ export default function ShowSearchFilterButton({
                                                 limitedSeries: undefined,
                                                 currentlyAiring: undefined
                                             });
-                                            router.push(pathname); // Reset filters
+                                            router.replace(currentPathname ?? '');
                                         });
                                     }}
                                     className={`${backdropBackground} me-2 outline outline-white hover:bg-white hover:text-black px-4 py-2 rounded-md`}

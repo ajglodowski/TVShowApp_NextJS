@@ -7,10 +7,13 @@ import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import Image from "next/image";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import { getPresignedUserImageURL } from "@/app/profile/UserService";
+import { Skeleton } from "@/components/ui/skeleton";
 export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
 
-    const profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
-    const source = profilePicUrl ? profilePicUrl : "/images/placeholder-user.jpg";
+    let profilePicUrl = null;
+    if (userInfo.user.profilePhotoURL) {
+        profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
+    }
 
     const RatingIcon = ({rating}: {rating: Rating}) => {
         switch (rating) {
@@ -32,12 +35,15 @@ export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDat
             <div className="relative">
                 {profilePicUrl &&
                     <Image 
-                    src={source}
+                    src={profilePicUrl}
                     width="0"
                     height="0" sizes="100vw"
                     alt="Avatar"
                     className="w-10 h-10 mx-auto rounded-full"
                     />
+                }
+                {!profilePicUrl &&
+                    <Skeleton className="w-10 h-10 mx-auto rounded-full" />
                 }
                 {userInfo.rating && 
                     <div className="absolute top-5 left-5">

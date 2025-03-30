@@ -180,7 +180,7 @@ export default async function ShowSearch(props: ShowSearchProps) {
             />
             <div className='w-full overflow-x-hidden'>
                 
-                {/* <Suspense fallback={<ShowSearchShowsLoading />}>
+                <Suspense fallback={<ShowSearchShowsLoading />}>
                     <ShowSearchShows 
                         filters={filters}
                         searchType={searchType}
@@ -192,7 +192,7 @@ export default async function ShowSearch(props: ShowSearchProps) {
                         previousPageUrl={previousPageUrl}
                         nextPageUrl={nextPageUrl}
                     />
-                </Suspense> */}
+                </Suspense>
             </div>
         </div>       
     );

@@ -5,10 +5,14 @@ import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import { Rating } from "@/app/models/rating";
 import Image from "next/image";
-import { getProfilePic } from "@/app/profile/UserServiceClient";
-export const UserDetails = ({ userInfo }: { userInfo: UserShowDataWithUserInfo }) => {
+import { getPresignedUserImageURL } from "@/app/profile/UserService";
+import { Skeleton } from "@/components/ui/skeleton";
+export async function UserDetails({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
     
-    const profilePicUrl = getProfilePic(userInfo.user.profilePhotoURL);
+    let profilePicUrl = null
+    if (userInfo.user.profilePhotoURL) {
+        profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
+    }
 
     const RatingIcon = ({rating}: {rating: Rating}) => {
         switch (rating) {
@@ -26,15 +30,18 @@ export const UserDetails = ({ userInfo }: { userInfo: UserShowDataWithUserInfo }
     };
 
     const ProfilePic = () => {
-        const source = profilePicUrl ? profilePicUrl : "/images/placeholder-user.jpg";
+        if (!profilePicUrl) {
+            return <Skeleton className="w-8 h-8 mx-auto rounded-full" />;
+        }
         return (
             <div className="">
                 <Image
-                    src={source}
+                    src={profilePicUrl}
                     width="0"
                     height="0" sizes="100vw"
                     alt="Avatar"
                     className="w-8 h-8 mx-auto rounded-full"
+                    loading="lazy"
                 />
             </div>);
     }

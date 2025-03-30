@@ -5,6 +5,7 @@ import { getUser, getUserImageURL } from '@/app/utils/userService'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import Image from "next/image";
+import { getPresignedUserImageURL } from '@/app/profile/UserService'
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -21,12 +22,22 @@ export default async function AuthButton() {
     return redirect('/login')
   }
 
-  const ProfilePic = () => {
-    if (userInfo && userInfo.profilePhotoURL) {
-      const profilePhotoURL = getUserImageURL(userInfo.profilePhotoURL);
+  const ProfilePic = async () => {
+    if (!userInfo) {
       return (
         <Image
-          src={profilePhotoURL}
+          src="/images/placeholder-user.jpg"
+          width={40}
+          height={40}
+          alt="Avatar"  
+          className="overflow-hidden rounded-full"
+        />
+      )
+    } else if (userInfo && userInfo.profilePhotoURL) {
+      const profilePhotoURL = await getPresignedUserImageURL(userInfo.profilePhotoURL);
+      return (
+        <Image
+          src={profilePhotoURL!}
           width={40}
           height={40}
           alt="Avatar"

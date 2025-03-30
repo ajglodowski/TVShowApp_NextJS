@@ -28,7 +28,7 @@ export default async function ShowRow({ show, currentUserInfo }: { show: Show | 
                                 fill 
                                 className="rounded-md object-cover" />
                             }
-                            {!showImageUrl && <Skeleton className="w-12 h-12 rounded-md" />}
+                            {!showImageUrl && <Skeleton className="w-full h-full rounded-md" />}
                         </div>
                     </div>
                     <div className="flex flex-col justify-center">
@@ -41,8 +41,10 @@ export default async function ShowRow({ show, currentUserInfo }: { show: Show | 
                     </div>
                 </div>
                 <Suspense fallback={<Skeleton className="w-16 h-16 rounded-md" />}>
-                    {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo, currentUserInfo]}/>}
+                    {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo]}/>}
                 </Suspense>
+                {/* {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo, currentUserInfo]}/>} */}
+                
             </div>
         </Link>
     );
