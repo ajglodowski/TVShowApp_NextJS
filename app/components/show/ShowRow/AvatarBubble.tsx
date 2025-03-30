@@ -10,7 +10,7 @@ import { getPresignedUserImageURL } from "@/app/profile/UserService";
 import { Skeleton } from "@/components/ui/skeleton";
 export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
 
-    let profilePicUrl = null;
+    let profilePicUrl: string | null = null;
     if (userInfo.user.profilePhotoURL) {
         profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
     }
