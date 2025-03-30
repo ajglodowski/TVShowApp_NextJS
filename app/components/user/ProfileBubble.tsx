@@ -1,4 +1,4 @@
-import { getUser } from "@/utils/userService";
+import { getUser } from "@/app/utils/userService";
 import ProfileBubbleClient from "./ProfileBubbleClient";
 
 type ProfileBubbleProps = { userId: string; };

@@ -3,7 +3,7 @@ import { UserDetails } from "./UserDetails";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { AvatarsBubbleRow } from "./AvatarsBubbleRow";
-import { backdropBackground } from "@/utils/stylingConstants";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 export const UserDetailsDropdown = ({ currentUserInfo, otherUsersInfo }: { currentUserInfo: UserShowDataWithUserInfo, otherUsersInfo: UserShowDataWithUserInfo[] }) => {
     
     return (

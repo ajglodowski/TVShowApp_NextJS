@@ -1,7 +1,7 @@
 import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowImage } from "@/app/models/showImage";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/app/utils/supabase/client";
 import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
 import { apiRoute, clientBaseURL } from "@/app/envConfig";
@@ -145,4 +145,12 @@ export async function removeShowTag(showId: string, tag: ShowTag): Promise<boole
       return false;
     }
     return true;
+}
+
+export async function getServices(): Promise<Service[] | null> {
+    const supabase = await createClient();
+    const { data: serviceData } = await supabase.from("service").select();
+    if (!serviceData) return null;
+    const services: Service[] = serviceData;
+    return services;
 }

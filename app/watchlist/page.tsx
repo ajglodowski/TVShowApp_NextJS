@@ -1,12 +1,12 @@
 import ShowSearch from "../components/showSearch/ShowSearch";
 import { ShowSearchType } from "../models/showSearchType";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/app/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 export default async function CurrentUserWatchlist({
     searchParams
 }: {
-    searchParams: { [key: string]: string | string[] | undefined }
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
     // Get current user ID
     const supabase = await createClient();
@@ -22,7 +22,7 @@ export default async function CurrentUserWatchlist({
             <ShowSearch 
                 searchType={ShowSearchType.WATCHLIST} 
                 currentUserId={user.id}
-                searchParams={searchParams}
+                searchParams={await searchParams}
                 pathname="/watchlist"
             />
         </div>

@@ -10,6 +10,8 @@ import ShowSearchFiltersRow from "./ShowSearchFiltersRow";
 import ShowSearchCurrentUserFiltersRow from "./ShowSearchCurrentUserFiltersRow";
 import Link from "next/link";
 import { getServices } from "../ShowSearchService";
+import { Suspense } from "react";
+import ShowSearchFilterButtonSkeleton from "./ShowSearchFilterButtonSkeleton";
 
 export type ShowSearchFiltersType = {
     service: Service[];
@@ -44,7 +46,7 @@ export default async function ShowSearchHeader({
 }: ShowSearchHeaderProps) {
     // Generate URLs for various filter changes
     const clearSearchURL = () => {
-        const url = new URL(pathname, 'http://localhost');
+        const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
         
         // Add all current filter params except search
         if (filters.service.length > 0) url.searchParams.set('service', filters.service.map(s => s.id).join(','));
@@ -87,11 +89,13 @@ export default async function ShowSearchHeader({
                             pathname={pathname}
                             currentFilters={filters}
                         />
-                        <ShowSearchFilterButton 
-                            filters={filters} 
-                            pathname={pathname}
-                            getServicesFunction={getServicesFunction}
-                        />
+                        <Suspense fallback={<ShowSearchFilterButtonSkeleton />}>
+                            <ShowSearchFilterButton 
+                                filters={filters} 
+                                pathname={pathname}
+                                getServicesFunction={getServicesFunction}
+                            />
+                        </Suspense>
                     </div>
                 </div>
 

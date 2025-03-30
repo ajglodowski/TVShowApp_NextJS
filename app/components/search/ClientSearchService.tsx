@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/app/utils/supabase/client";
 
 export async function searchShows({searchQuery}: {searchQuery: string}): Promise<string[] | null> {
     'use client'

@@ -1,7 +1,7 @@
 import { Rating } from "@/app/models/rating";
 import { Status } from "@/app/models/status";
 import { UserShowData } from "@/app/models/userShowData";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/app/utils/supabase/client";
 
 export async function getYourShows({userId, selectedStatuses}: {userId: string, selectedStatuses: Status[]}): Promise<UserShowData[] | null> {
     'use client'

@@ -1,6 +1,6 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/app/utils/supabase/server";
 import UserProfile from "./components/ProfilePage/UserProfile";
-import { getUser } from "@/utils/userService";
+import { getUser } from "@/app/utils/userService";
 
 export default async function CurrentUserProfilePage() {
     const supabase = await createClient();

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getShowsLogged, ShowTagCountDTO } from "@/utils/userService";
+import { getShowsLogged, ShowTagCountDTO } from "@/app/utils/userService";
 import { getListsCreated, getUpdatesCreated } from "./UserStatsCardService";
 
 export default async function UserStatsCard({ userId }: { userId: string }) {

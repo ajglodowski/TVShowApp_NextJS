@@ -17,7 +17,7 @@ export type ShowTileBadgeProps = {
 
 export default async function ShowTileContent({showData, badges}: ShowTileContentProps) {
     const show = showData;
-    let showImageUrl = null;
+    let showImageUrl: string | null = null;
     if (show.pictureUrl) {
         showImageUrl = await getPresignedShowImageURL(show.pictureUrl, true);
     }

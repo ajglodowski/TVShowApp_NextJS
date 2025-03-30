@@ -1,4 +1,4 @@
-import { getUserImageURL } from "@/utils/userService";
+import { getUserImageURL } from "@/app/utils/userService";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cache } from "react";
 import { serverBaseURL } from "../envConfig";

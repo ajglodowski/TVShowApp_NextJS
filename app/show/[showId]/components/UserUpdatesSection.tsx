@@ -1,6 +1,6 @@
 import { UserUpdate } from "@/app/models/userUpdate";
-import { getUserUpdateMessage } from "@/utils/getUserUpdateMessage";
-import { dateToString } from "@/utils/timeUtils";
+import { getUserUpdateMessage } from "@/app/utils/getUserUpdateMessage";
+import { dateToString } from "@/app/utils/timeUtils";
 
 export default function UserUpdatesSection ({ userUpdates }: { userUpdates: UserUpdate[] | null }) {
 

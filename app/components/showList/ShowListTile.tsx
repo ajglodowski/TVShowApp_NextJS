@@ -2,7 +2,7 @@ import { getListData, getListEntries } from "@/app/showList/ShowListService";
 import Image from "next/image"
 import ProfileBubble from "../user/ProfileBubble";
 import { getShowImageURL } from "@/app/show/[showId]/ShowService";
-import { backdropBackground } from "@/utils/stylingConstants";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 import Link from "next/link";
 
 export default async function ShowsListTile({listId}: {listId: number}) {

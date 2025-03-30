@@ -147,17 +147,21 @@ export default async function ShowSearch(props: ShowSearchProps) {
     
     // Generate URLs for pagination
     const createPageUrl = (pageNum: number) => {
-        const url = new URL(pathname, 'http://localhost');
+        // Create a URLSearchParams object from the current search params
+        const params = new URLSearchParams();
         
-        // Add all current params
+        // Add all current params except 'page'
         Object.entries(searchParams).forEach(([key, value]) => {
             if (key !== 'page' && value) {
-                url.searchParams.set(key, value);
+                params.set(key, value);
             }
         });
         
-        url.searchParams.set('page', pageNum.toString());
-        return pathname + url.search;
+        // Add the page parameter
+        params.set('page', pageNum.toString());
+        
+        // Return the pathname with the query string
+        return `${pathname}?${params.toString()}`;
     };
     
     // Pre-generate URLs for the client component
@@ -176,7 +180,7 @@ export default async function ShowSearch(props: ShowSearchProps) {
             />
             <div className='w-full overflow-x-hidden'>
                 
-                <Suspense fallback={<ShowSearchShowsLoading />}>
+                {/* <Suspense fallback={<ShowSearchShowsLoading />}>
                     <ShowSearchShows 
                         filters={filters}
                         searchType={searchType}
@@ -188,7 +192,7 @@ export default async function ShowSearch(props: ShowSearchProps) {
                         previousPageUrl={previousPageUrl}
                         nextPageUrl={nextPageUrl}
                     />
-                </Suspense>
+                </Suspense> */}
             </div>
         </div>       
     );

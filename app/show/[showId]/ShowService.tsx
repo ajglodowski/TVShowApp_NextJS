@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { createClient, publicClient } from '@/app/utils/supabase/server';
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
 import { Service } from "@/app/models/service";
@@ -15,7 +15,9 @@ import { cache } from 'react';
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 
 export const getShow = cache(async (showId: string): Promise<Show | null> => {
-  const supabase = await createClient();
+  'use cache'
+  cacheLife('hours');
+  const supabase = await publicClient();
   const { data: showData } = await supabase.from("show").select(ShowPropertiesWithService).match({id: showId}).single();
   if (!showData) return null;
   const show: Show = {
@@ -44,7 +46,9 @@ export async function getTags(showId: string): Promise<ShowTag[] | null> {
 }
 
 export const getAllTags = async function (): Promise<ShowTag[] | null> {
-  const supabase = await createClient();
+  'use cache'
+  cacheLife('days');
+  const supabase = await publicClient();
   const { data: tagData } = await supabase
     .from('showTag')
     .select('id, name, created_at');
@@ -86,6 +90,8 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
 });
 
 export const fetchAverageColor = cache(async function (imageUrl: string):  Promise<string> {
+  'use cache'
+  cacheLife('days');
   const apiURL = `${serverBaseURL}/api/averageColor?imageUrl=${imageUrl}`;
   const response = await fetch(apiURL);
   if (response.status !== 200) return "rbg(0,0,0)";

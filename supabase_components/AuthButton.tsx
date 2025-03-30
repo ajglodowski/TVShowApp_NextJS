@@ -1,7 +1,7 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { getUser, getUserImageURL } from '@/utils/userService'
+import { getUser, getUserImageURL } from '@/app/utils/userService'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import Image from "next/image";

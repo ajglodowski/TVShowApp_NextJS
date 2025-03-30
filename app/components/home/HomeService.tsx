@@ -1,11 +1,12 @@
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { Status } from "@/app/models/status";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, publicClient } from "@/app/utils/supabase/server";
 import { ComingSoonDTO } from "./ComingSoonRow";
 import { UserUpdateTileDTO } from "../userUpdate/UserUpdateService";
 import { UserUpdate, UserUpdatePropertiesWithShowName } from "@/app/models/userUpdate";
 import { CurrentlyAiringDTO } from "@/app/models/airDate";
 import { cache } from "react";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 export async function getWatchList({userId}: {userId: string}): Promise<Show[] | null> {
     if (!userId) return null;
@@ -19,8 +20,9 @@ export async function getWatchList({userId}: {userId: string}): Promise<Show[] |
 
 export async function getTop10(): Promise<{showId: number, updates: number}[] | null> {
 
-    
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('hours');
+    const supabase = await publicClient();
     const { data: showData } = await supabase.from("top10shows").select('showId, updates');
     
     if (!showData) return null;   
@@ -30,8 +32,9 @@ export async function getTop10(): Promise<{showId: number, updates: number}[] | 
 }
 
 export const getAllStatuses = cache(async function (): Promise<Status[] | null> {
-    
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('days');
+    const supabase = await publicClient();
     const { data } = await supabase.from("status").select();
     const statuses = data as unknown as Status[];
     return statuses;
@@ -55,7 +58,7 @@ export async function getComingSoon({userId}: {userId: string}): Promise<ComingS
 }
 
 function formatUpdate(updateData: any): UserUpdateTileDTO {
-    const showInfo = updateData.show as unknown as {id: number, name: string};
+    const showInfo = updateData.show as unknown as {id: number, name: string, pictureUrl: string};
     const formatted = {
         ...updateData,
         showId: showInfo.id as unknown as string,

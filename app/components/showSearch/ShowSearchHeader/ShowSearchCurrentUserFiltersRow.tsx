@@ -1,5 +1,5 @@
 'use client'
-import { backdropBackground } from "@/utils/stylingConstants";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 import { X } from "lucide-react";
 import { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
 import { Rating } from "@/app/models/rating";
@@ -32,7 +32,7 @@ export default function ShowSearchCurrentUserFiltersRow({
     );
 
     const createRemoveFilterURL = (key: keyof CurrentUserFilters, value: Rating | Status | boolean | undefined) => {
-        const url = new URL(pathname, "http://localhost");
+        const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
         
         // Add all current filter params
         if (currentFilters.service.length > 0) url.searchParams.set('service', currentFilters.service.map(s => s.id).join(','));
@@ -152,7 +152,7 @@ export default function ShowSearchCurrentUserFiltersRow({
 
     // Create a URL that clears all user filters but keeps show filters
     const clearUserFiltersURL = () => {
-        const url = new URL(pathname, "http://localhost");
+        const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
         
         // Add only show filter params
         if (currentFilters.service.length > 0) url.searchParams.set('service', currentFilters.service.map(s => s.id).join(','));

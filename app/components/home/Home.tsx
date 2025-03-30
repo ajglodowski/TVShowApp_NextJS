@@ -1,5 +1,5 @@
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import WatchListRow from './WatchlistRow';
 import Top10Row from './Top10Row';
 import YourShowsRow from './YourShowsRow/YourShowsRow';

@@ -1,4 +1,4 @@
-import { LoadingSpinner } from "@/utils/loadingSpinner";
+import { LoadingSpinner } from "@/app/utils/loadingSpinner";
 
 export default async function LoadingShowPage() {
     return (

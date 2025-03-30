@@ -1,6 +1,6 @@
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/app/utils/supabase/server";
 import { Service } from "@/app/models/service";
 import { UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
 import { Status } from "@/app/models/status";

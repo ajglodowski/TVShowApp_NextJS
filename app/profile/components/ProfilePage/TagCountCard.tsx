@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShowTagCountDTO } from "@/utils/userService";
+import { ShowTagCountDTO } from "@/app/utils/userService";
 
 export default function TagCountCard({ tagData }: { tagData: ShowTagCountDTO[] | null }) {
 

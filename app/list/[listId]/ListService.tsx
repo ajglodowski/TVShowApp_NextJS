@@ -1,5 +1,5 @@
 import { ShowList, ShowListEntry, ShowListEntryParams, ShowListParams } from "@/app/models/showList";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/app/utils/supabase/server";
 
 export async function getList( listId: string ): Promise<ShowList | null> {
     

@@ -1,6 +1,6 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/app/utils/supabase/server";
 import { getList, getShowsForList } from "./ListService";
-import { dateToString } from "@/utils/timeUtils";
+import { dateToString } from "@/app/utils/timeUtils";
 import ListShowsSection from "./components/ListShowsSection";
 
 function ListNotFound() {

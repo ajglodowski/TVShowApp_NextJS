@@ -11,9 +11,9 @@ export default async function ShowRow({ show, currentUserInfo }: { show: Show | 
 
     const showData = show;
     if (!showData) return <ShowRowSkeleton />;
-    let showImageUrl = null;
+    let showImageUrl: string | null = null;
     if (showData.pictureUrl) {
-        showImageUrl =  await getPresignedShowImageURL(showData?.name as string, true);
+        showImageUrl =  await getPresignedShowImageURL(showData.pictureUrl as string, true);
     }
     
     return (

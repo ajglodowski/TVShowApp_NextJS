@@ -8,7 +8,7 @@ import { Status } from "@/app/models/status";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Trash2, User } from "lucide-react";
-import { backdropBackground } from "@/utils/stylingConstants";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 import { useRouter } from "next/navigation";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 import { useOptimistic, useState, useTransition } from "react";
@@ -64,7 +64,7 @@ export default function ShowSearchCurrentUserFilters({ filters, pathname, curren
 
     // Create URLs for various filter changes
     const createFilterURL = (changes: Partial<CurrentUserFilters>) => {
-        const url = new URL(pathname, "http://localhost");
+        const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
         
         // Add current show filter params
         if (currentFilters.service.length > 0) url.searchParams.set('service', currentFilters.service.map(s => s.id).join(','));
@@ -84,7 +84,7 @@ export default function ShowSearchCurrentUserFilters({ filters, pathname, curren
             url.searchParams.set('statuses', newFilters.statuses.map(s => s.id).join(','));
         }
         
-        return pathname + url.search;
+        return url.pathname + url.search;
     };
 
     // Handle removing a rating with optimistic update
@@ -146,17 +146,8 @@ export default function ShowSearchCurrentUserFilters({ filters, pathname, curren
 
     // URL for clearing all user filters
     const clearFiltersURL = () => {
-        const url = new URL(pathname, "http://localhost");
-        
-        // Add only show filter params
-        if (currentFilters.service.length > 0) url.searchParams.set('service', currentFilters.service.map(s => s.id).join(','));
-        if (currentFilters.length.length > 0) url.searchParams.set('length', currentFilters.length.join(','));
-        if (currentFilters.airDate.length > 0) url.searchParams.set('airDate', currentFilters.airDate.join(','));
-        if (currentFilters.limitedSeries !== undefined) url.searchParams.set('limitedSeries', currentFilters.limitedSeries.toString());
-        if (currentFilters.running !== undefined) url.searchParams.set('running', currentFilters.running.toString());
-        if (currentFilters.currentlyAiring !== undefined) url.searchParams.set('currentlyAiring', currentFilters.currentlyAiring.toString());
-        
-        return pathname + url.search;
+        const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
+        return url.pathname;
     };
 
     const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 text-center outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black cursor-pointer'

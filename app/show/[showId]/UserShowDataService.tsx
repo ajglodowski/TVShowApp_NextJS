@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/app/utils/supabase/server';
 import { Status } from "@/app/models/status";
 import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
 import { Rating } from "@/app/models/rating";

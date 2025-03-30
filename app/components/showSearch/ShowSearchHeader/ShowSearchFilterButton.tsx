@@ -9,7 +9,7 @@ import { ShowSearchFiltersType } from "./ShowSearchHeader";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
-import { backdropBackground } from "@/utils/stylingConstants";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 import { useRouter } from "next/navigation";
 import { use, useOptimistic, useTransition } from "react";
 
@@ -35,7 +35,7 @@ export default function ShowSearchFilterButton({
     );
 
     const createFilterURL = (updatedFilters: ShowSearchFiltersType) => {
-        const url = new URL(pathname, "http://localhost");
+        const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
         
         if (updatedFilters.service.length > 0) {
             url.searchParams.set('service', updatedFilters.service.map(s => s.id).join(','));

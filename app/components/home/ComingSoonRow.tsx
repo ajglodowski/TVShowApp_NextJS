@@ -3,7 +3,7 @@ import ShowTile from "../show/ShowTile/ShowTile";
 import { getComingSoon } from "./HomeService";
 import { Calendar, Clock } from "lucide-react";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
-import { releaseDateToString } from "@/utils/timeUtils";
+import { releaseDateToString } from "@/app/utils/timeUtils";
 
 export type ComingSoonDTO = {
     showId: string

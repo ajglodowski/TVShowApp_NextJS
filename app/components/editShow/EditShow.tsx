@@ -1,6 +1,6 @@
 'use client'
 
-import { getShow, updateShow } from "@/app/components/show/ClientShowService";
+import { getServices, getShow, updateShow } from "@/app/components/show/ClientShowService";
 import { AirDate } from "@/app/models/airDate";
 import { Service } from "@/app/models/service";
 import { NewShow, Show } from "@/app/models/show";
@@ -18,7 +18,6 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getServices } from "../showSearch/ShowSearchService";
 
 function ShowNotFound() {
   return (

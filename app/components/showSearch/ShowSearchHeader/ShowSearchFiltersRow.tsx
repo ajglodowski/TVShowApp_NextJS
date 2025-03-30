@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
 import { AirDate } from "@/app/models/airDate";
-import { backdropBackground } from "@/utils/stylingConstants";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 import { useRouter } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
 
@@ -32,7 +32,7 @@ export default function ShowSearchFiltersRow({
 
     // Function to create a URL with the filter removed
     const createRemoveFilterURL = (key: keyof ShowSearchFiltersType, value: Service | ShowLength | AirDate | boolean) => {
-        const url = new URL(pathname, "http://localhost");
+        const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
         
         // Add current filter params except the one we're removing
         if (optimisticFilters.service.length > 0) {
@@ -83,6 +83,18 @@ export default function ShowSearchFiltersRow({
         return pathname + url.search;
     };
 
+    const isService = (item: any): item is Service => {
+        return (item as Service).id !== undefined; // Adjust this check based on your Service type
+    };
+
+    const isShowLength = (item: any): item is ShowLength => {
+        return Object.values(ShowLength).includes(item as ShowLength);
+    };
+
+    const isAirDate = (item: any): item is AirDate => {
+        return Object.values(AirDate).includes(item as AirDate);
+    };
+
     const renderFilterBubbles = (): ReactNode[] => {
         const bubbles: ReactNode[] = [];
 
@@ -90,25 +102,32 @@ export default function ShowSearchFiltersRow({
         Object.entries(optimisticFilters).forEach(([key, value]) => {
             if (Array.isArray(value) && value.length > 0) {
                 value.forEach((item) => {
-                    let displayValue: string;
-                    if (key === 'service') {
-                        displayValue = (item as Service).name;
+                    let displayValue: string = "";
+                    if (key === 'service' && isService(item)) {
+                        displayValue = item.name;
                     } else if (key === 'length') {
-                        displayValue = item as ShowLength;
-                    } else {
-                        displayValue = item as AirDate;
+                        displayValue = String(item); // Safely convert to string
+                    } else if (key === 'airDate') {
+                        displayValue = String(item); // Safely convert to string
                     }
                     bubbles.push(
                         <div
                             key={`${key}-${displayValue}`}
                             onClick={() => {
                                 startTransition(() => {
-                                    const currentFilters = optimisticFilters[key as keyof ShowSearchFiltersType];
-                                    if (Array.isArray(currentFilters)) {
-                                        const newFilters = currentFilters.filter((i) => i !== item);
-                                        updateOptimisticFilters({ [key as keyof ShowSearchFiltersType]: newFilters });
-                                        router.push(createRemoveFilterURL(key as keyof ShowSearchFiltersType, item));
+                                    if (key === 'service') {
+                                        const newServices = optimisticFilters.service.filter(s => 
+                                            isService(item) ? s.id !== item.id : true
+                                        );
+                                        updateOptimisticFilters({ service: newServices });
+                                    } else if (key === 'length') {
+                                        const newLengths = optimisticFilters.length.filter(l => l !== item);
+                                        updateOptimisticFilters({ length: newLengths });
+                                    } else if (key === 'airDate') {
+                                        const newAirDates = optimisticFilters.airDate.filter(a => a !== item);
+                                        updateOptimisticFilters({ airDate: newAirDates });
                                     }
+                                    router.push(createRemoveFilterURL(key as keyof ShowSearchFiltersType, item));
                                 });
                             }}
                         >

@@ -1,5 +1,5 @@
 import { UserUpdateTileDTO } from "../UserUpdateService";
-import { dateToString } from "@/utils/timeUtils";
+import { dateToString } from "@/app/utils/timeUtils";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import ProfileBubble from "../../user/ProfileBubble";
 
