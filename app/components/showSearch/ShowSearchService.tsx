@@ -8,6 +8,7 @@ import { Rating } from "@/app/models/rating";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { UserBasicInfo } from "@/app/models/user";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { AirDate } from "@/app/models/airDate";
 
 export async function fetchShows(filters: ShowSearchFiltersType, searchType: ShowSearchType, otherUserId?: string, currentUserId?: string): Promise<Show[] | null> {
     const supabase = await createClient();
@@ -61,6 +62,70 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
     });
     
     return shows;
+}
+
+export type UserWatchListData = {
+    show: Show;
+    userShowData: UserShowDataWithUserInfo;
+}
+
+export async function fetchUsersWatchlist(userId: string): Promise<UserWatchListData[] | null> {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .rpc('fetch_watchlist_for_user', { userid: userId });
+
+    if (error) {
+        console.error(error);
+        return null;
+    }
+
+    const shows: UserWatchListData[] = data.map((row: any) => ({
+        show: {
+            id: row.id,
+            createdAt: row.created_at,
+            lastUpdated: row.lastupdated,
+            name: row.name,
+            service: {
+                id: row.service,
+                name: row.service_name
+            },
+            running: row.running,
+            limitedSeries: row.limitedseries,
+            totalSeasons: row.totalseasons,
+            releaseDate: row.releasedate,
+            airDate: row.airdate,
+            currentlyAiring: row.currentlyairing,
+            length: row.length,
+            firebaseShowId: row.firebaseshowid,
+            pictureUrl: row.pictureurl
+        },
+        userShowData: {
+            user: {
+                id: row.user_id,
+                username: row.username,
+                profilePhotoURL: row.profilephotourl
+            },
+            showId: row.showid,
+            status: row.status,
+            updated: row.user_details_updated,
+            currentSeason: row.currentseason,
+            rating: row.rating,
+            createdAt: row.user_details_created_at
+        }
+    }));
+    return shows;
+}
+
+export function filterWatchlist(UserWatchListData: UserWatchListData[] | null, filters: ShowSearchFiltersType): UserWatchListData[] | null {
+    if (!UserWatchListData) return null;
+    let filteredShows = [...UserWatchListData];
+    if (filters.currentlyAiring !== undefined) filteredShows = filteredShows.filter((show) => show.show.currentlyAiring === filters.currentlyAiring);
+    if (filters.running !== undefined) filteredShows = filteredShows.filter((show) => show.show.running === filters.running);
+    if (filters.limitedSeries !== undefined) filteredShows = filteredShows.filter((show) => show.show.limitedSeries === filters.limitedSeries);
+    if (filters.service.length > 0) filteredShows = filteredShows.filter((show) => filters.service.map((service) => service.id).includes(show.show.service.id));
+    if (filters.airDate.length > 0) filteredShows = filteredShows.filter((show) => filters.airDate.includes(show.show.airdate as AirDate));
+    if (filters.length.length > 0) filteredShows = filteredShows.filter((show) => filters.length.includes(show.show.length));
+    return filteredShows;
 }
 
 export async function getServices(): Promise<Service[] | null> {

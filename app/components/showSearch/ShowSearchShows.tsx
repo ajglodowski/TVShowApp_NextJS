@@ -7,7 +7,7 @@ import ShowRow from '../show/ShowRow/ShowRow';
 import { ShowSearchFiltersType } from './ShowSearchHeader/ShowSearchHeader';
 import { ShowSearchType } from '@/app/models/showSearchType';
 import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
-import { fetchShows, getUserShowData } from './ShowSearchService';
+import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } from './ShowSearchService';
 import ShowRowSkeleton from '../show/ShowRow/ShowRowSkeleton';
 import { Suspense } from 'react';
 import PaginationControls from './PaginationControls';
@@ -41,17 +41,29 @@ export default async function ShowSearchShows({
     nextPageUrl
 }: ShowSearchShowsProps) {
     // Fetch shows based on filters
-    let shows = await fetchShows(filters, searchType, userId, currentUserId);
-    
-    // Fetch current user info if needed
+    let shows: Show[] | undefined = undefined;
+    // If the search type is WATCHLIST, fetch the user's watchlist
+    // and set the current user info
+    // If the search type is OTHER_USER_WATCHLIST, fetch the other user's watchlist
     let currentUserInfo: UserShowDataWithUserInfo[] | undefined | null = undefined;
     let currenUserInfoMap: Map<number, UserShowDataWithUserInfo> = new Map();
-    if (currentUserId && shows) {
-        const showIds = shows.map((show) => String(show.id));
-        currentUserInfo = await getUserShowData({showIds, userId: currentUserId});
+    if (searchType === ShowSearchType.WATCHLIST && currentUserId) {
+        const userData = await fetchUsersWatchlist(currentUserId);
+        const filteredUserData = filterWatchlist(userData, filters);
+        shows = filteredUserData?.map((userShowData) => userShowData.show);
+        currentUserInfo = filteredUserData?.map((userShowData) => userShowData.userShowData);
         currentUserInfo?.forEach((info) => {
             currenUserInfoMap.set(Number(info.showId), info);
         });
+    } else {
+        let shows = await fetchShows(filters, searchType, userId, currentUserId);
+        if (currentUserId && shows) {
+            const showIds = shows.map((show) => String(show.id));
+            currentUserInfo = await getUserShowData({showIds, userId: currentUserId});
+            currentUserInfo?.forEach((info) => {
+                currenUserInfoMap.set(Number(info.showId), info);
+            });
+        }
     }
     
     // Filter shows based on search and user filters if necessary

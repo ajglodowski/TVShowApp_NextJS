@@ -130,7 +130,6 @@ function parseCurrentUserFilters(searchParams: ShowSearchProps['searchParams'] =
 
 export default async function ShowSearch(props: ShowSearchProps) {
     
-    const startTime = performance.now();
     const {searchType, userId, currentUserId} = props;
     const searchParams = await props.searchParams || {};
     
@@ -167,8 +166,6 @@ export default async function ShowSearch(props: ShowSearchProps) {
     // Pre-generate URLs for the client component
     const previousPageUrl = createPageUrl(currentPage - 1);
     const nextPageUrl = createPageUrl(currentPage + 1);
-    const endTime = performance.now();
-    console.log(`Time taken: ${endTime - startTime} milliseconds`);
 
     return (
         <div className='w-full overflow-x-hidden'>
