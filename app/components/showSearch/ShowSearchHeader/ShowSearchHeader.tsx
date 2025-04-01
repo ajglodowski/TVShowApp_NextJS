@@ -63,9 +63,9 @@ export default async function ShowSearchHeader({
     
     return (
         <div className="">
-            <div className="text-white px-4 py-1">
-                <div className="flex justify-between space-x-2 items-center mt-4">
-                    <form action={pathname} method="get" className="relative flex-1">
+            <div className="text-white px-4 py-1 flex-wrap justify-between">
+                <div className="flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 items-center mt-4">
+                    <form action={pathname} method="get" className="relative flex-1 w-full mb-4 md:mb-0">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
                         <Input
                             className={`pl-10 bg-white/5 text-white`}
@@ -83,7 +83,7 @@ export default async function ShowSearchHeader({
                             </Link>
                         )}
                     </form>
-                    <div className="flex space-x-2">
+                    <div className="flex-1 space-x-2 w-full">
                         <ShowSearchCurrentUserFilters 
                             filters={currentUserFilters} 
                             pathname={pathname}

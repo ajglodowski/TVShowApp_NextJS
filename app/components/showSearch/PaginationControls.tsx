@@ -2,27 +2,17 @@
 
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 type PaginationControlsProps = {
     currentPage: number;
     previousPageUrl?: string;
     nextPageUrl?: string;
+    totalPages: number;
 };
 
-export default function PaginationControls({ currentPage, previousPageUrl, nextPageUrl }: PaginationControlsProps) {
+export default function PaginationControls({ currentPage, previousPageUrl, nextPageUrl, totalPages }: PaginationControlsProps) {
     const router = useRouter();
-    const [totalPages, setTotalPages] = useState(1);
     
-    useEffect(() => {
-        // Read total pages from the hidden div
-        const totalPagesElement = document.getElementById('total-pages');
-        if (totalPagesElement) {
-            const pages = parseInt(totalPagesElement.getAttribute('data-total-pages') || '1');
-            setTotalPages(pages);
-        }
-    }, []);
-
     if (totalPages <= 1) {
         return null; // Don't render pagination if there's only one page
     }
@@ -62,4 +52,4 @@ export default function PaginationControls({ currentPage, previousPageUrl, nextP
             </Button>
         </div>
     );
-} 
+}

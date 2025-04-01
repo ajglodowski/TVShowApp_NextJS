@@ -141,12 +141,11 @@ export default async function ShowSearchShows({
                     ))}
                 </div>
             </ScrollArea>
-            {/* Hidden div to pass data to parent */}
-            <div id="total-pages" data-total-pages={totalPages} className="hidden"></div>
             <PaginationControls 
                 currentPage={currentPage} 
                 previousPageUrl={previousPageUrl}
                 nextPageUrl={nextPageUrl}
+                totalPages={totalPages}
             />
         </div>
     );
