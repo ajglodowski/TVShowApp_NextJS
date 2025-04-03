@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { X } from "lucide-react"
 import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton"
+import { backdropTabs } from "@/app/utils/stylingConstants"
 
 export default function YourShowsRowClient({ userId, allStatuses }: { userId: string; allStatuses: Status[] | null }) {
   const [selectedStatus, setSelectedStatus] = useState<Status[]>([])
@@ -109,9 +110,9 @@ export default function YourShowsRowClient({ userId, allStatuses }: { userId: st
         </div>
 
         <div className="relative">
-          <Tabs defaultValue="all" className="w-full ">
+          <Tabs defaultValue="all" className="w-full">
             <ScrollArea className="w-full">
-              <TabsList className="bg-white/5 text-white h-auto w-auto gap-1 p-1">
+              <TabsList className={`h-auto w-auto gap-1 p-1 ${backdropTabs}`}>
                 {allStatuses.map((status) => (
                   <TabsTrigger
                     key={status.id}

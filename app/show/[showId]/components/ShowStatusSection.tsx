@@ -5,13 +5,14 @@ import { UserShowData } from "@/app/models/userShowData";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { useState } from "react";
 import { updateUserShowData } from "../UserShowDataService";
-import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function ShowStatusSection({ showId, userId, userShowData, allStatuses, updateFunction, loggedIn }: { showId: string, userId: string | undefined, userShowData: UserShowData | null, allStatuses: Status[] | null, updateFunction: Function, loggedIn: boolean }) {
 
     const [currentStatus, setCurrentStatus] = useState(userShowData?.status);
     const otherStatuses = allStatuses?.filter((status) => status.id !== currentStatus?.id);
     const [showOptions, setShowOptions] = useState(false);
+    const router = useRouter();
 
     if (!loggedIn) return (<></>);
     if (userShowData === null) return (
@@ -32,10 +33,10 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
     };
     
     //const { toast } = useToast(); // TODO FIXME
+    
     async function addShowToWatchlist() {
-        const response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId, showId: showId, newValue: status });
-        //if (!response) toast({variant: 'destructive',description: 'Error Adding Show to Watchlist', title: 'Failure'});
-        //else toast({description: 'Please refresh page to see changes', title: 'Show Added to Watchlist'});
+        const response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId, showId: showId, newValue: null });
+        router.push(`/show/${showId}`);
     };
 
     return (

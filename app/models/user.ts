@@ -5,6 +5,7 @@ export type User = {
     profilePhotoURL: string;
     bio: string;
     name: string;
+    private: boolean;
 }
 
 export type UserBasicInfo = {

@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getShowsLogged, getUser, getUserByUsername, getUserFollowRelationship, getUserImageURL, getUserTopTags } from "@/app/utils/userService"
+import { getFollowerCount, getFollowingCount, getListsForUser, getShowsLogged, getUser, getUserByUsername, getUserFollowRelationship, getUserImageURL, getUserTopServices, getUserTopTags } from "@/app/utils/userService"
 import { Heart, ListChecks, MessageSquare, Star, Tv, Users } from "lucide-react"
 import Image from "next/image"
 import FollowButton from "./FollowButton"
@@ -10,8 +10,12 @@ import { createClient } from "@/app/utils/supabase/server"
 import TagCountCard from "./TagCountCard"
 import UserStatsCard from "./UserStatsCard/UserStatsCard"
 import ShowsListTile from "../../../components/showList/ShowListTile"
-import { backdropTabs, backdropTabsTrigger } from "@/app/utils/stylingConstants"
+import { backdropBackground, backdropTabs, backdropTabsTrigger } from "@/app/utils/stylingConstants"
 import YourUpdatesRow from "@/app/components/home/YourUpdatesRow"
+import ServiceCountCard from "./ServiceCountCard"
+import { ScrollArea } from "@radix-ui/react-scroll-area"
+import UserUpdatesRow from "../UserUpdatesRow"
+import Link from "next/link"
 
 export default async function UserProfile({username}: {username: string}) {
 
@@ -29,12 +33,8 @@ export default async function UserProfile({username}: {username: string}) {
     if (!user) return <UserNotFound />;
     const userId = user.id;
     const showsLogged = getShowsLogged(userId);
-    const followInfo = {
-        followers: 1248,
-        following: 843,
-    };
 
-    const showLists: number[] = [1];
+    const showLists: number[] | null = await getListsForUser(userId);
 
     const profilePicUrl = user.profilePhotoURL ? getUserImageURL(user.profilePhotoURL) : "/images/placeholder-user.jpg";
 
@@ -43,14 +43,18 @@ export default async function UserProfile({username}: {username: string}) {
     const currentUserId = userData?.id;
     const loggedIn = currentUserId !== undefined;
 
+    const followersCount = await getFollowerCount(userId);
+    const followingCount = await getFollowingCount(userId!);
+
     const followRelationship = loggedIn ? await getUserFollowRelationship(userId, currentUserId!) : null;
 
     const tagData = await getUserTopTags(userId);
+    const serviceData = await getUserTopServices(userId);
 
     const Header = () => {
         return(
             <div>
-                <Avatar className="h-24 w-24 border-4 border-background">
+                <Avatar className="h-24 w-24 border-2 border-white/70">
                     <AvatarImage src={profilePicUrl} alt="@username" />
                     <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
@@ -59,23 +63,33 @@ export default async function UserProfile({username}: {username: string}) {
                         <h1 className="text-2xl font-bold">{user.name}</h1>
                         <FollowButton currentUserId={currentUserId} followRelationship={followRelationship} userId={userId} />
                     </div>
-                    <p className="text-muted-foreground">@{user.username}</p>
+                    <p className="text-muted-foreground font-bold">@{user.username}</p>
                     <div className="flex space-x-1 text-muted-foreground items-center">
                         <Tv className="h-4 w-4" />
                         <span className="">{showsLogged} Shows Logged</span>
                     </div>
-                    <p className="text-sm mt-2 max-w-md">
+                    <p className="text-sm mt-2 max-w-md pb-2">
                         {user.bio}
                     </p>
                 </div>
                 <div className="flex flex-col gap-2 text-sm md:text-right">
-                    <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 md:order-last" />
-                        <span className="font-medium">{followInfo.followers} Followers</span>
+                    <div className="flex items-center gap-2 hover:underline cursor-pointer">
+                        <Users className="h-4 w-4" />
+                        { followersCount != null && 
+                          <Link href={`/profile/${user.username}/followers`}>
+                            <span className="font-medium">{followersCount} Followers</span>
+                          </Link>
+                        }
+                        { followersCount == null && <span className="font-medium">Error loading followers</span>}
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 md:order-last" />
-                        <span className="font-medium">{followInfo.following} Following</span>
+                    <div className="flex items-center gap-2 hover:underline cursor-pointer">
+                        <Users className="h-4 w-4" />
+                        { followingCount != null && 
+                          <Link href={`/profile/${user.username}/following`}>
+                            <span className="font-medium">{followingCount} Following</span>
+                          </Link>
+                        }
+                        { followingCount == null && <span className="font-medium">Error loading Following</span>}
                     </div>
                     
                 </div>
@@ -87,35 +101,35 @@ export default async function UserProfile({username}: {username: string}) {
     <div className="container mx-auto py-6 px-4 md:px-6">
       <div className="grid gap-6 lg:grid-cols-[1fr_300px] bg-black">
         <div className="space-y-6">
-            <Card className="bg-black text-white">
-                <CardContent>
+            <Card className={`${backdropBackground} text-white border-2 border-white/10 shadow-lg rounded-lg`}>
+                <CardContent className="p-4">
                 <Header />
                 </CardContent>
             </Card>
 
-          <Tabs defaultValue="lists" className={` w-full`}>
+          <Tabs defaultValue="lists" className={`w-full rounded-lg ${backdropBackground} border-2 border-white/10 p-2`}>
             <TabsList className={`grid grid-cols-3 w-full md:w-[400px] rounded-lg ${backdropTabs}`}>
               <TabsTrigger value="lists" className={`${backdropTabsTrigger}`}>Lists</TabsTrigger>
               <TabsTrigger value="updates" className={`${backdropTabsTrigger}`}>Updates</TabsTrigger>
               <TabsTrigger value="reviews" className={`${backdropTabsTrigger}`}>Reviews</TabsTrigger>
             </TabsList>
-            <TabsContent value="lists" className="space-y-4 mt-6">
+            <TabsContent value="lists" className="space-y-4 mt-6 ">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">My Lists</h2>
+                <h2 className="text-xl font-semibold">{user.username}'s Lists</h2>
                 <Button variant="outline" className={`${backdropTabs}`} size="sm">
                   <ListChecks className="mr-2 h-4 w-4" />
                   Create List
                 </Button>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
-                {showLists.map((listId) => (
+                {showLists && showLists.map((listId) => (
                   <ShowsListTile key={listId} listId={listId}/>
                 ))}
               </div>
             </TabsContent>
-            <TabsContent value="updates" className="flex flex-wrap w-64 overflow-hidden">
-              <div className="flex flex-wrap overflow-x-hidden">
-                <YourUpdatesRow userId={userId} />
+            <TabsContent value="updates" className="mt-6 w-full">
+              <div className="w-full overflow-x-auto">
+                  <UserUpdatesRow userId={userId} />
               </div>
             </TabsContent>
             <TabsContent value="reviews" className="space-y-4 mt-6">
@@ -177,6 +191,7 @@ export default async function UserProfile({username}: {username: string}) {
         <div className="space-y-6">
           <UserStatsCard userId={userId} />
           <TagCountCard tagData={tagData}/>
+          <ServiceCountCard serviceData={serviceData}/>
         </div>
       </div>
     </div>

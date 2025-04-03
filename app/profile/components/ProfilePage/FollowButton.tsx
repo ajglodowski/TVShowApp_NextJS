@@ -3,9 +3,11 @@ import { UserFollowRelationship } from "@/app/models/userFollowRelationship";
 import { Button } from "@/components/ui/button";
 import { followUser, unfollowUser } from "../../UserServiceClient";
 import { useState } from "react";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 
 export default function FollowButton({ currentUserId, followRelationship, userId }: { currentUserId: string | undefined, followRelationship: UserFollowRelationship|null, userId: string }) {
 
+    const buttonStyle = `${backdropBackground}`;
     const [relationship, setRelationship] = useState<UserFollowRelationship | null>(followRelationship);
     const loggedIn = currentUserId !== undefined;
     if (!loggedIn) {
@@ -19,7 +21,7 @@ export default function FollowButton({ currentUserId, followRelationship, userId
     if (currentUserId === userId) {
         return (
             <div className='w-full h-full'>
-                <Button size="sm">You</Button>
+                <Button size="sm" className={`${buttonStyle} hover:bg-white hover:text-black`}>You</Button>
             </div>
         );
     }
@@ -38,15 +40,20 @@ export default function FollowButton({ currentUserId, followRelationship, userId
             let success = await unfollowUser(userId, currentUserId);
             if (success) setRelationship(null);
         } else {
-            let response = await unfollowUser(userId, currentUserId);
-            if (response) setRelationship(response);
+            let createdRelationship = await followUser(userId, currentUserId);
+            if (createdRelationship) setRelationship(createdRelationship);
         }
     }
 
 
     return (
-        <div className='w-full h-full'>
-            <Button size="sm" onClick={handleButtonClick}>{buttonText}</Button>
+        <div className='w-full h-full mx-16'>
+            <Button size="sm"
+                variant="outline"
+                className={`${buttonStyle} hover:bg-white hover:text-black`}
+                onClick={handleButtonClick}>
+                    {buttonText}
+            </Button>
         </div>
     );
 }

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import type { AirDate, CurrentlyAiringDTO } from "@/app/models/airDate"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ClientShowTile from "../../show/ShowTile/ClientShowTile"
+import { backdropTabs } from "@/app/utils/stylingConstants"
 
 type AirDateInfo = {
   day: AirDate
@@ -68,7 +69,7 @@ export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { cur
         onValueChange={(value) => setActiveDay(value as AirDate)}
         className="w-full"
       >
-        <TabsList className="bg-white/5 text-white h-auto w-auto gap-1 p-1">
+        <TabsList className={`${backdropTabs} my-2`}>
           {sortedDays.map(({ day }) => (
             <TabsTrigger key={day} value={day} 
                 className={

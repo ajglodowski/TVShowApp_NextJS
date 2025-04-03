@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from '@/components/ui/button'
 import Image from "next/image";
 import { getPresignedUserImageURL } from '@/app/profile/UserService'
+import { backdropBackground } from '@/app/utils/stylingConstants'
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -64,12 +65,12 @@ export default async function AuthButton() {
         <Button
           variant="outline"
           size="icon"
-          className="overflow-hidden rounded-full"
+          className={`overflow-hidden rounded-full`}
         >
           <ProfilePic />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className='bg-black text-white'>
+      <DropdownMenuContent align="end" className={`${backdropBackground} text-white`}>
         <DropdownMenuLabel>Hey {userInfo?.username}!</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
@@ -97,9 +98,15 @@ export default async function AuthButton() {
   ) : (
     <Link
       href="/login"
-      className="py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
+      className="flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
     >
-      Login
+      <Button
+        variant="outline"
+        size="icon"
+        className={`${backdropBackground} text-white rounded-md px-8 mx-2 py-2`}
+      >
+        Login
+      </Button>
     </Link>
   )
 }

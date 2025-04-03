@@ -12,7 +12,7 @@ export const getPresignedUserImageURL = cache(async (picLocation: string): Promi
     cacheLife({
       stale: 300, // 5 minutes
       revalidate: 300, // 5 minutes
-      expire: 600, // 10 minutes
+      expire: 300, // 10 minutes
     });
     const apiURL = `${serverBaseURL}/api/imageUrlFetcher?path=profilePics&imageName=`;
     const transformedName = encodeURIComponent(picLocation);

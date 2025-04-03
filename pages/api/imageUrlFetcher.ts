@@ -17,11 +17,14 @@ const getGCPCredentials = () => {
 
 
 // Initialize Google Cloud Storage client with authentication
-const storage = new Storage(getGCPCredentials());
-// const storage = new Storage({
-//     projectId: "tv-show-app-602d7",
-//     keyFilename: "gcpCreds.json"
-// });
+let storage: Storage;
+if (process.env.NODE_ENV === "production") storage = new Storage(getGCPCredentials());
+else {
+  storage = new Storage({
+    projectId: "tv-show-app-602d7",
+    keyFilename: "gcpCreds.json"
+});
+}
 
 
 type ImageUrlCacheEntry = {
@@ -29,17 +32,8 @@ type ImageUrlCacheEntry = {
     timestamp: number;
 }
 
-const urlCache = new Map<string, ImageUrlCacheEntry>();
 
 export async function generatePresignedUrl(fileName: string) {
-    const cachedEntry = urlCache.get(fileName);
-    if (cachedEntry) {
-        if (cachedEntry.timestamp > Date.now() - 60 * 60 * 1000) {
-            return cachedEntry.url;
-        } else {
-            urlCache.delete(fileName);
-        }
-    }
 
   const bucketName = process.env.GCP_BUCKET_NAME || "";
   const bucket = storage.bucket(bucketName);
@@ -48,10 +42,9 @@ export async function generatePresignedUrl(fileName: string) {
   const [url] = await file.getSignedUrl({
     version: 'v4',
     action: 'read',
-    expires: Date.now() + 60 * 60 * 1000, // 1 hour
+    expires: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
   });
 
-  urlCache.set(fileName, { url, timestamp: Date.now() });
   return url;
 }
 

@@ -15,7 +15,7 @@ function Navbar() {
                     </Link>
                 </div>
                 <nav className="flex justify-between w-full">
-                    <ul className='flex items-center space-x-6 text-sm font-medium'>
+                    <ul className='flex items-center space-x-2 md:space-x-6  text-sm font-medium'>
                         <Link href="/" className="transition-colors hover:text-white text-gray-300">
                         Home
                         </Link>

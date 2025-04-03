@@ -10,11 +10,13 @@ export default async function YourUpdatesRow ({userId}: {userId: string}) {
     if (updates.length === 0) return (<div>No Updates found</div>);
 
     return (
-        <div className="flex items-center justify-center mx-2">
+        <div className="w-full">
             <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
-                <div className="flex space-x-2">
+                <div className="flex space-x-4 p-4">
                     {updates.map((update) => (
-                        <UserUpdateTile key={update.showName} updateDto={update}/>
+                        <div key={update.userUpdate.id} className="flex-shrink-0">
+                            <UserUpdateTile key={update.showName} updateDto={update}/>
+                        </div>
                     ))}
                 </div>
                 <ScrollBar orientation="horizontal" />

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getShowsLogged, ShowTagCountDTO } from "@/app/utils/userService";
 import { getListsCreated, getUpdatesCreated } from "./UserStatsCardService";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 
 export default async function UserStatsCard({ userId }: { userId: string }) {
 
@@ -31,16 +32,16 @@ export default async function UserStatsCard({ userId }: { userId: string }) {
     }
 
     return (
-        <Card>
-            <CardHeader>
+        <Card className={`${backdropBackground} text-white border-2 border-white/10`}>
+            <CardHeader className="p-4">
                 <CardTitle>Stats</CardTitle>
             </CardHeader>
             <CardContent className="">
-                {showsLogged && <StatLine label="Shows Logged" value={showsLogged} />}
-                {updatesCreated && <StatLine label="Updates Created" value={updatesCreated} />}
-                {listsCreated && <StatLine label="Lists Created" value={listsCreated} />}
-                {listsLiked && <StatLine label="Liked lists" value={listsLiked} />}
-                {likesOnLists && <StatLine label="List Likes" value={likesOnLists} />}
+                {showsLogged != null && <StatLine label="Shows Logged" value={showsLogged} />}
+                {updatesCreated != null && <StatLine label="Updates Created" value={updatesCreated} />}
+                {listsCreated != null && <StatLine label="Lists Created" value={listsCreated} />}
+                {listsLiked != null && <StatLine label="Liked lists" value={listsLiked} />}
+                {likesOnLists != null && <StatLine label="List Likes" value={likesOnLists} />}
             </CardContent>
         </Card>
     );

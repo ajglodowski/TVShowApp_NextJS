@@ -31,13 +31,6 @@ export async function getTags(showId: string): Promise<ShowTag[] | null> {
   const supabase = await createClient();
   const { data: tagData } = await supabase.from("ShowTagRelationship").select('tag:tagId (id, name, created_at)').match({showId: showId});
   
-  const { data: actorData } = await supabase
-            .from("ActorShowRelationship")
-            .select("showId, actor!inner(id, name)")
-            .match({"showId": showId});
-
-  console.log(actorData);
-  
   if (!tagData) return null;
   
   const tags = tagData.map((obj) => obj.tag) as unknown as ShowTag[];
