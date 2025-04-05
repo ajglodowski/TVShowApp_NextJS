@@ -1,13 +1,12 @@
 'use client'
 import { Show } from "@/app/models/show";
 import { ShowImage } from "@/app/models/showImage";
+import { Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { fetchAverageColor, getPresignedShowImageURL, getShow, getShowImage, getShowImageURL } from "../ClientShowService";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Clock } from "lucide-react";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
+import { getPresignedShowImageURL, getShow } from "../ClientShowService";
 
 export default function ClientShowTile({ showId }: { showId: string }) {
 
@@ -31,12 +30,6 @@ export default function ClientShowTile({ showId }: { showId: string }) {
                 const imageUrl = await getPresignedShowImageURL(show.pictureUrl, true);
                 setShowImageInfo({ imageUrl, averageColor: "rgb(0,0,0)" } as ShowImage);
             }
-            /*
-            fetchAverageColor(imageUrl).then((averageColor) => {
-                if (!averageColor) setShowImageInfo(null);
-                else setShowImageInfo({ imageUrl, averageColor } as ShowImage);
-            });
-            */
         };
 
         fetchImageUrl();

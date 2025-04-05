@@ -1,8 +1,8 @@
-import { fetchAverageColor, getPresignedShowImageURL, getShowImage, getShowImageURL } from "@/app/show/[showId]/ShowService";
+import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
 import Image from "next/image";
 import { Suspense } from "react";
-import { UserUpdateTileDTO } from "../UserUpdateService";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
+import { UserUpdateTileDTO } from "../UserUpdateService";
 import UserUpdateTileBody from "./UserUpdateTileBody";
 
 type UserUpdateTileProps = { updateDto: UserUpdateTileDTO; };

@@ -1,10 +1,12 @@
-import { UserUpdate } from "@/app/models/userUpdate";
 import { getUserUpdateMessage } from "@/app/utils/getUserUpdateMessage";
 import { dateToString } from "@/app/utils/timeUtils";
+import { getUserUpdates } from "../UserShowDataService";
 
-export default function UserUpdatesSection ({ userUpdates }: { userUpdates: UserUpdate[] | null }) {
+export default async function UserUpdatesSection ({ showId, currentUserId }: { showId: number, currentUserId: string | undefined }) {
 
-    if (!userUpdates) return (<></>);
+    const userUpdates = await getUserUpdates({ showId: showId, userId: currentUserId});
+
+    if (userUpdates == null) return (<></>);
 
     if (userUpdates.length === 0) return (<div>No updates</div>);
 

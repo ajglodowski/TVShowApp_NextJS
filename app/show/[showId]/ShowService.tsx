@@ -82,12 +82,14 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
   return data.url;
 });
 
-export const fetchAverageColor = cache(async function (imageUrl: string):  Promise<string> {
-  'use cache'
+export const fetchAverageShowColor = cache(async function (showName: string): Promise<string> {
+  'use cache';
   cacheLife('days');
-  const apiURL = `${serverBaseURL}/api/averageColor?imageUrl=${imageUrl}`;
+  const imagePath = `showImages/resizedImages/${showName}_200x200.jpeg`;
+  const encodedImagePath = encodeURIComponent(imagePath); // Encode the path
+  const apiURL = `${serverBaseURL}/api/averageColor?imagePath=${encodedImagePath}`;
   const response = await fetch(apiURL);
-  if (response.status !== 200) return "rbg(0,0,0)";
+  if (response.status !== 200) return "rgb(0,0,0)";
   const { averageColor } = await response.json();
   return averageColor;
 });

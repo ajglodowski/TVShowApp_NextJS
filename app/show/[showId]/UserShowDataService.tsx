@@ -57,7 +57,7 @@ export async function getAllStatuses(): Promise<Status[]|null> {
     return statuses;
 }
 
-export async function getUserUpdates({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserUpdate[]|null> {
+export async function getUserUpdates({showId, userId}: {showId: number, userId: string | undefined}): Promise<UserUpdate[]|null> {
     if (!userId) return null;
   
     

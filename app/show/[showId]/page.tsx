@@ -1,20 +1,20 @@
+import Divider from '@/app/components/Divider';
 import type { Show } from '@/app/models/show';
 import { boolToEmoji } from '@/app/utils/boolToEmoji';
-import { fetchAverageColor, getAllTags, getRatingCounts, getShow, getShowImage, getShowImageURL, getStatusCounts, getTags } from './ShowService';
-import ShowTagsSection from "./components/ShowTagsSection";
 import { createClient } from '@/app/utils/supabase/server';
-import SeasonsRow from './components/SeasonsRow';
-import { getAllStatuses, getUserShowData, getUserUpdates, updateUserShowData } from './UserShowDataService';
-import ShowStatusSection from './components/ShowStatusSection';
-import Image from 'next/image';
-import UserUpdatesSection from './components/UserUpdatesSection';
-import RatingsStatsSection from './components/RatingsStatsSection';
-import UserRatingsSection from './components/UserRatingsSection';
 import { dateToString, releaseDateToString } from '@/app/utils/timeUtils';
-import Divider from '@/app/components/Divider';
-import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import Image from 'next/image';
+import Link from 'next/link';
+import { fetchAverageShowColor, getAllTags, getPresignedShowImageURL, getRatingCounts, getShow, getShowImageURL, getStatusCounts, getTags } from './ShowService';
+import { getAllStatuses, getUserShowData, updateUserShowData } from './UserShowDataService';
+import RatingsStatsSection from './components/RatingsStatsSection';
+import SeasonsRow from './components/SeasonsRow';
+import ShowStatusSection from './components/ShowStatusSection';
+import ShowTagsSection from "./components/ShowTagsSection";
 import StatusStatsSection from './components/StatusStatsSection';
+import UserRatingsSection from './components/UserRatingsSection';
+import UserUpdatesSection from './components/UserUpdatesSection';
 
 function ShowNotFound() {
   return (
@@ -36,7 +36,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   const currentUserId = user?.id;
   const loggedIn = currentUserId !== undefined;
 
-  const [showData, currentTags, allTags, userInfoData, allStatuses, ratingCounts, statusCounts, userUpdates] = await Promise.all([
+  const [showData, currentTags, allTags, userInfoData, allStatuses, ratingCounts, statusCounts] = await Promise.all([
     getShow(showId),
     getTags(showId),
     getAllTags(),
@@ -44,7 +44,6 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
     getAllStatuses(),
     getRatingCounts(showId),
     getStatusCounts(showId),
-    getUserUpdates({ showId: showId, userId: currentUserId}),
   ]);
 
   if (!showData) {
@@ -53,9 +52,20 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   const show = showData as Show;
 
   //const showImageInfo = await getShowImage(show.name, false);
-  const showImageUrl = getShowImageURL(show.name, false);
-  //const backgroundColor = showImageInfo?.averageColor;
-  const backgroundColor = await fetchAverageColor(showImageUrl);
+  const startTime = performance.now();
+  const pictureUrl = show.pictureUrl;
+  let showImageUrl: string | null = null;
+  let backgroundColor = 'rgb(0,0,0)';
+  if (pictureUrl) {
+    const [x, y] = await Promise.all([
+      getPresignedShowImageURL(pictureUrl, false),
+      fetchAverageShowColor(pictureUrl),
+    ]);
+    backgroundColor = y;
+    showImageUrl = x;
+  }
+  const endTime = performance.now();
+  console.log(`Image fetching took ${endTime - startTime} milliseconds`);
   const RGBAToHexA = (rgba: string, forceRemoveAlpha = false) => {
     return "#" + rgba.replace(/^rgba?\(|\s+|\)$/g, '') // Get's rgba / rgb string values
       .split(',') // splits them at ","
@@ -153,7 +163,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
       <div className='flex'>
         <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
           <h1 className='text-7xl font-bold tracking-tighter'>Your Updates</h1>
-          <UserUpdatesSection userUpdates={userUpdates} />
+          <UserUpdatesSection showId={parseInt(showId)} currentUserId={currentUserId} />
         </div>
       </div>
 

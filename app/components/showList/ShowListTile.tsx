@@ -1,9 +1,9 @@
-import { getListData, getListEntries } from "@/app/showList/ShowListService";
 import Image from "next/image"
 import ProfileBubble from "../user/ProfileBubble";
 import { getPresignedShowImageURL, getShowImageURL } from "@/app/show/[showId]/ShowService";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import Link from "next/link";
+import { getListData, getListEntries } from "@/app/list/[listId]/ListService";
 
 export default async function ShowsListTile({listId}: {listId: number}) {
 
@@ -36,7 +36,7 @@ export default async function ShowsListTile({listId}: {listId: number}) {
     };
 
   return (
-    <Link href={`/showList/${listId}`}>
+    <Link href={`/list/${listId}`}>
       <div className={`flex flex-col w-64 h-64  hover:bg-neutral-800/95 ${backdropBackground} text-white rounded-lg shadow-lg`}>
         <div className="relative flex w-full h-32 rounded-lg overflow-hidden mb-4">
           {imageUrls.map((imageUrl, index) => (

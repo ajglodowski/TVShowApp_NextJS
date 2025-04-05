@@ -40,12 +40,3 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
     return output;
 }
 
-export async function getAllStatuses(): Promise<Status[]|null> {
-    'use client';
-    const supabase = createClient();
-    const { data } = await supabase.from("status").select();
-    const statuses = data as unknown as Status[];
-    console.log(statuses);
-    return statuses;
-}
-

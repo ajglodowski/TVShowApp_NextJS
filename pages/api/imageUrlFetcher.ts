@@ -23,7 +23,7 @@ else {
   storage = new Storage({
     projectId: "tv-show-app-602d7",
     keyFilename: "gcpCreds.json"
-});
+  });
 }
 
 
