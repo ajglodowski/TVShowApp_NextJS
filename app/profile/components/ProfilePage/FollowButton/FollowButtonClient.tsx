@@ -1,11 +1,11 @@
 'use client';
 import { UserFollowRelationship } from "@/app/models/userFollowRelationship";
 import { Button } from "@/components/ui/button";
-import { followUser, unfollowUser } from "../../UserServiceClient";
 import { useState } from "react";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { followUser, unfollowUser } from "@/app/profile/UserServiceClient";
 
-export default function FollowButton({ currentUserId, followRelationship, userId }: { currentUserId: string | undefined, followRelationship: UserFollowRelationship|null, userId: string }) {
+export default function FollowButtonClient({ currentUserId, followRelationship, userId }: { currentUserId: string | undefined, followRelationship: UserFollowRelationship|null, userId: string }) {
 
     const buttonStyle = `${backdropBackground}`;
     const [relationship, setRelationship] = useState<UserFollowRelationship | null>(followRelationship);

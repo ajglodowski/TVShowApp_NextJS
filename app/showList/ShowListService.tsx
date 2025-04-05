@@ -11,7 +11,7 @@ export async function getListData(listId: number): Promise<ShowList | null> {
 
 export async function getListEntries(listId: number, limit: number| null): Promise<ShowListEntry[] | null> {
     const supabase = await createClient();
-    let baseQuery = supabase.from("ShowListRelationship").select('id, show: showId (name, releaseDate, id), created_at, listId, position').match({listId: listId});
+    let baseQuery = supabase.from("ShowListRelationship").select('id, show: showId (name, releaseDate, id, pictureUrl), created_at, listId, position').match({listId: listId});
     if (limit) baseQuery = baseQuery.limit(limit);
     baseQuery = baseQuery.order('position', {ascending: true});
     const { data: showData } = await baseQuery;

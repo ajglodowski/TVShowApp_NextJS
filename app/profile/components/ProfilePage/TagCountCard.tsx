@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShowTagCountDTO } from "@/app/utils/userService";
+import { getUserTopTags, ShowTagCountDTO } from "@/app/utils/userService";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 
-export default function TagCountCard({ tagData }: { tagData: ShowTagCountDTO[] | null }) {
+export default async function TagCountCard({ userId }: { userId: string }) {
+
+    const tagData = await getUserTopTags(userId);
 
     if (tagData === null) {
         return (

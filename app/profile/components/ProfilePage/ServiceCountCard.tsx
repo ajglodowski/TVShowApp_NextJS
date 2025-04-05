@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShowServiceCountDTO } from "@/app/utils/userService";
+import { getUserTopServices, ShowServiceCountDTO } from "@/app/utils/userService";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 
-export default function ServiceCountCard({ serviceData }: { serviceData: ShowServiceCountDTO[] | null }) {
+export default async function ServiceCountCard({ userId }: { userId: string }) {
+
+    const serviceData = await getUserTopServices(userId);
 
     if (serviceData === null) {
         return (

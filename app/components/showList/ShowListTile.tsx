@@ -1,7 +1,7 @@
 import { getListData, getListEntries } from "@/app/showList/ShowListService";
 import Image from "next/image"
 import ProfileBubble from "../user/ProfileBubble";
-import { getShowImageURL } from "@/app/show/[showId]/ShowService";
+import { getPresignedShowImageURL, getShowImageURL } from "@/app/show/[showId]/ShowService";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import Link from "next/link";
 
@@ -17,9 +17,15 @@ export default async function ShowsListTile({listId}: {listId: number}) {
         );
     };
 
-    const imageUrls: string[] = listEntries.map(entry => {
-        return getShowImageURL(entry.show.name, true);
+    const imageUrlPromises = listEntries.map(async (entry) => {
+      if (entry.show.pictureUrl) {
+        const imageUrl = await getPresignedShowImageURL(entry.show.pictureUrl, true);
+        return imageUrl;
+      } else {
+        return null;
+      }
     });
+    const imageUrls = await Promise.all(imageUrlPromises);
 
     const translateMap: {[key: number]: string} = {
       0: '',
