@@ -5,6 +5,7 @@ import Link from "next/link";
 import FollowButton from "./FollowButton/FollowButton";
 import { Tv, Users } from "lucide-react";
 import { getPresignedUserImageURL } from "../../UserService";
+import EditButton from "./EditButton";
 
 export default async function UserProfileHeader({userId, userData}: {userId: string, userData: User}) {
     const user = userData;
@@ -32,8 +33,10 @@ export default async function UserProfileHeader({userId, userData}: {userId: str
                 <div className="flex items-center gap-4">
                     <h1 className="text-2xl font-bold">{user.name}</h1>
                     <FollowButton userId={userId} />
+                    <EditButton userId={userId} />
                 </div>
                 <p className="text-muted-foreground font-bold">@{user.username}</p>
+                { user.private && <p className="text-sm text-muted-foreground italic">This account is private</p>}
                 <div className="flex space-x-1 text-muted-foreground items-center">
                     <Tv className="h-4 w-4" />
                     <span className="">{showsLogged} Shows Logged</span>
