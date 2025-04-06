@@ -1,7 +1,5 @@
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import AvatarBubble from "./AvatarBubble";
-import AvatarBubbleLoading from "./AvatarBubbleLoading";
-import { Suspense } from "react";
 
 export const AvatarsBubbleRow = ({ currentUserInfo, otherUsersInfo }: { currentUserInfo: UserShowDataWithUserInfo, otherUsersInfo: UserShowDataWithUserInfo[] }) => {
     

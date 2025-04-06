@@ -40,7 +40,7 @@ export default function ShowSearchFilterButton({
     const updateURL = (updatedFilters: ShowSearchFiltersType) => {
         // Create a new query string manually
         let query = '';
-        let params: Record<string, string> = {};
+        const params: Record<string, string> = {};
         
         // Preserve non-filter params
         if (searchParams) {

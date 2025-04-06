@@ -26,13 +26,6 @@ else {
   });
 }
 
-
-type ImageUrlCacheEntry = {
-    url: string;
-    timestamp: number;
-}
-
-
 export async function generatePresignedUrl(fileName: string) {
 
   const bucketName = process.env.GCP_BUCKET_NAME || "";

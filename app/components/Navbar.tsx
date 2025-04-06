@@ -4,7 +4,7 @@ import AuthButton from '@/supabase_components/AuthButton';
 
 function Navbar() {
 
-    const textButtonStyle = ' my-auto text-white p-1 outline rounded-md m-1 hover:text-black hover:bg-white hover:shadow-md transition duration-300 ease-in-out';
+    //const textButtonStyle = ' my-auto text-white p-1 outline rounded-md m-1 hover:text-black hover:bg-white hover:shadow-md transition duration-300 ease-in-out';
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-neutral-800 bg-neutral-800/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-800/60 overflow-x-hidden">

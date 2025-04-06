@@ -6,7 +6,7 @@ import { dateToString, releaseDateToString } from '@/app/utils/timeUtils';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import Link from 'next/link';
-import { fetchAverageShowColor, getAllTags, getPresignedShowImageURL, getRatingCounts, getShow, getShowImageURL, getStatusCounts, getTags } from './ShowService';
+import { fetchAverageShowColor, getAllTags, getPresignedShowImageURL, getRatingCounts, getShow, getStatusCounts, getTags } from './ShowService';
 import { getAllStatuses, getUserShowData, updateUserShowData } from './UserShowDataService';
 import RatingsStatsSection from './components/RatingsStatsSection';
 import SeasonsRow from './components/SeasonsRow';
@@ -51,7 +51,6 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   }
   const show = showData as Show;
 
-  //const showImageInfo = await getShowImage(show.name, false);
   const startTime = performance.now();
   const pictureUrl = show.pictureUrl;
   let showImageUrl: string | null = null;

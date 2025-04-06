@@ -1,18 +1,14 @@
 'use server';
-import { Show } from '@/app/models/show';
-import ShowSearchHeader, { ShowSearchFiltersType, defaultFilters } from './ShowSearchHeader/ShowSearchHeader';
-import ShowSearchShows from './ShowSearchShows';
-import { fetchShows, getUserShowData, getServices } from './ShowSearchService';
-import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
-import { ShowSearchType } from '@/app/models/showSearchType';
-import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
-import { Rating } from '@/app/models/rating';
 import { AirDate } from '@/app/models/airDate';
-import { Service } from '@/app/models/service';
+import { Rating } from '@/app/models/rating';
+import { Show } from '@/app/models/show';
 import { ShowLength } from '@/app/models/showLength';
-import Link from 'next/link';
+import { ShowSearchType } from '@/app/models/showSearchType';
 import { Suspense } from 'react';
-import PaginationControls from './PaginationControls';
+import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
+import ShowSearchHeader, { ShowSearchFiltersType, defaultFilters } from './ShowSearchHeader/ShowSearchHeader';
+import { getServices } from './ShowSearchService';
+import ShowSearchShows from './ShowSearchShows';
 import ShowSearchShowsLoading from './ShowSearchShowsLoading';
 
 export type ShowSearchData = {

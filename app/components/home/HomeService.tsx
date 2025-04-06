@@ -57,7 +57,20 @@ export async function getComingSoon({userId}: {userId: string}): Promise<ComingS
     return output;
 }
 
-function formatUpdate(updateData: any): UserUpdateTileDTO {
+type UserUpdateDTO = {
+    id: number,
+    userId: string,
+    showId: string,
+    status: Status,
+    updateDate: Date,
+    show: {
+        id: number,
+        name: string,
+        pictureUrl: string
+    }
+}
+
+function formatUpdate(updateData: UserUpdateDTO): UserUpdateTileDTO {
     const showInfo = updateData.show as unknown as {id: number, name: string, pictureUrl: string};
     const formatted = {
         ...updateData,
@@ -78,7 +91,7 @@ export async function getUserUpdates({userId, updateLimit, fetchHidden}: {userId
     if (!updateData) return null;
     const updates = [];
     for (const update of updateData) {
-        updates.push(formatUpdate(update));
+        updates.push(formatUpdate(update as unknown as UserUpdateDTO));
     }
     return updates;
 }

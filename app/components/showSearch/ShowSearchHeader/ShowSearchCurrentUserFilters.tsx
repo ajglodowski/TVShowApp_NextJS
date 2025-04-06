@@ -1,17 +1,16 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
 import { Rating } from "@/app/models/rating";
 import { Status } from "@/app/models/status";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Trash2, User } from "lucide-react";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useOptimistic, useTransition } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
-import { useOptimistic, useState, useTransition } from "react";
 
 export type CurrentUserFilters = {
     addedToWatchlist?: boolean;
@@ -49,12 +48,6 @@ export default function ShowSearchCurrentUserFilters({ filters, pathname, curren
             ...update
         })
     );
-    
-    const getBoolFromString = (str: string): boolean | undefined => {
-        if (str === 'true') return true;
-        if (str === 'false') return false;
-        return undefined;
-    }
 
     const getStringFromBool = (bool: boolean | undefined): string => {
         if (bool === true) return 'true';

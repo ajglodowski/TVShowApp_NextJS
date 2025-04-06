@@ -1,10 +1,9 @@
-import Link from 'next/link'
-import { headers } from 'next/headers'
 import { createClient } from '@/app/utils/supabase/server'
-import { redirect } from 'next/navigation'
-import { ChevronRight } from 'lucide-react'
-import { backdropBackground } from '../utils/stylingConstants'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { backdropBackground } from '../utils/stylingConstants'
 
 export default async function Login({
   searchParams,

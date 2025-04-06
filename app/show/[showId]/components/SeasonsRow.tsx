@@ -9,7 +9,7 @@ export default function SeasonsRow({ userId, currentSeason, totalSeasons, showId
   const [currentSeasonState, setCurrentSeasonState] = useState(currentSeason);
 
   async function changeCurrentSeason(season: number){
-    let updateResponse = await updateFunction({ updateType: UserUpdateCategory.ChangedSeason, userId: userId, showId: showId, newValue: season });
+    const updateResponse = await updateFunction({ updateType: UserUpdateCategory.ChangedSeason, userId: userId, showId: showId, newValue: season });
     if (updateResponse) setCurrentSeasonState(season);
     else console.log(`Error updating season to ${season} for user ${userId} show ${showId}`);
   };

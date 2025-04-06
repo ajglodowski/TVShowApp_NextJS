@@ -4,16 +4,15 @@ import { getListsForUser, getUserByUsername } from "@/app/utils/userService"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Heart, ListChecks, MessageSquare, Star } from "lucide-react"
-import Image from "next/image"
+import { ListChecks } from "lucide-react"
 import { Suspense } from "react"
 import ShowsListTile from "../../../components/showList/ShowListTile"
 import UserUpdatesRow from "../UserUpdatesRow"
+import ProfilePageCardSkeleton from "./ProfilePageCardSkeleton"
 import ServiceCountCard from "./ServiceCountCard"
 import TagCountCard from "./TagCountCard"
 import UserProfileHeader from "./UserProfileHeader"
 import UserStatsCard from "./UserStatsCard/UserStatsCard"
-import ProfilePageCardSkeleton from "./ProfilePageCardSkeleton"
 
 export default async function UserProfile({username}: {username: string}) {
 

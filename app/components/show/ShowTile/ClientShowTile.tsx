@@ -14,7 +14,6 @@ export default function ClientShowTile({ showId }: { showId: string }) {
     const [showImageInfo, setShowImageInfo] = useState<ShowImage | null>(null);
     const show = showData as Show;
     const showImageUrl = showImageInfo?.imageUrl;
-    const backgroundColor = showImageInfo?.averageColor;
 
     useEffect(() => {
         getShow(showId).then((show) => {

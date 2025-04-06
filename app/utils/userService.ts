@@ -5,7 +5,6 @@ import { UserFollowRelationship } from "@/app/models/userFollowRelationship";
 import { ShowTag } from "@/app/models/showTag";
 import { cache } from 'react';
 import { Service } from "../models/service";
-import { data } from "autoprefixer";
 
 export const getUser = cache(async (userId: string): Promise<User | null> => {
   const supabase = await createClient();

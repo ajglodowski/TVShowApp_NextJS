@@ -13,7 +13,7 @@ export default function StatusStatsSection ({ statusCounts }: { statusCounts: St
     }
 
     const data = ():{name: string, total: number}[] => {
-        let out = [];
+        const out = [];
         for (const statusCount of statusCounts) {
             out.push({name: statusCount.status.name, total: statusCount.count});
         }

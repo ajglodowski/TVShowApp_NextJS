@@ -1,10 +1,8 @@
+import { apiRoute } from "@/app/envConfig";
 import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
-import { ShowImage } from "@/app/models/showImage";
-import { createClient } from "@/app/utils/supabase/client";
-import ColorThief from "colorthief";
 import { ShowTag } from "@/app/models/showTag";
-import { apiRoute, clientBaseURL } from "@/app/envConfig";
+import { createClient } from "@/app/utils/supabase/client";
 import { cache } from "react";
 
 export async function getShow( showId: string ): Promise<Show | null> {
@@ -80,45 +78,6 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
     setImageURLInCache(showNameURL, data.url);
     return data.url;
 });
-
-const colorCache: { [showName: string]: string } = {};
-
-export async function getShowImage(showName: string, tile: boolean): Promise<ShowImage | null> {
-    //const storage = firebaseStorage;
-
-    // Create a reference under which you want to list
-    //const imageRef = ref(storage, `showImages/resizedImages/${showName}_200x200.jpeg`);
-    try {
-        //const url = await getDownloadURL(imageRef);
-        
-        const url = getShowImageURL(showName, tile);
-        if (colorCache[showName]) {
-            console.log("Using cache");
-            return { imageUrl: url, averageColor: colorCache[showName] };
-        }
-        //const response = await fetch(url);
-
-        const image = new Image();
-        image.src = "";
-        image.src = url;
-        image.crossOrigin = "Anonymous";
-
-        await new Promise((resolve) => {
-            image.onload = resolve;
-        });
-
-        const colorThief = new ColorThief();
-        const [red, green, blue] = colorThief.getColor(image);
-        //const [red, green, blue] = [0, 0, 0];
-
-        const averageColor = `rgb(${red},${green},${blue})`;
-        colorCache[showName] = averageColor;
-        return { imageUrl: url, averageColor: averageColor };
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-}
 
 export async function addShowTag(showId: string, tag: ShowTag): Promise<boolean> {
     const supabase = createClient();

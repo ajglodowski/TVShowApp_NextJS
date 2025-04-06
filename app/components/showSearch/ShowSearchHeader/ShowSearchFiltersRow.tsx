@@ -1,14 +1,13 @@
 'use client'
-import { Button } from "@/components/ui/button";
-import { ShowSearchFiltersType, defaultFilters } from "./ShowSearchHeader";
-import { X } from "lucide-react";
-import { ReactNode } from "react";
+import { AirDate } from "@/app/models/airDate";
 import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
-import { AirDate } from "@/app/models/airDate";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useOptimistic, useTransition } from "react";
+import { ReactNode, useOptimistic, useTransition } from "react";
+import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
 // Define button styles as a constant
 const buttonStyles = ` ${backdropBackground} rounded-full text-white`;
@@ -87,13 +86,13 @@ export default function ShowSearchFiltersRow({
         return (item as Service).id !== undefined; // Adjust this check based on your Service type
     };
 
-    const isShowLength = (item: any): item is ShowLength => {
-        return Object.values(ShowLength).includes(item as ShowLength);
-    };
+    // const isShowLength = (item: any): item is ShowLength => {
+    //     return Object.values(ShowLength).includes(item as ShowLength);
+    // };
 
-    const isAirDate = (item: any): item is AirDate => {
-        return Object.values(AirDate).includes(item as AirDate);
-    };
+    // const isAirDate = (item: any): item is AirDate => {
+    //     return Object.values(AirDate).includes(item as AirDate);
+    // };
 
     const renderFilterBubbles = (): ReactNode[] => {
         const bubbles: ReactNode[] = [];

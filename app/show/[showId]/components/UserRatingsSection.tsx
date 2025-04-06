@@ -18,7 +18,7 @@ export default function UserRatingsSection ({ userInfo, updateFunction }: { user
 
     function updateRating(rating: Rating| null) {
         const updateCategory = rating ? UserUpdateCategory.ChangedRating : UserUpdateCategory.RemovedRating;
-        let updateResponse = updateFunction({ updateType: updateCategory , userId: userInfo!.userId, showId: userInfo!.showId, newValue: rating });
+        const updateResponse = updateFunction({ updateType: updateCategory , userId: userInfo!.userId, showId: userInfo!.showId, newValue: rating });
         if (updateResponse) setCurrentRating(rating);
         else console.error(`Error updating rating to ${rating}`);
     }

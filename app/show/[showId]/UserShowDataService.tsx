@@ -161,11 +161,22 @@ export async function updateUserShowData({updateType, userId, showId, newValue }
 
 export async function insertUpdate({update}: {update: UserUpdate}): Promise<boolean> {
     "use server";    
+
+    type UserUpdateInsert = {
+        id: number | undefined;
+        userId: string;
+        showId: number;
+        statusChange?: number;
+        seasonChange?: number;
+        ratingChange?: Rating;
+        updateDate: Date;
+        updateType: UserUpdateCategory;
+    }
     
     const supabase = await createClient();
-    let updateData = update as unknown as any;
+    const updateData = update as unknown as UserUpdateInsert;
     updateData.id = undefined;
-    if (updateData.updateType === UserUpdateCategory.UpdatedStatus) updateData.statusChange = updateData.statusChange.id;
+    if (update.updateType === UserUpdateCategory.UpdatedStatus) updateData.statusChange = update.statusChange!.id;
 
     const { error } = await supabase.from("UserUpdate").insert(updateData);
     if (error) {

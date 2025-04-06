@@ -1,7 +1,6 @@
 import { apiRoute } from "../envConfig";
 import { UserFollowRelationship } from "../models/userFollowRelationship";
 import { createClient } from "../utils/supabase/client";
-import { getUserByUsername } from "../utils/userService";
 
 export function getUserImageURL(username: string): string {
   const apiURL = `${apiRoute}/api/imageFetcher?path=profilePics&imageName=`;

@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { Suspense } from "react";
 import { UserUpdateTileDTO, getUserUpdate } from "../UserUpdateService";
-import UserUpdateTileWithoutImage from "./UserUpdateTileWithoutImage";
 import UserUpdateTileWithImage from "./UserUpdateTileWithImage";
 
 type UserUpdateTileProps =

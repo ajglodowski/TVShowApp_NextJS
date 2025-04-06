@@ -1,12 +1,9 @@
-import Link from 'next/link'
-import { headers } from 'next/headers'
-import { createClient } from '@/app/utils/supabase/server'
-import { redirect } from 'next/navigation'
-import { AtSign, ChevronRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { AtSign, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
 import { backdropBackground } from '../utils/stylingConstants'
 import { signUp } from '../utils/supabase/AuthService'
-import { Button } from '@/components/ui/button'
 
 export default async function Signup({
   searchParams,
@@ -20,7 +17,7 @@ export default async function Signup({
     return (
       <div className='text-white text-center mt-4 space-y-2'>
         <h1 className='text-xl font-bold'>Welcome to TV Show App</h1>
-        <h2 className='text-md text-white/80'>If you're new here please enter your details below to create your account and get started</h2>
+        <h2 className='text-md text-white/80'>If you&#39;re new here please enter your details below to create your account and get started</h2>
       </div>
     );
   }

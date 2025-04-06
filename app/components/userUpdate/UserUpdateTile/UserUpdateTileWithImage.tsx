@@ -10,7 +10,6 @@ type UserUpdateTileProps = { updateDto: UserUpdateTileDTO; };
 export default async function UserUpdateTileWithImage(props: UserUpdateTileProps) {
 
     const updateData = props.updateDto;
-    const showName = updateData.showName
     let showImageUrl: string | null = null;
     if (updateData.showPictureUrl) {
         showImageUrl = await getPresignedShowImageURL(updateData.showPictureUrl, true);

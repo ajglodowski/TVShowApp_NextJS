@@ -1,6 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getUserTopTags, ShowTagCountDTO } from "@/app/utils/userService";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function ProfilePageCardSkeleton({ cardTitle }: { cardTitle: string }) {

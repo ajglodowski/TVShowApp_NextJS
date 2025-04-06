@@ -1,6 +1,6 @@
 import { ProfileRow } from "@/app/components/user/ProfileRow";
 import { createClient } from "@/app/utils/supabase/server";
-import { getFollowerList, getFollowingList, getUserByUsername, getUserFollowRelationship } from "@/app/utils/userService";
+import { getFollowingList, getUserByUsername, getUserFollowRelationship } from "@/app/utils/userService";
 
 export default async function FollowingPage({ params }: { params: Promise<{ username: string }> }) {
     const username = (await params).username;

@@ -1,8 +1,7 @@
 'use client'
-import { LoadingImageSkeleton } from "../image/LoadingImageSkeleton";
-import Image from 'next/image';
 import { User } from "@/app/models/user";
-import { getUserImageURL } from "@/app/profile/UserServiceClient";
+import Image from 'next/image';
+import { LoadingImageSkeleton } from "../image/LoadingImageSkeleton";
 
 type ProfileBubbleProps = { user: User | null, profilePicUrl: string | null; };
 

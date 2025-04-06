@@ -2,16 +2,15 @@ import { AirDate } from "@/app/models/airDate";
 import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
 import { Input } from "@/components/ui/input";
-import ShowSearchCurrentUserFilters, { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchCurrentUserFilters";
-import { Search, Trash2, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import ShowSearchFilterButton from "./ShowSearchFilterButton";
-import ShowSearchFiltersRow from "./ShowSearchFiltersRow";
-import ShowSearchCurrentUserFiltersRow from "./ShowSearchCurrentUserFiltersRow";
+import { Search, X } from "lucide-react";
 import Link from "next/link";
-import { getServices } from "../ShowSearchService";
 import { Suspense } from "react";
+import { getServices } from "../ShowSearchService";
+import ShowSearchCurrentUserFilters, { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchCurrentUserFilters";
+import ShowSearchCurrentUserFiltersRow from "./ShowSearchCurrentUserFiltersRow";
+import ShowSearchFilterButton from "./ShowSearchFilterButton";
 import ShowSearchFilterButtonSkeleton from "./ShowSearchFilterButtonSkeleton";
+import ShowSearchFiltersRow from "./ShowSearchFiltersRow";
 
 export type ShowSearchFiltersType = {
     service: Service[];

@@ -46,7 +46,7 @@ export default async function ShowSearchShows({
     // and set the current user info
     // If the search type is OTHER_USER_WATCHLIST, fetch the other user's watchlist
     let currentUserInfo: UserShowDataWithUserInfo[] | undefined | null = undefined;
-    let currenUserInfoMap: Map<number, UserShowDataWithUserInfo> = new Map();
+    const currenUserInfoMap: Map<number, UserShowDataWithUserInfo> = new Map();
     if (searchType === ShowSearchType.WATCHLIST && currentUserId) {
         const userData = await fetchUsersWatchlist(currentUserId);
         const filteredUserData = filterWatchlist(userData, filters);
@@ -56,7 +56,7 @@ export default async function ShowSearchShows({
             currenUserInfoMap.set(Number(info.showId), info);
         });
     } else {
-        let shows = await fetchShows(filters, searchType, userId, currentUserId);
+        const shows = await fetchShows(filters, searchType, userId, currentUserId);
         if (currentUserId && shows) {
             const showIds = shows.map((show) => String(show.id));
             currentUserInfo = await getUserShowData({showIds, userId: currentUserId});

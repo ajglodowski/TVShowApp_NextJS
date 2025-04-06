@@ -37,10 +37,10 @@ export default function FollowButtonClient({ currentUserId, followRelationship, 
 
     const handleButtonClick = async () => {
         if (relationship) {
-            let success = await unfollowUser(userId, currentUserId);
+            const success = await unfollowUser(userId, currentUserId);
             if (success) setRelationship(null);
         } else {
-            let createdRelationship = await followUser(userId, currentUserId);
+            const createdRelationship = await followUser(userId, currentUserId);
             if (createdRelationship) setRelationship(createdRelationship);
         }
     }

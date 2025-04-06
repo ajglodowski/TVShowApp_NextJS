@@ -1,8 +1,8 @@
 import { Show } from "@/app/models/show";
+import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
+import { Clock, LucideIcon } from 'lucide-react';
 import Image from "next/image";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
-import { getPresignedShowImageURL, getShowImageURL } from "@/app/show/[showId]/ShowService";
-import { Clock, LucideIcon } from 'lucide-react';
 
 export type ShowTileContentProps = {
     showData: Show
