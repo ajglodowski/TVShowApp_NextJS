@@ -75,7 +75,7 @@ export default function ClientShowTile({ showId }: { showId: string }) {
 
 
     return (
-        <Link href={`show/${showId}`}>
+        <Link href={`/show/${showId}`}>
             {/* <div key={showId} className="inline-block rounded-lg w-32 h-42 shadow-xl" style={{ backgroundColor: backgroundColor }}> */}
             <div
                 className="group w-48 h-48 overflow-hidden rounded-lg bg-white/5 transition-all hover:bg-white/10 cursor-pointer relative"

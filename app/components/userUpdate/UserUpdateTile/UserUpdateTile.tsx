@@ -16,11 +16,11 @@ export default async function UserUpdateTile(props: UserUpdateTileProps) {
     }
     const update = updateData.userUpdate;
     return (
-        <Link key={update.showId} href={`show/${update.showId}`}>
+        <Link key={update.showId} href={`/show/${update.showId}`}>
             {/*
             
             <Suspense fallback={<UserUpdateTileWithoutImage updateDto={updateData}/>}>
-                <UserUpdateTileWithImage updateDto={updateData}/>
+            <UserUpdateTileWithImage updateDto={updateData}/>
             </Suspense>
             */}
             <UserUpdateTileWithImage updateDto={updateData}/>

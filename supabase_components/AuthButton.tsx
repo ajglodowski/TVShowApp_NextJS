@@ -73,11 +73,11 @@ export default async function AuthButton() {
       <DropdownMenuContent align="end" className={`${backdropBackground} text-white`}>
         <DropdownMenuLabel>Hey {userInfo?.username}!</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Link href="/profile">
-            Your Profile
-          </Link>
-        </DropdownMenuItem>
+        <Link href="/profile">
+          <DropdownMenuItem>
+              Your Profile
+          </DropdownMenuItem>
+        </Link>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <form action={signOut}>

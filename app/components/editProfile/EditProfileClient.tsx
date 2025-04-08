@@ -90,9 +90,9 @@ export function EditProfileForm({ userData, email, presignedImageUrl, saveFuncti
                                         <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
                                         <input
                                         className="ml-4 bg-inherit text-white"
-                                        name="username"
                                         placeholder="yourusername"
                                         required
+                                        {...field}
                                         />
                                     </div>
                                 </FormControl>

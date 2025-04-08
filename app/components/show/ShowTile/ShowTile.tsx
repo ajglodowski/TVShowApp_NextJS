@@ -26,7 +26,7 @@ export default async function ShowTile(props: ShowTileProps) {
     }
 
     return (
-        <Link key={showId} href={`show/${showId}`}>
+        <Link key={showId} href={`/show/${showId}`}>
             <ShowTileContent showData={showData} badges={props.badges}/>
         </Link>
     );
