@@ -15,6 +15,7 @@ import ShowTagsSection from "./components/ShowTagsSection";
 import StatusStatsSection from './components/StatusStatsSection';
 import UserRatingsSection from './components/UserRatingsSection';
 import UserUpdatesSection from './components/UserUpdatesSection';
+import ActorsSection from './components/ActorsSection';
 
 function ShowNotFound() {
   return (
@@ -163,6 +164,13 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
         <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
           <h1 className='text-7xl font-bold tracking-tighter'>Your Updates</h1>
           <UserUpdatesSection showId={parseInt(showId)} currentUserId={currentUserId} />
+        </div>
+      </div>
+
+      <div className='flex'>
+        <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
+          <h1 className='text-7xl font-bold tracking-tighter'>Actors</h1>
+          <ActorsSection showId={parseInt(showId)} />
         </div>
       </div>
 

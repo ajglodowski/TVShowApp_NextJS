@@ -1,5 +1,5 @@
 import { Actor, ActorParams } from "../models/actor";
-import { Show, ShowProperties } from "../models/show";
+import { Show, ShowPropertiesWithService } from "../models/show";
 import { createClient } from "../utils/supabase/server";
 
 export async function getActor( actorId: string ): Promise<Actor | null> {
@@ -12,7 +12,7 @@ export async function getActor( actorId: string ): Promise<Actor | null> {
 
 export async function getShowsForActor( actorId: string ): Promise<Show[] | null> {
     const supabase = await createClient();
-    const { data: showData } = await supabase.from("actor").select(`show: showId (${ShowProperties})`).match({id: actorId});
+    const { data: showData } = await supabase.from("ActorShowRelationship").select(`show: showId (${ShowPropertiesWithService})`).match({ actorId: actorId });
     if (!showData) return null;   
     const shows: Show[] = showData.map((obj) => obj.show as unknown as Show);
     return shows;

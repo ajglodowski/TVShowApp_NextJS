@@ -7,6 +7,7 @@ import { Rating } from "@/app/models/rating";
 import Image from "next/image";
 import { getPresignedUserImageURL } from "@/app/profile/UserService";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 export async function UserDetails({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
     
     let profilePicUrl: string | null = null
@@ -47,19 +48,21 @@ export async function UserDetails({ userInfo }: { userInfo: UserShowDataWithUser
     }
 
     return (
-        <span className="flex space-x-2">
-            <div className="my-auto text-center">
-                <ProfilePic />
-                <h5 className="font-bold">{userInfo.user.username}</h5>
-            </div>
-            <div className="my-auto">
-                <p>Current Season: {userInfo.currentSeason}</p>
-                <p>Status: {userInfo.status.name}</p>
-            </div>
-            {userInfo.rating && <div className="my-auto">
-                    <RatingIcon rating={userInfo.rating} />
-                </div>}
-        </span>
+        <Link href={`/profile/${userInfo.user.username}`} className="flex flex-nowrap justify-between">
+            <span className="flex space-x-2">
+                <div className="my-auto text-center">
+                    <ProfilePic />
+                    <h5 className="font-bold">{userInfo.user.username}</h5>
+                </div>
+                <div className="my-auto">
+                    <p>Current Season: {userInfo.currentSeason}</p>
+                    <p>Status: {userInfo.status.name}</p>
+                </div>
+                {userInfo.rating && <div className="my-auto">
+                        <RatingIcon rating={userInfo.rating} />
+                    </div>}
+            </span>
+        </Link>
     );
 
 }

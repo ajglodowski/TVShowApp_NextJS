@@ -9,6 +9,7 @@ import { Status } from "@/app/models/status";
 import { StatusCount } from "@/app/models/statusCount";
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { cache } from 'react';
+import { Actor } from "@/app/models/actor";
 
 export const getShow = cache(async (showId: string): Promise<Show | null> => {
   'use cache'
@@ -134,4 +135,12 @@ export async function getStatusCounts(showId: string): Promise<StatusCount[] | n
     } as unknown as StatusCount);
   }
   return output;
+}
+
+export async function getActorsForShow(showId: number): Promise<Actor[] | null> {
+  const supabase = await createClient();
+  const { data: actorData } = await supabase.from("ActorShowRelationship").select('actor: actorId (id, name)').match({showId: showId});
+  if (!actorData) return null;
+  const actors = actorData.map((obj) => obj.actor) as unknown as Actor[];
+  return actors;
 }

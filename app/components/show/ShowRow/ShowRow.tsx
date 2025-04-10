@@ -7,13 +7,27 @@ import { UserDetailsDropdown } from "./UserDetailsDropdown";
 import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
 import { Suspense } from "react";
 import ShowRowSkeleton from "./ShowRowSkeleton";
-export default async function ShowRow({ show, currentUserInfo }: { show: Show | undefined, currentUserInfo: UserShowDataWithUserInfo | undefined }) {
+import { getFriendsUserDetails } from "./ShowRowService";
+
+type ShowRowProps = {
+    show: Show | undefined;
+    currentUserInfo?: UserShowDataWithUserInfo | undefined;
+    otherUsersInfo?: UserShowDataWithUserInfo[] | undefined;
+    fetchFriendsInfo?: boolean;
+}
+
+
+export default async function ShowRow({ show, currentUserInfo, otherUsersInfo, fetchFriendsInfo }: ShowRowProps) {
 
     const showData = show;
     if (!showData) return <ShowRowSkeleton />;
     let showImageUrl: string | null = null;
     if (showData.pictureUrl) {
         showImageUrl =  await getPresignedShowImageURL(showData.pictureUrl as string, true);
+    }
+
+    if (otherUsersInfo === undefined && fetchFriendsInfo) {
+        otherUsersInfo = await getFriendsUserDetails(showData.id);
     }
     
     return (
@@ -42,7 +56,7 @@ export default async function ShowRow({ show, currentUserInfo }: { show: Show | 
                     </div>
                 </div>
                 <Suspense fallback={<Skeleton className="w-16 h-16 rounded-md" />}>
-                    {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo]}/>}
+                    {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={otherUsersInfo || []}/>}
                 </Suspense>
                 {/* {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo, currentUserInfo]}/>} */}
                 

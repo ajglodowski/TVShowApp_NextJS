@@ -1,9 +1,9 @@
 'use client'
 
-import { getServices, getShow, updateShow } from "@/app/components/show/ClientShowService";
+import { getServices, updateShow } from "@/app/components/show/ClientShowService";
 import { AirDate } from "@/app/models/airDate";
 import { Service } from "@/app/models/service";
-import { NewShow, Show } from "@/app/models/show";
+import { Show } from "@/app/models/show";
 import { ShowLength } from "@/app/models/showLength";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import ShowImageSection from "./ShowImageSection";
 
 function ShowNotFound() {
   return (
@@ -38,10 +39,11 @@ function LoadingShow() {
   );
 }
 
-export default function EditShowPage({showId}: {showId?: string|undefined}) {
+export default function EditShowPage({ show, presignedImageUrl }: { show: Show, presignedImageUrl: string | null }) {
+  const showId = show.id;
 
-  const [originalShowData, setOriginalShowData] = useState<Show | null | undefined>(undefined);
-  const [showData, setShowData] = useState<Show | null | undefined>(undefined);
+  const [originalShowData, setOriginalShowData] = useState<Show | null | undefined>(show);
+  const [showData, setShowData] = useState<Show | null | undefined>(show);
   const [services, setServices] = useState<Service[] | null | undefined>(undefined);
 
   const { toast } = useToast();
@@ -59,20 +61,6 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
         else setServices(null);
     });
   }, []);
-
-  useEffect(() => {
-    if (showId) {
-        getShow(showId).then((show) => {
-            if (!show) setShowData(null);
-            else {
-              setOriginalShowData(show);
-              setShowData(show);
-            }
-        });
-    } else {
-        setShowData(NewShow);
-    }
-  }, [showId]);
 
   if (showData === undefined) {
     return <LoadingShow />
@@ -161,6 +149,9 @@ export default function EditShowPage({showId}: {showId?: string|undefined}) {
   return (
     <div className='w-full h-full'>
       <h1 className="text-2xl font-bold mx-4">Editing {showData.name}</h1>
+
+      <ShowImageSection showData={showData} presignedImageUrl={presignedImageUrl} />
+
       <Card className="bg-black text-white m-8">
         <CardHeader>
           <CardTitle>

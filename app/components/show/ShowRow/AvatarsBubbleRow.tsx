@@ -10,7 +10,7 @@ export const AvatarsBubbleRow = ({ currentUserInfo, otherUsersInfo }: { currentU
             {users.map((user, index) => (
                 <div key={`${user.user.id}_${index}_bubble`}
                     style={{
-                        marginLeft: index > 0 ? "-20px" : "0",
+                        marginLeft: index > 0 ? "-30px" : "0",
                         zIndex: users.length - index,
                     }}
                 >

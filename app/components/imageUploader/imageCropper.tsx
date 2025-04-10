@@ -20,7 +20,7 @@ function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: numbe
     makeAspectCrop(
       {
         unit: "%",
-        width: 90,
+        width: 100,
       },
       aspect,
       mediaWidth,
@@ -46,42 +46,72 @@ export default function ImageCropper({ image, onCropComplete }: ImageCropperProp
 
   useEffect(() => {
     if (completedCrop?.width && completedCrop?.height && imgRef.current && canvasRef.current) {
-      // This is to get a blob from the crop
-      const ctx = canvasRef.current.getContext("2d")
-      if (!ctx) return
+      const image = imgRef.current
+      const canvas = canvasRef.current
+      const crop = completedCrop
+      const ctx = canvas.getContext('2d')
 
-      const scaleX = imgRef.current.naturalWidth / imgRef.current.width
-      const scaleY = imgRef.current.naturalHeight / imgRef.current.height
-
-      canvasRef.current.width = completedCrop.width * scaleX
-      canvasRef.current.height = completedCrop.height * scaleY
-
-      ctx.scale(scaleX, scaleY)
-      ctx.translate(-completedCrop.x, -completedCrop.y)
-
-      if (rotate) {
-        ctx.translate(imgRef.current.width / 2, imgRef.current.height / 2)
-        ctx.rotate((rotate * Math.PI) / 180)
-        ctx.translate(-imgRef.current.width / 2, -imgRef.current.height / 2)
+      if (!ctx) {
+        return
       }
 
-      ctx.drawImage(
-        imgRef.current,
-        0,
-        0,
-        imgRef.current.width,
-        imgRef.current.height,
-        0,
-        0,
-        imgRef.current.width,
-        imgRef.current.height,
-      )
-
-      canvasRef.current.toBlob((blob) => {
+      // Calculate pixel ratio for high DPI displays
+      const pixelRatio = window.devicePixelRatio || 1
+      
+      // Calculate the source dimensions (taking into account the scale)
+      const scaleX = image.naturalWidth / image.width
+      const scaleY = image.naturalHeight / image.height
+      
+      // Set canvas size to match the output dimensions
+      canvas.width = crop.width * scaleX * pixelRatio
+      canvas.height = crop.height * scaleY * pixelRatio
+      
+      // Scale the canvas according to the device pixel ratio
+      ctx.scale(pixelRatio, pixelRatio)
+      
+      // Draw the cropped image
+      const cropX = crop.x * scaleX
+      const cropY = crop.y * scaleY
+      const cropWidth = crop.width * scaleX
+      const cropHeight = crop.height * scaleY
+      
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      
+      // Handle rotation if needed
+      if (rotate > 0) {
+        ctx.save()
+        // Translate to center, rotate, and translate back
+        const cropCenterX = cropWidth / 2
+        const cropCenterY = cropHeight / 2
+        
+        ctx.translate(cropWidth / 2, cropHeight / 2)
+        ctx.rotate((rotate * Math.PI) / 180)
+        ctx.translate(-cropWidth / 2, -cropHeight / 2)
+        
+        // Draw the image
+        ctx.drawImage(
+          image,
+          cropX, cropY, cropWidth, cropHeight,
+          0, 0, cropWidth, cropHeight
+        )
+        
+        ctx.restore()
+      } else {
+        // Draw without rotation
+        ctx.drawImage(
+          image,
+          cropX, cropY, cropWidth, cropHeight,
+          0, 0, cropWidth, cropHeight
+        )
+      }
+      
+      // Convert to blob
+      canvas.toBlob(blob => {
         if (blob) {
           onCropComplete(blob)
         }
-      }, "image/jpeg")
+      }, 'image/jpeg', 0.95)
     }
   }, [completedCrop, onCropComplete, rotate])
 

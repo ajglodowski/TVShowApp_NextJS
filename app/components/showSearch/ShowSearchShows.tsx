@@ -134,7 +134,7 @@ export default async function ShowSearchShows({
                     {paginatedData.map((show: Show) => (
                         <div className='px-4' key={show.id}>
                             <Suspense fallback={<ShowRowSkeleton />}>
-                                <ShowRow show={show} currentUserInfo={currenUserInfoMap.get(show.id)}/>
+                                <ShowRow show={show} currentUserInfo={currenUserInfoMap.get(show.id)} fetchFriendsInfo={true} />
                             </Suspense>
                             <Divider />
                         </div>

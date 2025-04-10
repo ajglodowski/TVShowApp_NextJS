@@ -4,7 +4,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 
 export const config = {
   api: {

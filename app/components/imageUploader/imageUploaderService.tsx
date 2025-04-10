@@ -18,3 +18,18 @@ export async function updateCurrentUserProfilePic(imageUrl: string): Promise<boo
     }
     return true;
 }
+
+export async function updateCurrentShowImage(showId: number, imageUrl: string): Promise<boolean> {
+    
+    const strippedImageUrl = imageUrl.replace(".jpeg", "");
+    const supabase = await createClient();
+    const { data, error } = await supabase
+        .from('show')
+        .update({ pictureUrl: strippedImageUrl })
+        .eq('id', showId);
+    if (error) {
+        console.error(error);
+        return false;
+    }
+    return true;
+}
