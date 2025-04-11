@@ -22,6 +22,7 @@ type ShowSearchShowsProps = {
     currentUserId?: string;
     searchResults: string;
     currentUserFilters: CurrentUserFilters;
+    watchlistOwnerFilters?: CurrentUserFilters;
     currentPage: number;
     setTotalPages?: (totalPages: number) => void;
     previousPageUrl?: string;
@@ -35,6 +36,7 @@ export default async function ShowSearchShows({
     currentUserId, 
     searchResults, 
     currentUserFilters,
+    watchlistOwnerFilters = defaultCurrentUserFilters,
     currentPage,
     setTotalPages,
     previousPageUrl,
@@ -42,26 +44,52 @@ export default async function ShowSearchShows({
 }: ShowSearchShowsProps) {
     // Fetch shows based on filters
     let shows: Show[] | undefined = undefined;
-    // If the search type is WATCHLIST, fetch the user's watchlist
-    // and set the current user info
-    // If the search type is OTHER_USER_WATCHLIST, fetch the other user's watchlist
+    let displayUserInfo: UserShowDataWithUserInfo[] | undefined | null = undefined;
     let currentUserInfo: UserShowDataWithUserInfo[] | undefined | null = undefined;
-    const currenUserInfoMap: Map<number, UserShowDataWithUserInfo> = new Map();
+    const displayUserInfoMap: Map<number, UserShowDataWithUserInfo> = new Map();
+    const otherUsersInfoMap: Map<number, UserShowDataWithUserInfo[]> = new Map();
+
+    const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
+                                      currentUserId && userId && currentUserId !== userId;
+
     if (searchType === ShowSearchType.WATCHLIST && currentUserId) {
+        // User is viewing their own watchlist
         const userData = await fetchUsersWatchlist(currentUserId);
         const filteredUserData = filterWatchlist(userData, filters);
         shows = filteredUserData?.map((userShowData) => userShowData.show);
-        currentUserInfo = filteredUserData?.map((userShowData) => userShowData.userShowData);
-        currentUserInfo?.forEach((info) => {
-            currenUserInfoMap.set(Number(info.showId), info);
+        displayUserInfo = filteredUserData?.map((userShowData) => userShowData.userShowData);
+        displayUserInfo?.forEach((info) => {
+            displayUserInfoMap.set(Number(info.showId), info);
         });
-    } else {
-        const shows = await fetchShows(filters, searchType, userId, currentUserId);
+    } else if (searchType === ShowSearchType.OTHER_USER_WATCHLIST && userId) {
+        // User is viewing another user's watchlist
+        
+        // 1. Fetch and process profile user's watchlist
+        const profileUserData = await fetchUsersWatchlist(userId);
+        const filteredProfileUserData = filterWatchlist(profileUserData, filters);
+        shows = filteredProfileUserData?.map((userShowData) => userShowData.show);
+        displayUserInfo = filteredProfileUserData?.map((userShowData) => userShowData.userShowData);
+        displayUserInfo?.forEach((info) => {
+            displayUserInfoMap.set(Number(info.showId), info);
+        });
+        
+        // 2. If we have a current user, fetch their data for these shows too and place in otherUsersInfo
         if (currentUserId && shows) {
             const showIds = shows.map((show) => String(show.id));
             currentUserInfo = await getUserShowData({showIds, userId: currentUserId});
             currentUserInfo?.forEach((info) => {
-                currenUserInfoMap.set(Number(info.showId), info);
+                // Store current user's info in otherUsersInfoMap
+                otherUsersInfoMap.set(Number(info.showId), [info]);
+            });
+        }
+    } else {
+        // Any other search type
+        shows = await fetchShows(filters, searchType, userId, currentUserId) || undefined;
+        if (currentUserId && shows) {
+            const showIds = shows.map((show) => String(show.id));
+            displayUserInfo = await getUserShowData({showIds, userId: currentUserId});
+            displayUserInfo?.forEach((info) => {
+                displayUserInfoMap.set(Number(info.showId), info);
             });
         }
     }
@@ -69,24 +97,64 @@ export default async function ShowSearchShows({
     // Filter shows based on search and user filters if necessary
     let filteredShows = shows;
     
-    if (searchResults.length > 0 || JSON.stringify(currentUserFilters) !== JSON.stringify(defaultCurrentUserFilters)) {
+    if (searchResults.length > 0 || 
+        JSON.stringify(currentUserFilters) !== JSON.stringify(defaultCurrentUserFilters) ||
+        (isViewingOtherUserWatchlist && JSON.stringify(watchlistOwnerFilters) !== JSON.stringify(defaultCurrentUserFilters))) {
         if (shows) {
             filteredShows = [...shows];
             
-            // Apply watchlist filter
-            if (currentUserInfo && currentUserFilters.addedToWatchlist !== undefined) {
-                filteredShows = filteredShows.filter((show) => {
-                    const inUserInfo = currentUserInfo?.some((info) => Number(info.showId) === show.id);
-                    return currentUserFilters.addedToWatchlist === inUserInfo;
-                });
+            // Apply current user's watchlist filter
+            if (currentUserFilters.addedToWatchlist !== undefined) {
+                if (isViewingOtherUserWatchlist) {
+                    // For other user's watchlist, filter based on current user's watchlist status
+                    filteredShows = filteredShows.filter((show) => {
+                        const inCurrentUserInfo = currentUserInfo?.some((info) => Number(info.showId) === show.id);
+                        return currentUserFilters.addedToWatchlist === inCurrentUserInfo;
+                    });
+                } else {
+                    // For own watchlist or other search types, filter based on display user info
+                    filteredShows = filteredShows.filter((show) => {
+                        const inUserInfo = displayUserInfo?.some((info) => Number(info.showId) === show.id);
+                        return currentUserFilters.addedToWatchlist === inUserInfo;
+                    });
+                }
             }
             
-            // Apply ratings filter
-            if (currentUserInfo && currentUserFilters.ratings && currentUserFilters.ratings.length > 0) {
-                filteredShows = filteredShows.filter((show) => {
-                    const userInfo = currentUserInfo?.find((info) => Number(info.showId) === show.id);
-                    return userInfo && currentUserFilters.ratings.includes(userInfo.rating);
-                });
+            // Apply current user's ratings filter
+            if (currentUserFilters.ratings && currentUserFilters.ratings.length > 0) {
+                if (isViewingOtherUserWatchlist) {
+                    // For other user's watchlist, filter based on current user's ratings
+                    filteredShows = filteredShows.filter((show) => {
+                        const userInfo = currentUserInfo?.find((info) => Number(info.showId) === show.id);
+                        return userInfo && currentUserFilters.ratings.includes(userInfo.rating);
+                    });
+                } else {
+                    // For own watchlist or other search types, filter based on display user info
+                    filteredShows = filteredShows.filter((show) => {
+                        const userInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
+                        return userInfo && currentUserFilters.ratings.includes(userInfo.rating);
+                    });
+                }
+            }
+            
+            // Apply watchlist owner filters when viewing another user's watchlist
+            if (isViewingOtherUserWatchlist) {
+                // Filter by watchlist owner's ratings if specified
+                if (watchlistOwnerFilters.ratings && watchlistOwnerFilters.ratings.length > 0) {
+                    filteredShows = filteredShows.filter((show) => {
+                        const ownerInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
+                        return ownerInfo && watchlistOwnerFilters.ratings.includes(ownerInfo.rating);
+                    });
+                }
+                
+                // Filter by watchlist status if specified - this is unnecessary since these are all on their watchlist
+                // but including for completeness
+                if (watchlistOwnerFilters.addedToWatchlist !== undefined) {
+                    filteredShows = filteredShows.filter((show) => {
+                        const inOwnerWatchlist = displayUserInfo?.some((info) => Number(info.showId) === show.id);
+                        return watchlistOwnerFilters.addedToWatchlist === inOwnerWatchlist;
+                    });
+                }
             }
             
             // Apply search filter
@@ -134,7 +202,13 @@ export default async function ShowSearchShows({
                     {paginatedData.map((show: Show) => (
                         <div className='px-4' key={show.id}>
                             <Suspense fallback={<ShowRowSkeleton />}>
-                                <ShowRow show={show} currentUserInfo={currenUserInfoMap.get(show.id)} fetchFriendsInfo={true} />
+                                <ShowRow 
+                                    show={show} 
+                                    currentUserInfo={displayUserInfoMap.get(show.id)}
+                                    otherUsersInfo={otherUsersInfoMap.get(show.id)}
+                                    fetchCurrentUsersInfo={(searchType !== ShowSearchType.OTHER_USER_WATCHLIST)}
+                                    fetchFriendsInfo={true} 
+                                />
                             </Suspense>
                             <Divider />
                         </div>

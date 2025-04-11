@@ -38,61 +38,46 @@ export default function ShowSearchFilterButton({
 
     // Helper function to safely update URL
     const updateURL = (updatedFilters: ShowSearchFiltersType) => {
-        // Create a new query string manually
-        let query = '';
-        const params: Record<string, string> = {};
+        // Create a URLSearchParams object to build the query string
+        const params = new URLSearchParams(searchParams?.toString() || "");
         
-        // Preserve non-filter params
-        if (searchParams) {
-            // Get pagination and search params
-            const page = searchParams.get('page');
-            const search = searchParams.get('search');
-            const ratings = searchParams.get('ratings');
-            const statuses = searchParams.get('statuses');
-            const addedToWatchlist = searchParams.get('addedToWatchlist');
-            
-            if (page !== null) params.page = page;
-            if (search !== null) params.search = search;
-            if (ratings !== null) params.ratings = ratings;
-            if (statuses !== null) params.statuses = statuses;
-            if (addedToWatchlist !== null) params.addedToWatchlist = addedToWatchlist;
-        }
+        // Remove show filter parameters we're going to update
+        params.delete('service');
+        params.delete('length');
+        params.delete('airDate');
+        params.delete('running');
+        params.delete('limitedSeries');
+        params.delete('currentlyAiring');
         
-        // Add filter params
+        // Add or update filter params
         if (updatedFilters.service.length > 0) {
-            params.service = updatedFilters.service.map(s => s.id).join(',');
+            params.set('service', updatedFilters.service.map(s => s.id).join(','));
         }
         
         if (updatedFilters.length.length > 0) {
-            params.length = updatedFilters.length.join(',');
+            params.set('length', updatedFilters.length.join(','));
         }
         
         if (updatedFilters.airDate.length > 0) {
-            params.airDate = updatedFilters.airDate.join(',');
+            params.set('airDate', updatedFilters.airDate.join(','));
         }
         
         if (updatedFilters.limitedSeries !== undefined) {
-            params.limitedSeries = updatedFilters.limitedSeries.toString();
+            params.set('limitedSeries', updatedFilters.limitedSeries.toString());
         }
         
         if (updatedFilters.running !== undefined) {
-            params.running = updatedFilters.running.toString();
+            params.set('running', updatedFilters.running.toString());
         }
         
         if (updatedFilters.currentlyAiring !== undefined) {
-            params.currentlyAiring = updatedFilters.currentlyAiring.toString();
+            params.set('currentlyAiring', updatedFilters.currentlyAiring.toString());
         }
         
-        // Build query string
-        const queryParts = Object.entries(params).map(([key, value]) => 
-            `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
-        );
-        
-        if (queryParts.length > 0) {
-            query = '?' + queryParts.join('&');
-        }
-        
-        return `${currentPathname}${query}`;
+        // Build the new URL
+        const basePathname = currentPathname || '/';
+        const queryString = params.toString();
+        return basePathname + (queryString ? `?${queryString}` : '');
     };
 
     const handleAddService = (service: Service) => {
@@ -388,7 +373,22 @@ export default function ShowSearchFilterButton({
                                                 limitedSeries: undefined,
                                                 currentlyAiring: undefined
                                             });
-                                            router.replace(currentPathname ?? '');
+                                            
+                                            // Create a URLSearchParams object to build the query string
+                                            const params = new URLSearchParams(searchParams?.toString() || "");
+                                            
+                                            // Remove show filter parameters
+                                            params.delete('service');
+                                            params.delete('length');
+                                            params.delete('airDate');
+                                            params.delete('running');
+                                            params.delete('limitedSeries');
+                                            params.delete('currentlyAiring');
+                                            
+                                            // Build the new URL
+                                            const basePathname = currentPathname || '/';
+                                            const queryString = params.toString();
+                                            router.replace(basePathname + (queryString ? `?${queryString}` : ''));
                                         });
                                     }}
                                     className={`${backdropBackground} me-2 outline outline-white hover:bg-white hover:text-black px-4 py-2 rounded-md`}

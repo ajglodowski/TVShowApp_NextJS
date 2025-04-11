@@ -16,7 +16,7 @@ export default async function ActorPage({ params }: { params: Promise<{ actorId:
             <h1>{actor.name}</h1>
             <div className="flex flex-col gap-4 w-full">
                 {shows && shows.map(show => (
-                    <ShowRow key={show.id} show={show} />
+                    <ShowRow key={show.id} show={show} fetchCurrentUsersInfo={true} fetchFriendsInfo={true} />
                 ))}
             </div>
 

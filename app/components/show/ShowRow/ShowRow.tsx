@@ -7,17 +7,18 @@ import { UserDetailsDropdown } from "./UserDetailsDropdown";
 import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
 import { Suspense } from "react";
 import ShowRowSkeleton from "./ShowRowSkeleton";
-import { getFriendsUserDetails } from "./ShowRowService";
+import { getCurrentUsersShowDetails, getFriendsUserDetails } from "./ShowRowService";
 
 type ShowRowProps = {
     show: Show | undefined;
     currentUserInfo?: UserShowDataWithUserInfo | undefined;
     otherUsersInfo?: UserShowDataWithUserInfo[] | undefined;
+    fetchCurrentUsersInfo?: boolean;
     fetchFriendsInfo?: boolean;
 }
 
 
-export default async function ShowRow({ show, currentUserInfo, otherUsersInfo, fetchFriendsInfo }: ShowRowProps) {
+export default async function ShowRow({ show, currentUserInfo, otherUsersInfo, fetchCurrentUsersInfo, fetchFriendsInfo }: ShowRowProps) {
 
     const showData = show;
     if (!showData) return <ShowRowSkeleton />;
@@ -26,8 +27,14 @@ export default async function ShowRow({ show, currentUserInfo, otherUsersInfo, f
         showImageUrl =  await getPresignedShowImageURL(showData.pictureUrl as string, true);
     }
 
+    // Fetch friends' data if not provided and requested
     if (otherUsersInfo === undefined && fetchFriendsInfo) {
         otherUsersInfo = await getFriendsUserDetails(showData.id);
+    }
+    
+    // Fetch current user's data if not provided and requested
+    if (currentUserInfo === undefined && fetchCurrentUsersInfo) {
+        currentUserInfo = await getCurrentUsersShowDetails(showData.id);
     }
     
     return (
@@ -58,7 +65,6 @@ export default async function ShowRow({ show, currentUserInfo, otherUsersInfo, f
                 <Suspense fallback={<Skeleton className="w-16 h-16 rounded-md" />}>
                     {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={otherUsersInfo || []}/>}
                 </Suspense>
-                {/* {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={[currentUserInfo, currentUserInfo]}/>} */}
                 
             </div>
         </Link>

@@ -127,10 +127,20 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
               <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
               <h3 className="text-lg font-medium mb-2">Upload an image</h3>
               <p className="text-sm text-gray-500 mb-4">Drag and drop or click to select a file</p>
-              <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+              <Button variant="outline" onClick={(e) => {
+                e.stopPropagation();
+                fileInputRef.current?.click();
+              }}>
                 Select Image
               </Button>
-              <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                accept="image/*" 
+                className="hidden" 
+                capture="environment"
+              />
             </div>
           </CardContent>
         </Card>

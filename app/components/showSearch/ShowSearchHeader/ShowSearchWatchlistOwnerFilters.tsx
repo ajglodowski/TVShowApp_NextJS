@@ -1,53 +1,33 @@
 "use client";
 
 import { Rating } from "@/app/models/rating";
-import { ShowSearchType } from "@/app/models/showSearchType";
 import { Status } from "@/app/models/status";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { User } from "lucide-react";
+import { Users } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
+import { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchCurrentUserFilters";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
-export type CurrentUserFilters = {
-    addedToWatchlist?: boolean;
-    ratings: Rating[];
-    statuses: Status[];
-}
-
-export const defaultCurrentUserFilters: CurrentUserFilters = {
-    addedToWatchlist: undefined,
-    ratings: [],
-    statuses: []
-}
-
-type ShowSearchCurrentUserFiltersProps = {
+type ShowSearchWatchlistOwnerFiltersProps = {
     filters: CurrentUserFilters;
     pathname: string;
     currentFilters: ShowSearchFiltersType;
-    searchType?: ShowSearchType;
     userId?: string;
-    currentUserId?: string;
 }
 
-export default function ShowSearchCurrentUserFilters({ 
+export default function ShowSearchWatchlistOwnerFilters({ 
     filters, 
     pathname, 
     currentFilters,
-    searchType = ShowSearchType.UNRESTRICTED,
-    userId,
-    currentUserId
-}: ShowSearchCurrentUserFiltersProps) {
+    userId
+}: ShowSearchWatchlistOwnerFiltersProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    
-    // Determine if viewing other user's watchlist where current user != watchlist owner
-    const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
-                                       currentUserId && userId && currentUserId !== userId;
     
     // Ensure filters is properly initialized with default values
     const safeFilters: CurrentUserFilters = {
@@ -77,18 +57,18 @@ export default function ShowSearchCurrentUserFilters({
         const params = new URLSearchParams(searchParams?.toString() || "");
         
         // Remove the parameters we're going to update
-        params.delete('addedToWatchlist');
-        params.delete('ratings');
-        params.delete('statuses');
+        params.delete('ownerWatchlist');
+        params.delete('ownerRatings');
+        params.delete('ownerStatuses');
         
         // Apply changes to user filters
         const newFilters = { ...safeFilters, ...changes };
         
-        // Add updated user filter params
-        if (newFilters.addedToWatchlist !== undefined) params.set('addedToWatchlist', newFilters.addedToWatchlist.toString());
-        if (newFilters.ratings && newFilters.ratings.length > 0) params.set('ratings', newFilters.ratings.join(','));
+        // Add updated watchlist owner filter params
+        if (newFilters.addedToWatchlist !== undefined) params.set('ownerWatchlist', newFilters.addedToWatchlist.toString());
+        if (newFilters.ratings && newFilters.ratings.length > 0) params.set('ownerRatings', newFilters.ratings.join(','));
         if (newFilters.statuses && newFilters.statuses.length > 0) {
-            params.set('statuses', newFilters.statuses.map(s => s.id).join(','));
+            params.set('ownerStatuses', newFilters.statuses.map(s => s.id).join(','));
         }
         
         // Build the new URL
@@ -114,24 +94,6 @@ export default function ShowSearchCurrentUserFilters({
         });
     };
 
-    // Handle removing a status with optimistic update
-    const handleRemoveStatus = (status: Status) => {
-        startTransition(() => {
-            const newStatuses = optimisticFilters.statuses.filter(s => s.id !== status.id);
-            updateOptimisticFilters({ statuses: newStatuses });
-            router.push(createFilterURL({ statuses: newStatuses }));
-        });
-    };
-
-    // Handle adding a status with optimistic update
-    const handleAddStatus = (status: Status) => {
-        startTransition(() => {
-            const newStatuses = [...optimisticFilters.statuses, status];
-            updateOptimisticFilters({ statuses: newStatuses });
-            router.push(createFilterURL({ statuses: newStatuses }));
-        });
-    };
-
     // Handle setting watch list filter with optimistic update
     const handleWatchlistChange = (value: boolean | undefined) => {
         startTransition(() => {
@@ -153,10 +115,10 @@ export default function ShowSearchCurrentUserFilters({
             // Create a URLSearchParams object to build the query string
             const params = new URLSearchParams(searchParams?.toString() || "");
             
-            // Remove current user filter parameters
-            params.delete('addedToWatchlist');
-            params.delete('ratings');
-            params.delete('statuses');
+            // Remove owner filter parameters
+            params.delete('ownerWatchlist');
+            params.delete('ownerRatings');
+            params.delete('ownerStatuses');
             
             // Build the new URL
             const queryString = params.toString();
@@ -199,50 +161,16 @@ export default function ShowSearchCurrentUserFilters({
     const RatingsRow = () => {
         return (
             <div className="p-6 pb-0">
-                <div className="text-lg font-medium">Filter by Rating</div>
+                <div className="text-lg font-medium">Filter by Their Rating</div>
                 <RatingButtons />
             </div>
         )
     }
 
-    const StatusButtons = () => {
-        // Replace empty array with fetch from the Status enum or model
-        // Since we don't have access to all statuses in this component,
-        // we need to handle potential undefined statuses
-        const allStatuses: Status[] = []; // This would typically be fetched or passed as props
-        
-        return (
-            <div className="grid grid-cols-2 gap-2">
-                {optimisticFilters.statuses.map((status) => (
-                    <div
-                        key={status.name || status.id}
-                        onClick={() => handleRemoveStatus(status)}
-                        className={selectedBubbleStyle}
-                    >
-                        {status.name || `Status ${status.id}`}
-                    </div>
-                ))}
-
-                {/* We can't show unselected statuses if we don't have the full list */}
-            </div>
-        )
-    }
-
-    const StatusesRow = () => {
-        return (
-            <div className="p-6 pb-0">
-                <div className="text-lg font-medium">Filter by Status</div>
-                <StatusButtons />
-            </div>
-        )
-    }
-
     const WatchListRow = () => {
-        const watchlistLabel = isViewingOtherUserWatchlist ? "Filter by My Watch List" : "Filter by Watch List";
-        
         return (
             <div className="p-6 pb-0">
-                <div className="text-lg font-medium">{watchlistLabel}</div>
+                <div className="text-lg font-medium">Filter by Their Watch List</div>
                 <RadioGroup defaultValue={getStringFromBool(optimisticFilters.addedToWatchlist)}>
                     <div className="flex items-center space-x-2 mt-2">
                         <div onClick={() => handleWatchlistChange(undefined)} className="flex items-center space-x-2 cursor-pointer">
@@ -253,17 +181,13 @@ export default function ShowSearchCurrentUserFilters({
                     <div className="flex items-center space-x-2">
                         <div onClick={() => handleWatchlistChange(true)} className="flex items-center space-x-2 cursor-pointer">
                             <RadioGroupItem value="true" id="inWatchlist" />
-                            <Label htmlFor="inWatchlist">
-                                {isViewingOtherUserWatchlist ? "In My Watch List" : "In Watch List"}
-                            </Label>
+                            <Label htmlFor="inWatchlist">In Their Watch List</Label>
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
                         <div onClick={() => handleWatchlistChange(false)} className="flex items-center space-x-2 cursor-pointer">
                             <RadioGroupItem value="false" id="notInWatchlist" />
-                            <Label htmlFor="notInWatchlist">
-                                {isViewingOtherUserWatchlist ? "Not In My Watch List" : "Not In Watch List"}
-                            </Label>
+                            <Label htmlFor="notInWatchlist">Not In Their Watch List</Label>
                         </div>
                     </div>
                 </RadioGroup>
@@ -271,38 +195,28 @@ export default function ShowSearchCurrentUserFilters({
         )
     }
 
-    const getFilterButtonTitle = () => {
-        if (isViewingOtherUserWatchlist) {
-            return "My Filters";
-        }
-        return "User Filters";
-    };
-
     return (
         <>
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline" className="bg-white/5 space-x-2">
-                        <User className="h-4 w-4" />
-                        <span>{getFilterButtonTitle()}</span>
+                        <Users className="h-4 w-4" />
+                        <span>Their Filters</span>
                     </Button>
                 </SheetTrigger>
                 <SheetContent className={`w-[400px] ${backdropBackground}`}>
                     <SheetHeader>
                         <SheetTitle className="text-white">
-                            {isViewingOtherUserWatchlist ? "My Show Filters" : "User Show Filters"}
+                            Watchlist Owner Filters
                         </SheetTitle>
                         <SheetDescription className="text-white/70">
-                            {isViewingOtherUserWatchlist 
-                                ? "Filter shows based on your ratings and watchlist status"
-                                : "Filter shows based on your ratings and watchlist status"}
+                            Filter shows based on the watchlist owner's ratings and status
                         </SheetDescription>
                     </SheetHeader>
                     
                     <div className="grid gap-4">
                         <WatchListRow />
                         <RatingsRow />
-                        {/*<StatusesRow />*/}
                     </div>
                     
                     <div className="mt-8 flex justify-end">
@@ -317,4 +231,4 @@ export default function ShowSearchCurrentUserFilters({
             </Sheet>
         </>
     );
-}
+} 

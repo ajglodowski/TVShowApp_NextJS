@@ -3,7 +3,6 @@ import { backdropBackground } from "@/app/utils/stylingConstants";
 import { X } from "lucide-react";
 import { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
 import { Rating } from "@/app/models/rating";
-import { ShowSearchType } from "@/app/models/showSearchType";
 import { Status } from "@/app/models/status";
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -11,28 +10,20 @@ import { ShowSearchFiltersType } from "./ShowSearchHeader";
 import { Button } from "@/components/ui/button";
 import { useOptimistic, useTransition } from "react";
 
-type ShowSearchCurrentUserFiltersProps = {
+type ShowSearchWatchlistOwnerFiltersRowProps = {
     filters: CurrentUserFilters;
     pathname: string;
     currentFilters: ShowSearchFiltersType;
-    searchType?: ShowSearchType;
     userId?: string;
-    currentUserId?: string;
 }
 
-export default function ShowSearchCurrentUserFiltersRow({ 
+export default function ShowSearchWatchlistOwnerFiltersRow({ 
     filters, 
     pathname, 
     currentFilters,
-    searchType = ShowSearchType.UNRESTRICTED,
-    userId,
-    currentUserId
-}: ShowSearchCurrentUserFiltersProps) {
+    userId
+}: ShowSearchWatchlistOwnerFiltersRowProps) {
     const router = useRouter();
-    
-    // Determine if viewing other user's watchlist where current user != watchlist owner
-    const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
-                                       currentUserId && userId && currentUserId !== userId;
     
     const [isPending, startTransition] = useTransition();
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
@@ -54,27 +45,27 @@ export default function ShowSearchCurrentUserFiltersRow({
         if (currentFilters.running !== undefined) url.searchParams.set('running', currentFilters.running.toString());
         if (currentFilters.currentlyAiring !== undefined) url.searchParams.set('currentlyAiring', currentFilters.currentlyAiring.toString());
         
-        // Handle user filter params
+        // Handle watchlist owner filter params
         if (key === 'ratings') {
             const newRatings = optimisticFilters.ratings.filter(r => r !== value);
             if (newRatings.length > 0) {
-                url.searchParams.set('ratings', newRatings.join(','));
+                url.searchParams.set('ownerRatings', newRatings.join(','));
             }
         } else if (optimisticFilters.ratings && optimisticFilters.ratings.length > 0) {
-            url.searchParams.set('ratings', optimisticFilters.ratings.join(','));
+            url.searchParams.set('ownerRatings', optimisticFilters.ratings.join(','));
         }
         
         if (key === 'statuses') {
             const newStatuses = optimisticFilters.statuses.filter(s => s !== value);
             if (newStatuses.length > 0) {
-                url.searchParams.set('statuses', newStatuses.join(','));
+                url.searchParams.set('ownerStatuses', newStatuses.join(','));
             }
         } else if (optimisticFilters.statuses && optimisticFilters.statuses.length > 0) {
-            url.searchParams.set('statuses', optimisticFilters.statuses.join(','));
+            url.searchParams.set('ownerStatuses', optimisticFilters.statuses.join(','));
         }
         
         if (key !== 'addedToWatchlist' && optimisticFilters.addedToWatchlist !== undefined) {
-            url.searchParams.set('addedToWatchlist', optimisticFilters.addedToWatchlist.toString());
+            url.searchParams.set('ownerWatchlist', optimisticFilters.addedToWatchlist.toString());
         }
         
         return pathname + url.search;
@@ -89,7 +80,7 @@ export default function ShowSearchCurrentUserFiltersRow({
             optimisticFilters.ratings.forEach((rating) => {
                 bubbles.push(
                     <div
-                        key={`rating-${rating}`}
+                        key={`owner-rating-${rating}`}
                         onClick={() => {
                             startTransition(() => {
                                 const newRatings = optimisticFilters.ratings.filter(r => r !== rating);
@@ -99,7 +90,7 @@ export default function ShowSearchCurrentUserFiltersRow({
                         }}
                     >
                         <Button variant="outline" className={bubbleStyle}>
-                            Rating: {rating.toString()}
+                            Their Rating: {rating.toString()}
                             <X className="ml-1 h-4 w-4" />
                         </Button>
                     </div>
@@ -112,7 +103,7 @@ export default function ShowSearchCurrentUserFiltersRow({
             optimisticFilters.statuses.forEach((status) => {
                 bubbles.push(
                     <div
-                        key={`status-${status}`}
+                        key={`owner-status-${status}`}
                         onClick={() => {
                             startTransition(() => {
                                 const newStatuses = optimisticFilters.statuses.filter(s => s !== status);
@@ -122,7 +113,7 @@ export default function ShowSearchCurrentUserFiltersRow({
                         }}
                     >
                         <Button variant="outline" className={bubbleStyle}>  
-                            Status: {status.toString()}
+                            Their Status: {status.toString()}
                             <X className="ml-1 h-4 w-4" />
                         </Button>
                     </div>
@@ -132,13 +123,13 @@ export default function ShowSearchCurrentUserFiltersRow({
 
         // Handle watch list filter
         if (optimisticFilters.addedToWatchlist !== undefined) {
-            const watchlistText = isViewingOtherUserWatchlist 
-                ? (optimisticFilters.addedToWatchlist ? "In My Watch List" : "Not In My Watch List")
-                : (optimisticFilters.addedToWatchlist ? "In Watch List" : "Not In Watch List");
+            const watchlistText = optimisticFilters.addedToWatchlist 
+                ? "In Their Watch List" 
+                : "Not In Their Watch List";
                 
             bubbles.push(
                 <div
-                    key="watchlist"
+                    key="owner-watchlist"
                     onClick={() => {
                         startTransition(() => {
                             const newWatchlistValue = !optimisticFilters.addedToWatchlist;
@@ -165,8 +156,8 @@ export default function ShowSearchCurrentUserFiltersRow({
         );
     };
 
-    // Create a URL that clears all user filters but keeps show filters
-    const clearUserFiltersURL = () => {
+    // Create a URL that clears all watchlist owner filters but keeps other filters
+    const clearOwnerFiltersURL = () => {
         const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
         
         // Add only show filter params
@@ -180,10 +171,6 @@ export default function ShowSearchCurrentUserFiltersRow({
         return pathname + url.search;
     };
 
-    const getClearFiltersText = () => {
-        return isViewingOtherUserWatchlist ? "Clear My Filters" : "Clear Your Filters";
-    };
-
     return (
         <div className="flex flex-wrap gap-2 items-center">
             {renderFilterBubbles()}
@@ -191,16 +178,16 @@ export default function ShowSearchCurrentUserFiltersRow({
                 <div
                     onClick={() => {
                         startTransition(() => {
-                            router.push(clearUserFiltersURL());
+                            router.push(clearOwnerFiltersURL());
                         });
                     }}
                 >
                     <Button variant="outline" className="m-1 bg-white/90 text-black hover:bg-white/10 hover:text-white px-3 py-1 rounded-md inline-flex items-center">
-                        {getClearFiltersText()}
+                        Clear Their Filters
                         <X className="ml-1 h-4 w-4" />
                     </Button>
                 </div>
             )}
         </div>
     );
-}
+} 

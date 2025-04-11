@@ -32,6 +32,9 @@ type ShowSearchProps = {
         currentlyAiring?: string;
         addedToWatchlist?: string;
         ratings?: string;
+        ownerWatchlist?: string;
+        ownerRatings?: string;
+        ownerStatuses?: string;
     };
     pathname?: string;
 }
@@ -124,6 +127,41 @@ function parseCurrentUserFilters(searchParams: ShowSearchProps['searchParams'] =
     return filters;
 }
 
+function parseWatchlistOwnerFilters(searchParams: ShowSearchProps['searchParams'] = {}): CurrentUserFilters {
+    const { ownerWatchlist, ownerRatings, ownerStatuses } = searchParams || {};
+    const filters: CurrentUserFilters = {
+        ...defaultCurrentUserFilters
+    };
+
+    // Parse owner's watchlist filter
+    if (ownerWatchlist) {
+        filters.addedToWatchlist = ownerWatchlist === 'true';
+    }
+
+    // Parse owner's ratings
+    if (ownerRatings) {
+        const ratingStrings = ownerRatings.split(',');
+        const validRatings: Rating[] = [];
+        
+        for (const ratingStr of ratingStrings) {
+            // Check if the string value matches any enum value
+            const matchingRating = Object.values(Rating).find(r => r === ratingStr);
+            if (matchingRating) {
+                validRatings.push(matchingRating);
+            }
+        }
+        
+        filters.ratings = validRatings;
+    }
+
+    // Parse owner's statuses if needed
+    if (ownerStatuses) {
+        // Implement status parsing logic similar to ratings if needed
+    }
+
+    return filters;
+}
+
 export default async function ShowSearch(props: ShowSearchProps) {
     
     const {searchType, userId, currentUserId} = props;
@@ -135,6 +173,7 @@ export default async function ShowSearch(props: ShowSearchProps) {
     // Parse filters from URL parameters
     const filters = await parseFiltersFromSearchParams(searchParams);
     const currentUserFilters = parseCurrentUserFilters(searchParams);
+    const watchlistOwnerFilters = parseWatchlistOwnerFilters(searchParams);
     const searchResults = searchParams.search || '';
     
     // Get current page from URL or default to 1
@@ -169,7 +208,11 @@ export default async function ShowSearch(props: ShowSearchProps) {
                 filters={filters}
                 searchResults={searchResults}
                 currentUserFilters={currentUserFilters}
+                watchlistOwnerFilters={watchlistOwnerFilters}
                 pathname={pathname}
+                searchType={searchType}
+                userId={userId}
+                currentUserId={currentUserId}
             />
             <div className='w-full overflow-x-hidden'>
                 
@@ -181,6 +224,7 @@ export default async function ShowSearch(props: ShowSearchProps) {
                         currentUserId={currentUserId}
                         searchResults={searchResults}
                         currentUserFilters={currentUserFilters}
+                        watchlistOwnerFilters={watchlistOwnerFilters}
                         currentPage={currentPage}
                         previousPageUrl={previousPageUrl}
                         nextPageUrl={nextPageUrl}
