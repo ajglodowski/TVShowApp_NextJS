@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const path = req.query.path as unknown as string;
     const fullPath = `${path}/${imageName}`;
     
-    res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600, stale-while-revalidate=120'); // cache for 10 minutes
+    //res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600, stale-while-revalidate=120'); // cache for 10 minutes
     const presignedUrl = await generatePresignedUrl(fullPath);
     res.status(200).json({ url: presignedUrl });
   } catch (error) {
