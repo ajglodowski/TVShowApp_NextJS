@@ -3,14 +3,15 @@ import { ShowSearchType } from "@/app/models/showSearchType";
 import { createClient } from "@/app/utils/supabase/server";
 import { getUserByUsername } from "@/app/utils/userService";
 
-export default async function WatchlistPage({
-    searchParams,
-    params
-}: {
-    searchParams: { [key: string]: string | string[] | undefined },
-    params: { username: string }
-}) {
-    const username = (await params).username;
+interface PageProps {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+    params: Promise<{ username: string }>;
+}
+
+export default async function WatchlistPage({ searchParams, params }: PageProps) {
+    const awaitedParams = await params;
+    const username = awaitedParams.username;
+    const awaitedSearchParams = await searchParams;
     const user = await getUserByUsername(username);
     if (!user) {
         return (
@@ -34,7 +35,7 @@ export default async function WatchlistPage({
                 searchType={ShowSearchType.OTHER_USER_WATCHLIST} 
                 userId={userId}
                 currentUserId={currentUser?.id}
-                searchParams={searchParams}
+                searchParams={awaitedSearchParams}
                 pathname={`/watchlist/${username}`}
             />
         </div>
