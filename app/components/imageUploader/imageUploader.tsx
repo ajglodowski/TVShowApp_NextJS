@@ -139,7 +139,6 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
                 onChange={handleFileChange} 
                 accept="image/*" 
                 className="hidden" 
-                capture="environment"
               />
             </div>
           </CardContent>
