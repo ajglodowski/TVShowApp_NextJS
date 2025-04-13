@@ -1,8 +1,9 @@
 import { getUserUpdateMessage } from "@/app/utils/getUserUpdateMessage";
 import { dateToString } from "@/app/utils/timeUtils";
 import { getUserUpdates } from "../UserShowDataService";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function UserUpdatesSection ({ showId, currentUserId }: { showId: number, currentUserId: string | undefined }) {
+export async function UserUpdatesSection ({ showId, currentUserId }: { showId: number, currentUserId: string | undefined }) {
 
     const userUpdates = await getUserUpdates({ showId: showId, userId: currentUserId});
 
@@ -25,3 +26,17 @@ export default async function UserUpdatesSection ({ showId, currentUserId }: { s
         </ul>
     );
 };
+
+export const LoadingUserUpdatesSection = () => {
+    return (
+        <ul>
+            {Array.from({ length: 3 }).map((_, index) => (
+                <li key={index}
+                    className="border border-white rounded-full p-2 px-4 my-2 w-full"
+                >
+                   <Skeleton className="h-10 w-full" />
+                </li>
+            ))}
+        </ul>
+    );
+}

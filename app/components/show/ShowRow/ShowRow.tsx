@@ -48,7 +48,9 @@ export default async function ShowRow({ show, currentUserInfo, otherUsersInfo, f
                                 alt={showData.name} 
                                 fill 
                                 sizes="64px"
-                                className="rounded-md object-cover" />
+                                className="rounded-md object-cover"
+                                unoptimized={true}
+                                />  
                             }
                             {!showImageUrl && <Skeleton className="w-full h-full rounded-md" />}
                         </div>

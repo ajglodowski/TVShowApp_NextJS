@@ -50,6 +50,7 @@ export default async function ShowsListTile({listId}: {listId: number}) {
                 alt={listEntries[index].show.name}
                 fill
                 className="w-full h-full object-cover"
+                unoptimized={true}
               />
             </div>
           ))}

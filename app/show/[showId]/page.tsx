@@ -1,21 +1,19 @@
-import Divider from '@/app/components/Divider';
 import type { Show } from '@/app/models/show';
 import { boolToEmoji } from '@/app/utils/boolToEmoji';
+import { RGBAToHexA } from '@/app/utils/colorUtil';
 import { createClient } from '@/app/utils/supabase/server';
 import { dateToString, releaseDateToString } from '@/app/utils/timeUtils';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { fetchAverageShowColor, getAllTags, getPresignedShowImageURL, getRatingCounts, getShow, getStatusCounts, getTags } from './ShowService';
-import { getAllStatuses, getUserShowData, updateUserShowData } from './UserShowDataService';
-import RatingsStatsSection from './components/RatingsStatsSection';
-import SeasonsRow from './components/SeasonsRow';
-import ShowStatusSection from './components/ShowStatusSection';
-import ShowTagsSection from "./components/ShowTagsSection";
-import StatusStatsSection from './components/StatusStatsSection';
-import UserRatingsSection from './components/UserRatingsSection';
-import UserUpdatesSection from './components/UserUpdatesSection';
 import ActorsSection from './components/ActorsSection';
+import RatingsStatsSection from './components/RatingsStatsSection';
+import { LoadingShowTagsSection, ShowTagsSection } from "./components/ShowTagsSection";
+import StatusStatsSection from './components/StatusStatsSection';
+import { UserUpdatesSection, LoadingUserUpdatesSection } from './components/UserUpdatesSection';
+import { LoadingYourInfoSection, YourInfoSection } from './components/YourInfoSection';
 
 function ShowNotFound() {
   return (
@@ -37,12 +35,8 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   const currentUserId = user?.id;
   const loggedIn = currentUserId !== undefined;
 
-  const [showData, currentTags, allTags, userInfoData, allStatuses, ratingCounts, statusCounts] = await Promise.all([
+  const [showData, ratingCounts, statusCounts] = await Promise.all([
     getShow(showId),
-    getTags(showId),
-    getAllTags(),
-    getUserShowData({ userId: currentUserId, showId: showId }),
-    getAllStatuses(),
     getRatingCounts(showId),
     getStatusCounts(showId),
   ]);
@@ -66,16 +60,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   }
   const endTime = performance.now();
   console.log(`Image fetching took ${endTime - startTime} milliseconds`);
-  const RGBAToHexA = (rgba: string, forceRemoveAlpha = false) => {
-    return "#" + rgba.replace(/^rgba?\(|\s+|\)$/g, '') // Get's rgba / rgb string values
-      .split(',') // splits them at ","
-      .filter((string, index) => !forceRemoveAlpha || index !== 3)
-      .map(string => parseFloat(string)) // Converts them to numbers
-      .map((number, index) => index === 3 ? Math.round(number * 255) : number) // Converts alpha to 255 number
-      .map(number => number.toString(16)) // Converts numbers to hex
-      .map(string => string.length === 1 ? "0" + string : string) // Adds 0 when length of one number is 1
-      .join("") // Puts the array to togehter to a string
-  }
+  
 
   const adjustHexColor = (color: string, amount: number) => {
     return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
@@ -105,7 +90,14 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
       <div className=''>
         <div className='w-full'>
           {showImageUrl && <div className='w-9/12 md:4/12 max-w-xl min-w-64 mx-auto'>
-            <Image src={showImageUrl} alt={show.name} width={600} height={600} className='rounded-lg m-2 hover:shadow-2xl'/>
+            <Image 
+              src={showImageUrl} 
+              alt={show.name} 
+              width={600} 
+              height={600} 
+              className='rounded-lg m-2 hover:shadow-2xl'
+              unoptimized={true}
+            />
           </div> }
           { !showImageUrl && <div className="">
             <Skeleton className="w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] mx-auto object-contain rounded-md" />
@@ -116,18 +108,9 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
       <h2 className='text-2xl tracking-tight text-center'>{show.length} minutes - {show.service.name}</h2>
       
       <div className='flex flex-wrap md:flex-nowrap'>
-        <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
-          <span className='flex flex-wrap md:flex-nowrap justify-between my-auto'>
-            <div className='mx-auto'>
-              {loggedIn && <UserRatingsSection userInfo={userInfoData} updateFunction={updateUserShowData}/> }
-            </div>
-            <h2 className='text-5xl md:text-7xl font-bold tracking-tighter md:text-center my-auto'>Your History</h2>
-          </span>
-          <Divider />
-          <ShowStatusSection showId={showId} userId={currentUserId} userShowData={userInfoData} allStatuses={allStatuses} updateFunction={updateUserShowData} loggedIn={loggedIn}/>
-          <Divider />
-          {userInfoData && <SeasonsRow userId={currentUserId} currentSeason={userInfoData?.currentSeason} totalSeasons={showData.totalSeasons} showId={showId} updateFunction={updateUserShowData}/> }
-        </div>
+        <Suspense fallback={<LoadingYourInfoSection />}>
+          <YourInfoSection show={show} backgroundColor={backgroundColor} />
+        </Suspense>
 
         <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 h-auto shadow-2xl rounded-lg'>
           <span className='flex justify-between my-auto'>
@@ -163,7 +146,9 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
       <div className='flex'>
         <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
           <h1 className='text-7xl font-bold tracking-tighter'>Your Updates</h1>
-          <UserUpdatesSection showId={parseInt(showId)} currentUserId={currentUserId} />
+          <Suspense fallback={<LoadingUserUpdatesSection />}>
+            <UserUpdatesSection showId={parseInt(showId)} currentUserId={currentUserId} />
+          </Suspense>
         </div>
       </div>
 
@@ -177,7 +162,9 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
       <div className='flex flex-wrap md:flex-nowrap'>
         <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
           <h1 className='text-7xl font-bold tracking-tighter text-right'>Tags</h1>
-          <ShowTagsSection showId={showId} currentTags={currentTags} allTags={allTags} />
+          <Suspense fallback={<LoadingShowTagsSection />}>
+            <ShowTagsSection showId={showId} />
+          </Suspense>
         </div>
         <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
           <RatingsStatsSection ratingCounts={ratingCounts} />

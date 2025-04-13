@@ -32,6 +32,7 @@ export default async function ShowTileContent({showData, badges}: ShowTileConten
                     fill
                     sizes="128px"
                     className="object-cover rounded-lg shadow-md"
+                    unoptimized={true}
                 />
             </div>
         );

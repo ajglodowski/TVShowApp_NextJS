@@ -68,6 +68,7 @@ export default function ClientShowTile({ showId }: { showId: string }) {
                         fill
                         sizes="128px"
                         className="object-cover rounded-lg shadow-md"
+                        unoptimized={true}
                     />
                 </div>
             );

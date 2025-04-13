@@ -25,6 +25,7 @@ export default async function UserUpdateTileWithImage(props: UserUpdateTileProps
                     fill
                     //sizes="128px"
                     className="w-full aspect-square rounded-xl object-cover"
+                    unoptimized={true}
                 />
             </div>
         );
