@@ -26,15 +26,32 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
   const [croppedImage, setCroppedImage] = useState<Blob | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      setIsProcessing(true)
+      setError(null)
+      
+      // Check file size (limit to 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError("Image too large. Please choose an image under 10MB.")
+        setIsProcessing(false)
+        return
+      }
+      
       const reader = new FileReader()
       reader.onload = () => {
         setSelectedImage(reader.result as string)
         setIsSuccess(false)
+        setIsProcessing(false)
+      }
+      reader.onerror = () => {
+        setError("Failed to read the image. Please try again.")
+        setIsProcessing(false)
       }
       reader.readAsDataURL(file)
     }
@@ -44,10 +61,25 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
     e.preventDefault()
     const file = e.dataTransfer.files?.[0]
     if (file) {
+      setIsProcessing(true)
+      setError(null)
+      
+      // Check file size (limit to 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError("Image too large. Please choose an image under 10MB.")
+        setIsProcessing(false)
+        return
+      }
+      
       const reader = new FileReader()
       reader.onload = () => {
         setSelectedImage(reader.result as string)
         setIsSuccess(false)
+        setIsProcessing(false)
+      }
+      reader.onerror = () => {
+        setError("Failed to read the image. Please try again.")
+        setIsProcessing(false)
       }
       reader.readAsDataURL(file)
     }
@@ -124,15 +156,36 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
               onDrop={handleDrop}
               onDragOver={handleDragOver}
             >
-              <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-medium mb-2">Upload an image</h3>
-              <p className="text-sm text-gray-500 mb-4">Drag and drop or click to select a file</p>
-              <Button variant="outline" onClick={(e) => {
-                e.stopPropagation();
-                fileInputRef.current?.click();
-              }}>
-                Select Image
-              </Button>
+              {isProcessing ? (
+                <>
+                  <Loader2 className="h-12 w-12 mx-auto mb-4 text-gray-400 animate-spin" />
+                  <h3 className="text-lg font-medium mb-2">Processing image...</h3>
+                </>
+              ) : error ? (
+                <>
+                  <h3 className="text-lg font-medium mb-2 text-red-500">{error}</h3>
+                  <Button variant="outline" onClick={(e) => {
+                    e.stopPropagation();
+                    setError(null);
+                    fileInputRef.current?.click();
+                  }}>
+                    Try Again
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-medium mb-2">Upload an image</h3>
+                  <p className="text-sm text-gray-500 mb-4">Drag and drop or click to select a file</p>
+                  <p className="text-xs text-gray-400 mb-4">Max file size: 10MB</p>
+                  <Button variant="outline" onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}>
+                    Select Image
+                  </Button>
+                </>
+              )}
               <input 
                 type="file" 
                 ref={fileInputRef} 

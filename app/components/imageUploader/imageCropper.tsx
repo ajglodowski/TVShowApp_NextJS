@@ -42,6 +42,10 @@ export default function ImageCropper({ image, onCropComplete }: ImageCropperProp
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget
     setCrop(centerAspectCrop(width, height, 1))
+    
+    // Create initial crop to ensure we have a valid completedCrop value
+    const initialCrop = centerAspectCrop(width, height, 1)
+    setCompletedCrop(initialCrop)
   }, [])
 
   useEffect(() => {
@@ -61,10 +65,22 @@ export default function ImageCropper({ image, onCropComplete }: ImageCropperProp
       // Calculate the source dimensions (taking into account the scale)
       const scaleX = image.naturalWidth / image.width
       const scaleY = image.naturalHeight / image.height
+
+      // Limit max dimensions for better performance with large images
+      const maxDimension = 1200
+      let outputWidth = crop.width * scaleX
+      let outputHeight = crop.height * scaleY
+      
+      // Scale down if image is too large
+      if (outputWidth > maxDimension || outputHeight > maxDimension) {
+        const ratio = Math.min(maxDimension / outputWidth, maxDimension / outputHeight)
+        outputWidth *= ratio
+        outputHeight *= ratio
+      }
       
       // Set canvas size to match the output dimensions
-      canvas.width = crop.width * scaleX * pixelRatio
-      canvas.height = crop.height * scaleY * pixelRatio
+      canvas.width = outputWidth * pixelRatio
+      canvas.height = outputHeight * pixelRatio
       
       // Scale the canvas according to the device pixel ratio
       ctx.scale(pixelRatio, pixelRatio)
