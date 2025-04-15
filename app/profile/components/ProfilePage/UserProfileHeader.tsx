@@ -1,11 +1,11 @@
 import { User } from "@/app/models/user";
 import { getFollowerCount, getFollowingCount, getShowsLogged } from "@/app/utils/userService";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ChevronRight, Tv, Users } from "lucide-react";
 import Link from "next/link";
-import FollowButton from "./FollowButton/FollowButton";
-import { Tv, Users } from "lucide-react";
 import { getPresignedUserImageURL } from "../../UserService";
 import EditButton from "./EditButton";
+import FollowButton from "./FollowButton/FollowButton";
 
 export default async function UserProfileHeader({userId, userData}: {userId: string, userData: User}) {
     const user = userData;
@@ -64,7 +64,14 @@ export default async function UserProfileHeader({userId, userData}: {userId: str
                     }
                     { followingCount == null && <span className="font-medium">Error loading Following</span>}
                 </div>
-                
+            </div>
+            <div className="flex flex-col gap-2 my-2 hover:underline cursor-pointer">
+                <Link href={`/watchlist/${user.username}`}>
+                    <span className="text-muted-foreground flex items-center gap-2 text-sm">
+                        Visit {user.username}'s Watchlist
+                        <ChevronRight className="h-4 w-4" />
+                    </span>
+                </Link>
             </div>
         </div>
     );

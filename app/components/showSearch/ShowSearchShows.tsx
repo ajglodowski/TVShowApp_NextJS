@@ -137,6 +137,45 @@ export default async function ShowSearchShows({
                 }
             }
             
+            // Apply current user's statuses filter
+            if (currentUserFilters.statuses && currentUserFilters.statuses.length > 0) {
+                if (isViewingOtherUserWatchlist) {
+                    // For other user's watchlist, filter based on current user's statuses
+                    filteredShows = filteredShows.filter((show) => {
+                        const userInfo = currentUserInfo?.find((info) => Number(info.showId) === show.id);
+                        
+                        if (!userInfo || !userInfo.status) return false;
+                        
+                        // Handle status that might be just an ID (number) or a full Status object
+                        const statusId = typeof userInfo.status === 'number' 
+                            ? userInfo.status 
+                            : userInfo.status.id;
+                            
+                        // Compare by ID directly
+                        return currentUserFilters.statuses.some(filterStatus => 
+                            filterStatus.id === statusId
+                        );
+                    });
+                } else {
+                    // For own watchlist or other search types, filter based on display user info
+                    filteredShows = filteredShows.filter((show) => {
+                        const userInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
+                        
+                        if (!userInfo || !userInfo.status) return false;
+                        
+                        // Handle status that might be just an ID (number) or a full Status object
+                        const statusId = typeof userInfo.status === 'number' 
+                            ? userInfo.status 
+                            : userInfo.status.id;
+                            
+                        // Compare by ID directly
+                        return currentUserFilters.statuses.some(filterStatus => 
+                            filterStatus.id === statusId
+                        );
+                    });
+                }
+            }
+            
             // Apply watchlist owner filters when viewing another user's watchlist
             if (isViewingOtherUserWatchlist) {
                 // Filter by watchlist owner's ratings if specified
@@ -144,6 +183,25 @@ export default async function ShowSearchShows({
                     filteredShows = filteredShows.filter((show) => {
                         const ownerInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
                         return ownerInfo && watchlistOwnerFilters.ratings.includes(ownerInfo.rating);
+                    });
+                }
+                
+                // Filter by watchlist owner's statuses if specified
+                if (watchlistOwnerFilters.statuses && watchlistOwnerFilters.statuses.length > 0) {
+                    filteredShows = filteredShows.filter((show) => {
+                        const ownerInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
+                        
+                        if (!ownerInfo || !ownerInfo.status) return false;
+                        
+                        // Handle status that might be just an ID (number) or a full Status object
+                        const statusId = typeof ownerInfo.status === 'number' 
+                            ? ownerInfo.status 
+                            : ownerInfo.status.id;
+                            
+                        // Compare by ID directly
+                        return watchlistOwnerFilters.statuses.some(filterStatus => 
+                            filterStatus.id === statusId
+                        );
                     });
                 }
                 

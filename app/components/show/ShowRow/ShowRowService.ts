@@ -54,18 +54,23 @@ export const getCurrentUsersShowDetails = async (showId: number): Promise<UserSh
         .from('UserShowDetails')
         .select(UserShowDataWithUserInfoParams)
         .match({ userId: userId, showId: showId })
-        .single();
+        .limit(1);
     
     if (error) {
         console.error(error);
         return undefined;
     }
 
+    if (data.length === 0) {
+        return undefined;
+    }
+
+    const userShowData = data[0];
     const output: UserShowDataWithUserInfo = {
-        ...data,
-        user: data.user as unknown as UserBasicInfo,
-        status: data.status as unknown as Status,
-        rating: data.rating as unknown as Rating
+        ...userShowData,
+        user: userShowData.user as unknown as UserBasicInfo,
+        status: userShowData.status as unknown as Status,
+        rating: userShowData.rating as unknown as Rating
     };
 
     return output;

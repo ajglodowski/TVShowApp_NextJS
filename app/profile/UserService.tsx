@@ -10,12 +10,12 @@ export async function getProfilePic (username: string): Promise<string|null> {
 }
 
 export const getPresignedUserImageURL = cache(async (picLocation: string): Promise<string | null> => {
-    "use cache";
-    cacheLife({
-      stale: 300, // 5 minutes
-      revalidate: 300, // 5 minutes
-      expire: 300, // 10 minutes
-    });
+    // "use cache";
+    // cacheLife({
+    //   stale: 300, // 5 minutes
+    //   revalidate: 300, // 5 minutes
+    //   expire: 300, // 10 minutes
+    // });
     const apiURL = `${serverBaseURL}/api/imageUrlFetcher?path=profilePics&imageName=`;
     const transformedName = encodeURIComponent(picLocation);
     //const dimensions = tile ? "200x200" : "640x640";
@@ -23,6 +23,7 @@ export const getPresignedUserImageURL = cache(async (picLocation: string): Promi
 
 
     const response = await fetch(showNameURL, {
+      cache: 'force-cache',
       next: {
         revalidate: 60 * 5 // 5 minutes
       }

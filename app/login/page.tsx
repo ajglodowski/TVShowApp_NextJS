@@ -65,15 +65,26 @@ export default async function Login({
           </form>
         </CardContent>
         <CardFooter className="flex justify-center pt-4">
-        <Link 
+          <div className='flex flex-col gap-2'>
+            <Link 
+              href="/resetPassword"
+              className="text-sm text-foreground/80 hover:text-foreground/100 transition-colors">
+              <div className='flex items-center gap-2'>
+                <p className="text-sm">Forgot your password?</p>
+                <p>Reset it</p>
+                <ChevronRight className="h-4 w-4 text-foreground/70 hover:text-foreground/100 transition-colors" />
+              </div>
+          </Link>
+          <Link 
             href="/signup"
             className="text-sm text-foreground/80 hover:text-foreground/100 transition-colors">
             <div className='flex items-center gap-2'>
               <p className="text-sm">Don't have an account?</p>
               <p>Create an account</p>
               <ChevronRight className="h-4 w-4 text-foreground/70 hover:text-foreground/100 transition-colors" />
-            </div>
-          </Link>
+              </div>
+            </Link>
+          </div>
         </CardFooter>
       </Card>
       {(await searchParams)?.message && (

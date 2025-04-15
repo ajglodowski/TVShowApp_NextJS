@@ -58,20 +58,15 @@ export const getShowImageURL = cache((showName: string, tile: boolean): string =
 });
 
 export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
-  "use cache";
-  cacheLife({
-    stale: 300, // 5 minutes
-    revalidate: 300, // 5 minutes
-    expire: 600, // 10 minutes
-  });
   const apiURL = `${serverBaseURL}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
   const transformedName = encodeURIComponent(showName);
   const dimensions = tile ? "200x200" : "640x640";
   const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
 
   const response = await fetch(showNameURL, {
+    cache: 'force-cache',
     next: {
-      revalidate: 60 * 5 // 5 minutes
+      revalidate: 60 * 10 // 10 minutes
     }
   });
   if (response.status !== 200) return null;

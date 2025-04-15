@@ -5,20 +5,45 @@ import { ShowTag } from "@/app/models/showTag";
 import { createClient } from "@/app/utils/supabase/client";
 import { cache } from "react";
 
-export async function getShow( showId: string ): Promise<Show | null> {
+export const getShowFromCache = (showId: string): Show | null => {
+    const cacheKey = `show_${showId}`;
+    const sessionStorageValue = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+    if (sessionStorageValue && sessionStorageValue.timestamp > Date.now() - 60 * 10 * 1000) { // 10 minutes
+        return sessionStorageValue.data;
+    } else {
+        sessionStorage.removeItem(cacheKey);
+        return null;
+    }
+}
+
+export const setShowInCache = (showId: string, show: Show): void => {
+    const cacheKey = `show_${showId}`;
+    const sessionStorageItem = JSON.stringify({ data: show, timestamp: Date.now() });
+    sessionStorage.setItem(cacheKey, sessionStorageItem);
+}
+
+export const getShow = cache(async (showId: string): Promise<Show | null> => {
+    // Check cache first
+    const cachedShow = getShowFromCache(showId);
+    if (cachedShow) {
+        return cachedShow;
+    }
+    
     const supabase = createClient();
     const { data: showData } = await supabase.from("show").select(ShowPropertiesWithService).match({id: showId}).single();
     
-    if (!showData) { console.log("HEre"); return null;   }
+    if (!showData) { return null; }
 
     const show: Show = {
         ...showData,
         service: showData.service as unknown as Service
     };
     
+    // Store in cache
+    setShowInCache(showId, show);
     
     return show;
-}
+});
 
 export async function updateShow(show: Show): Promise<boolean> {
     const supabase = createClient();
@@ -69,8 +94,9 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
     }
 
     const response = await fetch(showNameURL, {
+        cache: 'force-cache',
         next: {
-            revalidate: 60 * 5 // 5 minutes
+            revalidate: 60 * 10 // 10 minutes
         }
     });
     if (response.status !== 200) return null;

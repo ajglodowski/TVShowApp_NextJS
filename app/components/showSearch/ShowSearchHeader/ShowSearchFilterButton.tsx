@@ -144,8 +144,8 @@ export default function ShowSearchFilterButton({
 
     const services = use(getServicesFunction);
 
-    const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black text-center cursor-pointer'
-    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 outline outline-1 outline-white hover:bg-white hover:text-black text-white text-center cursor-pointer'
+    const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black text-center cursor-pointer'
+    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto outline outline-1 outline-white hover:bg-white hover:text-black text-white text-center cursor-pointer'
 
     const ServiceButtons = () => {
         if (!services) return (<></>);
@@ -259,79 +259,76 @@ export default function ShowSearchFilterButton({
 
     const FilterRows = () => {
         return (
-            <div>
-                <div className="flex space-x-4">
-                    <div className="items-center space-x-2 py-2">
-                        <Label>Running?</Label>
-                        <RadioGroup 
-                            value={optimisticFilters.running === undefined ? "undefined" : String(optimisticFilters.running)} 
-                            defaultValue="compact"
-                            onValueChange={(value) => {
-                                const boolValue = value === "undefined" ? undefined : value === "true";
-                                handleSetFilter('running', boolValue);
-                            }}
-                        >
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="undefined" id="r1" />
-                                <Label htmlFor="r1">Not Applied</Label>
+            <div className="pb-4 space-y-4">
+                <div className="flex flex-col">
+                    <div className="py-2">
+                        <Label className="font-medium text-sm">Running?</Label>
+                        <div className="flex flex-col gap-2 mt-2">
+                            <div 
+                                onClick={() => handleSetFilter('running', undefined)}
+                                className={optimisticFilters.running === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                Not Applied
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="true" id="r2" />
-                                <Label htmlFor="r2">Yes</Label>
+                            <div 
+                                onClick={() => handleSetFilter('running', true)}
+                                className={optimisticFilters.running === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                Yes
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="false" id="r3" />
-                                <Label htmlFor="r3">No</Label>
+                            <div 
+                                onClick={() => handleSetFilter('running', false)}
+                                className={optimisticFilters.running === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                No
                             </div>
-                        </RadioGroup>
+                        </div>
                     </div>
-                    <div className="items-center space-x-2 py-2">
-                        <Label>Limited Series?</Label>
-                        <RadioGroup 
-                            value={optimisticFilters.limitedSeries === undefined ? "undefined" : String(optimisticFilters.limitedSeries)} 
-                            defaultValue="compact"
-                            onValueChange={(value) => {
-                                const boolValue = value === "undefined" ? undefined : value === "true";
-                                handleSetFilter('limitedSeries', boolValue);
-                            }}
-                        >
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="undefined" id="l1" />
-                                <Label htmlFor="l1">Not Applied</Label>
+                    <div className="py-2">
+                        <Label className="font-medium text-sm">Limited Series?</Label>
+                        <div className="flex flex-col gap-2 mt-2">
+                            <div 
+                                onClick={() => handleSetFilter('limitedSeries', undefined)}
+                                className={optimisticFilters.limitedSeries === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                Not Applied
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="true" id="l2" />
-                                <Label htmlFor="l2">Yes</Label>
+                            <div 
+                                onClick={() => handleSetFilter('limitedSeries', true)}
+                                className={optimisticFilters.limitedSeries === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                Yes
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="false" id="l3" />
-                                <Label htmlFor="l3">No</Label>
+                            <div 
+                                onClick={() => handleSetFilter('limitedSeries', false)}
+                                className={optimisticFilters.limitedSeries === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                No
                             </div>
-                        </RadioGroup>
+                        </div>
                     </div>
-                    <div className="items-center space-x-2 py-2">
-                        <Label>Currently Airing?</Label>
-                        <RadioGroup 
-                            value={optimisticFilters.currentlyAiring === undefined ? "undefined" : String(optimisticFilters.currentlyAiring)} 
-                            defaultValue="compact"
-                            onValueChange={(value) => {
-                                const boolValue = value === "undefined" ? undefined : value === "true";
-                                handleSetFilter('currentlyAiring', boolValue);
-                            }}
-                        >
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="undefined" id="c1" />
-                                <Label htmlFor="c1">Not Applied</Label>
+                    <div className="py-2">
+                        <Label className="font-medium text-sm">Currently Airing?</Label>
+                        <div className="flex flex-col gap-2 mt-2">
+                            <div 
+                                onClick={() => handleSetFilter('currentlyAiring', undefined)}
+                                className={optimisticFilters.currentlyAiring === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                Not Applied
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="true" id="c2" />
-                                <Label htmlFor="c2">Yes</Label>
+                            <div 
+                                onClick={() => handleSetFilter('currentlyAiring', true)}
+                                className={optimisticFilters.currentlyAiring === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                Yes
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="false" id="c3" />
-                                <Label htmlFor="c3">No</Label>
+                            <div 
+                                onClick={() => handleSetFilter('currentlyAiring', false)}
+                                className={optimisticFilters.currentlyAiring === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                            >
+                                No
                             </div>
-                        </RadioGroup>
+                        </div>
                     </div>
                 </div>
                 <div>

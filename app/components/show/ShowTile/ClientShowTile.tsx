@@ -16,10 +16,12 @@ export default function ClientShowTile({ showId }: { showId: string }) {
     const showImageUrl = showImageInfo?.imageUrl;
 
     useEffect(() => {
-        getShow(showId).then((show) => {
-            if (!show) setShowData(null);
-            else setShowData(show as Show);
-        });
+        const fetchShowData = async () => {
+            const showData = await getShow(showId);
+            if (!showData) setShowData(null);
+            else setShowData(showData as Show);
+        };
+        fetchShowData();
     },[]);
 
     useEffect(() => {

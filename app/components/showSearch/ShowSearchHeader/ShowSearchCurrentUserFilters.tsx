@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useOptimistic, useTransition } from "react";
+import { use, useOptimistic, useTransition } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
 export type CurrentUserFilters = {
@@ -32,6 +32,7 @@ type ShowSearchCurrentUserFiltersProps = {
     searchType?: ShowSearchType;
     userId?: string;
     currentUserId?: string;
+    getStatusesFunction: Promise<Status[] | null>;
 }
 
 export default function ShowSearchCurrentUserFilters({ 
@@ -40,10 +41,13 @@ export default function ShowSearchCurrentUserFilters({
     currentFilters,
     searchType = ShowSearchType.UNRESTRICTED,
     userId,
-    currentUserId
+    currentUserId,
+    getStatusesFunction
 }: ShowSearchCurrentUserFiltersProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
+
+    const statuses = use(getStatusesFunction);
     
     // Determine if viewing other user's watchlist where current user != watchlist owner
     const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
@@ -164,8 +168,8 @@ export default function ShowSearchCurrentUserFilters({
         });
     };
 
-    const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 text-center outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black cursor-pointer'
-    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 text-center outline outline-1 outline-white hover:bg-white hover:text-black text-white cursor-pointer'
+    const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto text-center outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black cursor-pointer'
+    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto text-center outline outline-1 outline-white hover:bg-white hover:text-black text-white cursor-pointer'
 
     const RatingButtons = () => {
         const allRatings = Object.values(Rating);
@@ -206,24 +210,38 @@ export default function ShowSearchCurrentUserFilters({
     }
 
     const StatusButtons = () => {
-        // Replace empty array with fetch from the Status enum or model
-        // Since we don't have access to all statuses in this component,
-        // we need to handle potential undefined statuses
-        const allStatuses: Status[] = []; // This would typically be fetched or passed as props
+        const allStatuses: Status[] = statuses || [];
+        
+        // Filter out already selected statuses from the list of all statuses
+        const unselectedStatuses = allStatuses.filter(status => 
+            !optimisticFilters.statuses.some(s => s.id === status.id)
+        );
         
         return (
             <div className="grid grid-cols-2 gap-2">
-                {optimisticFilters.statuses.map((status) => (
+                {optimisticFilters.statuses.map((selectedStatus) => {
+                    // Try to find a matching full status from the fetched statuses list
+                    const matchingStatus = allStatuses.find(s => s.id === selectedStatus.id);
+                    return (
+                        <div
+                            key={`selected-${selectedStatus.id}`}
+                            onClick={() => handleRemoveStatus(selectedStatus)}
+                            className={selectedBubbleStyle}
+                        >
+                            {matchingStatus?.name || `Status ${selectedStatus.id}`}
+                        </div>
+                    );
+                })}
+
+                {unselectedStatuses.map((status) => (
                     <div
-                        key={status.name || status.id}
-                        onClick={() => handleRemoveStatus(status)}
-                        className={selectedBubbleStyle}
-                    >
+                        key={`unselected-${status.id}`}
+                        onClick={() => handleAddStatus(status)}
+                        className={unselectedBubbleStyle}
+                    >   
                         {status.name || `Status ${status.id}`}
                     </div>
                 ))}
-
-                {/* We can't show unselected statuses if we don't have the full list */}
             </div>
         )
     }
@@ -243,30 +261,26 @@ export default function ShowSearchCurrentUserFilters({
         return (
             <div className="p-6 pb-0">
                 <div className="text-lg font-medium">{watchlistLabel}</div>
-                <RadioGroup defaultValue={getStringFromBool(optimisticFilters.addedToWatchlist)}>
-                    <div className="flex items-center space-x-2 mt-2">
-                        <div onClick={() => handleWatchlistChange(undefined)} className="flex items-center space-x-2 cursor-pointer">
-                            <RadioGroupItem value="undefined" id="all" />
-                            <Label htmlFor="all">All</Label>
-                        </div>
+                <div className="flex flex-col gap-2 mt-2">
+                    <div 
+                        onClick={() => handleWatchlistChange(undefined)}
+                        className={optimisticFilters.addedToWatchlist === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                    >
+                        All
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <div onClick={() => handleWatchlistChange(true)} className="flex items-center space-x-2 cursor-pointer">
-                            <RadioGroupItem value="true" id="inWatchlist" />
-                            <Label htmlFor="inWatchlist">
-                                {isViewingOtherUserWatchlist ? "In My Watch List" : "In Watch List"}
-                            </Label>
-                        </div>
+                    <div 
+                        onClick={() => handleWatchlistChange(true)}
+                        className={optimisticFilters.addedToWatchlist === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                    >
+                        {isViewingOtherUserWatchlist ? "In My Watch List" : "In Watch List"}
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <div onClick={() => handleWatchlistChange(false)} className="flex items-center space-x-2 cursor-pointer">
-                            <RadioGroupItem value="false" id="notInWatchlist" />
-                            <Label htmlFor="notInWatchlist">
-                                {isViewingOtherUserWatchlist ? "Not In My Watch List" : "Not In Watch List"}
-                            </Label>
-                        </div>
+                    <div 
+                        onClick={() => handleWatchlistChange(false)}
+                        className={optimisticFilters.addedToWatchlist === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                    >
+                        {isViewingOtherUserWatchlist ? "Not In My Watch List" : "Not In Watch List"}
                     </div>
-                </RadioGroup>
+                </div>
             </div>
         )
     }
@@ -302,13 +316,14 @@ export default function ShowSearchCurrentUserFilters({
                     <div className="grid gap-4">
                         <WatchListRow />
                         <RatingsRow />
-                        {/*<StatusesRow />*/}
+                        <StatusesRow />
                     </div>
                     
                     <div className="mt-8 flex justify-end">
                         <Button 
                             onClick={handleClearFilters}
                             disabled={isPending}
+                            className={`${backdropBackground} hover:bg-white/10`}
                         >
                             Clear All
                         </Button>

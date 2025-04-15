@@ -18,6 +18,7 @@ type ShowSearchCurrentUserFiltersProps = {
     searchType?: ShowSearchType;
     userId?: string;
     currentUserId?: string;
+    statuses?: Status[];
 }
 
 export default function ShowSearchCurrentUserFiltersRow({ 
@@ -26,7 +27,8 @@ export default function ShowSearchCurrentUserFiltersRow({
     currentFilters,
     searchType = ShowSearchType.UNRESTRICTED,
     userId,
-    currentUserId
+    currentUserId,
+    statuses = []
 }: ShowSearchCurrentUserFiltersProps) {
     const router = useRouter();
     
@@ -42,6 +44,12 @@ export default function ShowSearchCurrentUserFiltersRow({
             ...update
         })
     );
+
+    // Function to find status name by id
+    const getStatusName = (statusId: number): string => {
+        const status = statuses.find(s => s.id === statusId);
+        return status?.name || `Status ${statusId}`;
+    };
 
     const createRemoveFilterURL = (key: keyof CurrentUserFilters, value: Rating | Status | boolean | undefined) => {
         const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
@@ -65,12 +73,12 @@ export default function ShowSearchCurrentUserFiltersRow({
         }
         
         if (key === 'statuses') {
-            const newStatuses = optimisticFilters.statuses.filter(s => s !== value);
+            const newStatuses = optimisticFilters.statuses.filter(s => s.id !== (value as Status).id);
             if (newStatuses.length > 0) {
-                url.searchParams.set('statuses', newStatuses.join(','));
+                url.searchParams.set('statuses', newStatuses.map(s => s.id).join(','));
             }
         } else if (optimisticFilters.statuses && optimisticFilters.statuses.length > 0) {
-            url.searchParams.set('statuses', optimisticFilters.statuses.join(','));
+            url.searchParams.set('statuses', optimisticFilters.statuses.map(s => s.id).join(','));
         }
         
         if (key !== 'addedToWatchlist' && optimisticFilters.addedToWatchlist !== undefined) {
@@ -112,17 +120,17 @@ export default function ShowSearchCurrentUserFiltersRow({
             optimisticFilters.statuses.forEach((status) => {
                 bubbles.push(
                     <div
-                        key={`status-${status}`}
+                        key={`status-${status.id}`}
                         onClick={() => {
                             startTransition(() => {
-                                const newStatuses = optimisticFilters.statuses.filter(s => s !== status);
+                                const newStatuses = optimisticFilters.statuses.filter(s => s.id !== status.id);
                                 updateOptimisticFilters({ statuses: newStatuses });
                                 router.push(createRemoveFilterURL('statuses', status));
                             });
                         }}
                     >
                         <Button variant="outline" className={bubbleStyle}>  
-                            Status: {status.toString()}
+                            Status: {getStatusName(status.id)}
                             <X className="ml-1 h-4 w-4" />
                         </Button>
                     </div>

@@ -20,9 +20,7 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
     if (filters.service.length > 0) queryBase = queryBase.in('service', filters.service.map((service) => service.id));
     if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
     if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
-    
 
-    //queryBase = queryBase.limit(100);
     if (searchType === ShowSearchType.WATCHLIST) {
         if (!currentUserId) return null;
         const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
@@ -36,18 +34,19 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
         queryBase = queryBase.in('id', showIds);
     }
     if (searchType === ShowSearchType.DISCOVER_NEW) {
-        if (!currentUserId) return null;
-        const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
-        if (!showIds) return null;
-        let showIdsString = '(';
-        for (let i = 0; i < showIds.length; i++) {
-            showIdsString += showIds[i];
-            if (i < showIds.length - 1) {
-                showIdsString += ', ';
+        if (!!currentUserId) {
+            const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
+            if (!showIds) return null;
+            let showIdsString = '(';
+            for (let i = 0; i < showIds.length; i++) {
+                showIdsString += showIds[i];
+                if (i < showIds.length - 1) {
+                    showIdsString += ', ';
+                }
             }
+            showIdsString += ')';
+            queryBase = queryBase.not('id', 'in', showIdsString);
         }
-        showIdsString += ')';
-        queryBase = queryBase.not('id', 'in', showIdsString);
     }
 
     const { data: showData } = await queryBase;

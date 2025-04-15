@@ -15,6 +15,7 @@ import ShowSearchFiltersRow from "./ShowSearchFiltersRow";
 import ClearSearchButton from "./ShowSearchClearSearchButton";
 import ShowSearchWatchlistOwnerFilters from "./ShowSearchWatchlistOwnerFilters";
 import ShowSearchWatchlistOwnerFiltersRow from "./ShowSearchWatchlistOwnerFiltersRow";
+import { getAllStatuses } from "@/app/show/[showId]/UserShowDataService";
 
 export type ShowSearchFiltersType = {
     service: Service[];
@@ -76,6 +77,9 @@ export default async function ShowSearchHeader({
     };
 
     const getServicesFunction = getServices();
+    const getStatusesFunction = getAllStatuses();
+    
+    const statuses = await getStatusesFunction;
     
     return (
         <div className="">
@@ -103,6 +107,7 @@ export default async function ShowSearchHeader({
                             searchType={searchType}
                             userId={userId}
                             currentUserId={currentUserId}
+                            getStatusesFunction={getStatusesFunction}
                         />
                         
                         {/* Show Watchlist Owner Filters Button when viewing other user's watchlist */}
@@ -112,6 +117,7 @@ export default async function ShowSearchHeader({
                                 pathname={pathname}
                                 currentFilters={filters}
                                 userId={userId}
+                                getStatusesFunction={getStatusesFunction}
                             />
                         )}
                         
@@ -137,6 +143,7 @@ export default async function ShowSearchHeader({
                     searchType={searchType}
                     userId={userId}
                     currentUserId={currentUserId}
+                    statuses={statuses || []}
                 />
                 
                 {/* Show Watchlist Owner Filters Row when viewing other user's watchlist */}
@@ -146,6 +153,7 @@ export default async function ShowSearchHeader({
                         pathname={pathname}
                         currentFilters={filters}
                         userId={userId}
+                        statuses={statuses || []}
                     />
                 )}
             </div>
