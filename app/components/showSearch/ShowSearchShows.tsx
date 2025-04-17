@@ -1,4 +1,4 @@
-import { Show } from '@/app/models/show';
+import { Show, ShowWithAnalytics } from '@/app/models/show';
 import { Skeleton } from '@/components/ui/skeleton';
 import Divider from '../Divider';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
@@ -11,6 +11,7 @@ import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } fro
 import ShowRowSkeleton from '../show/ShowRow/ShowRowSkeleton';
 import { Suspense } from 'react';
 import PaginationControls from './PaginationControls';
+import { Rating, RatingPoints } from '@/app/models/rating';
 
 // Number of items per page
 const ITEMS_PER_PAGE = 20;
@@ -43,7 +44,7 @@ export default async function ShowSearchShows({
     nextPageUrl
 }: ShowSearchShowsProps) {
     // Fetch shows based on filters
-    let shows: Show[] | undefined = undefined;
+    let shows: ShowWithAnalytics[] | undefined = undefined;
     let displayUserInfo: UserShowDataWithUserInfo[] | undefined | null = undefined;
     let currentUserInfo: UserShowDataWithUserInfo[] | undefined | null = undefined;
     const displayUserInfoMap: Map<number, UserShowDataWithUserInfo> = new Map();
@@ -56,7 +57,7 @@ export default async function ShowSearchShows({
         // User is viewing their own watchlist
         const userData = await fetchUsersWatchlist(currentUserId);
         const filteredUserData = filterWatchlist(userData, filters);
-        shows = filteredUserData?.map((userShowData) => userShowData.show);
+        shows = filteredUserData?.map((userShowData) => userShowData.show) as ShowWithAnalytics[];
         displayUserInfo = filteredUserData?.map((userShowData) => userShowData.userShowData);
         displayUserInfo?.forEach((info) => {
             displayUserInfoMap.set(Number(info.showId), info);
@@ -67,7 +68,7 @@ export default async function ShowSearchShows({
         // 1. Fetch and process profile user's watchlist
         const profileUserData = await fetchUsersWatchlist(userId);
         const filteredProfileUserData = filterWatchlist(profileUserData, filters);
-        shows = filteredProfileUserData?.map((userShowData) => userShowData.show);
+        shows = filteredProfileUserData?.map((userShowData) => userShowData.show) as ShowWithAnalytics[];
         displayUserInfo = filteredProfileUserData?.map((userShowData) => userShowData.userShowData);
         displayUserInfo?.forEach((info) => {
             displayUserInfoMap.set(Number(info.showId), info);
@@ -84,7 +85,7 @@ export default async function ShowSearchShows({
         }
     } else {
         // Any other search type
-        shows = await fetchShows(filters, searchType, userId, currentUserId) || undefined;
+        shows = await fetchShows(filters, searchType, userId, currentUserId) as ShowWithAnalytics[] || undefined;
         if (currentUserId && shows) {
             const showIds = shows.map((show) => String(show.id));
             displayUserInfo = await getUserShowData({showIds, userId: currentUserId});
@@ -221,8 +222,73 @@ export default async function ShowSearchShows({
                     show.name.toLowerCase().includes(searchResults.toLowerCase()));
             }
             
-            // Sort by name
-            filteredShows = filteredShows.sort((a, b) => a.name.localeCompare(b.name));
+            // Apply sorting
+            if (filteredShows) {
+                const sortField = filters.sortBy?.split('-')[0] || 'alphabetical';
+                const sortDirection = filters.sortBy?.split('-')[1] || 'asc';
+                
+                if (sortField === "alphabetical") {
+                    filteredShows = filteredShows.sort((a, b) => {
+                        const comparison = a.name.localeCompare(b.name);
+                        return sortDirection === 'asc' ? comparison : -comparison;
+                    });
+                } else if (sortField === "weekly_popularity") {
+                    // Sort by weekly updates
+                    filteredShows = filteredShows.sort((a, b) => {
+                        const aPopularity = a.weekly_updates || 0;
+                        const bPopularity = b.weekly_updates || 0;
+                        
+                        // If popularity is equal, fall back to alphabetical
+                        if (aPopularity === bPopularity) return a.name.localeCompare(b.name);
+                        
+                        // By default, higher popularity first
+                        return sortDirection === 'desc' ? bPopularity - aPopularity : aPopularity - bPopularity;
+                    });
+                } else if (sortField === "monthly_popularity") {
+                    // Sort by monthly updates
+                    filteredShows = filteredShows.sort((a, b) => {
+                        const aPopularity = a.monthly_updates || 0;
+                        const bPopularity = b.monthly_updates || 0;
+                        
+                        // If popularity is equal, fall back to alphabetical
+                        if (aPopularity === bPopularity) return a.name.localeCompare(b.name);
+                        
+                        // By default, higher popularity first
+                        return sortDirection === 'desc' ? bPopularity - aPopularity : aPopularity - bPopularity;
+                    });
+                } else if (sortField === "yearly_popularity") {
+                    // Sort by yearly updates
+                    filteredShows = filteredShows.sort((a, b) => {
+                        const aPopularity = a.yearly_updates || 0;
+                        const bPopularity = b.yearly_updates || 0;
+                        
+                        // If popularity is equal, fall back to alphabetical
+                        if (aPopularity === bPopularity) return a.name.localeCompare(b.name);
+                        
+                        // By default, higher popularity first
+                        return sortDirection === 'desc' ? bPopularity - aPopularity : aPopularity - bPopularity;
+                    });
+                } else if (sortField === "rating") {
+                    // Sort by user rating (if available)
+                    filteredShows = filteredShows.sort((a, b) => {
+                        const aRating = displayUserInfoMap.get(a.id)?.rating;
+                        const bRating = displayUserInfoMap.get(b.id)?.rating;
+                        
+                        // If ratings are equal or not available, fall back to alphabetical
+                        if (!aRating && !bRating) return a.name.localeCompare(b.name);
+                        if (!aRating) return 1; // Shows without ratings go to the end
+                        if (!bRating) return -1; // Shows without ratings go to the end
+                        
+                        // Get numerical values from RatingPoints
+                        const aValue = RatingPoints[aRating as Rating] || 0;
+                        const bValue = RatingPoints[bRating as Rating] || 0;
+                        
+                        // Compare numerical values (default: higher values first)
+                        const ratingComparison = bValue - aValue;
+                        return sortDirection === 'desc' ? ratingComparison : -ratingComparison;
+                    });
+                }
+            }
         }
     }
     
@@ -257,7 +323,7 @@ export default async function ShowSearchShows({
             </div>
             <ScrollArea className='rounded-md border-2 h-96 overflow-auto'>
                 <div className='py-2'>
-                    {paginatedData.map((show: Show) => (
+                    {paginatedData.map((show: ShowWithAnalytics) => (
                         <div className='px-4' key={show.id}>
                             <Suspense fallback={<ShowRowSkeleton />}>
                                 <ShowRow 

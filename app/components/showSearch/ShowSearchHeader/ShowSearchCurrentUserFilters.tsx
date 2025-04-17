@@ -84,6 +84,7 @@ export default function ShowSearchCurrentUserFilters({
         params.delete('addedToWatchlist');
         params.delete('ratings');
         params.delete('statuses');
+        params.delete('page'); // Remove page param to reset to first page
         
         // Apply changes to user filters
         const newFilters = { ...safeFilters, ...changes };
@@ -161,6 +162,7 @@ export default function ShowSearchCurrentUserFilters({
             params.delete('addedToWatchlist');
             params.delete('ratings');
             params.delete('statuses');
+            params.delete('page'); // Remove page param to reset to first page
             
             // Build the new URL
             const queryString = params.toString();

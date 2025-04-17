@@ -1,4 +1,4 @@
-import { Show } from "@/app/models/show"
+import { Show, ShowWithAnalytics } from "@/app/models/show"
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import Link from "next/dist/client/link";
@@ -10,7 +10,7 @@ import ShowRowSkeleton from "./ShowRowSkeleton";
 import { getCurrentUsersShowDetails, getFriendsUserDetails } from "./ShowRowService";
 
 type ShowRowProps = {
-    show: Show | undefined;
+    show: Show | ShowWithAnalytics | undefined;
     currentUserInfo?: UserShowDataWithUserInfo | undefined;
     otherUsersInfo?: UserShowDataWithUserInfo[] | undefined;
     fetchCurrentUsersInfo?: boolean;

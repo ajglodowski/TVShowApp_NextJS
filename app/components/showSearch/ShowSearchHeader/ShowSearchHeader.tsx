@@ -16,6 +16,7 @@ import ClearSearchButton from "./ShowSearchClearSearchButton";
 import ShowSearchWatchlistOwnerFilters from "./ShowSearchWatchlistOwnerFilters";
 import ShowSearchWatchlistOwnerFiltersRow from "./ShowSearchWatchlistOwnerFiltersRow";
 import { getAllStatuses } from "@/app/show/[showId]/UserShowDataService";
+import SortButton, { SortOption } from "./SortButton";
 
 export type ShowSearchFiltersType = {
     service: Service[];
@@ -24,6 +25,7 @@ export type ShowSearchFiltersType = {
     limitedSeries?: boolean;
     running?: boolean;
     currentlyAiring?: boolean;
+    sortBy?: SortOption;
 }
 
 export const defaultFilters: ShowSearchFiltersType = {
@@ -32,7 +34,8 @@ export const defaultFilters: ShowSearchFiltersType = {
     airDate: [],
     limitedSeries: undefined,
     running: undefined,
-    currentlyAiring: undefined
+    currentlyAiring: undefined,
+    sortBy: undefined
 }
 
 type ShowSearchHeaderProps = {
@@ -71,6 +74,7 @@ export default async function ShowSearchHeader({
         if (filters.limitedSeries !== undefined) queryParams.push(`limitedSeries=${filters.limitedSeries.toString()}`);
         if (filters.running !== undefined) queryParams.push(`running=${filters.running.toString()}`);
         if (filters.currentlyAiring !== undefined) queryParams.push(`currentlyAiring=${filters.currentlyAiring.toString()}`);
+        if (filters.sortBy !== undefined) queryParams.push(`sortBy=${filters.sortBy}`);
         
         const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
         return pathname + queryString;
@@ -85,7 +89,11 @@ export default async function ShowSearchHeader({
         <div className="">
             <div className="text-white px-4 py-1 flex-wrap justify-between">
                 <div className="flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 items-center mt-4">
-                    <form action={pathname} method="get" className="relative flex-1 w-full mb-4 md:mb-0">
+                    <form 
+                        action={pathname} 
+                        method="get" 
+                        className="relative flex-1 w-full mb-4 md:mb-0"
+                    >
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
                         <Input
                             className={`pl-10 bg-white/5 text-white`}
@@ -94,11 +102,44 @@ export default async function ShowSearchHeader({
                             placeholder="Search through results" 
                             defaultValue={searchResults}
                         />
+                        {/* Preserve existing filter parameters */}
+                        {filters.service.length > 0 && (
+                            <input type="hidden" name="service" value={filters.service.map(s => s.id).join(',')} />
+                        )}
+                        {filters.length.length > 0 && (
+                            <input type="hidden" name="length" value={filters.length.join(',')} />
+                        )}
+                        {filters.airDate.length > 0 && (
+                            <input type="hidden" name="airDate" value={filters.airDate.join(',')} />
+                        )}
+                        {filters.limitedSeries !== undefined && (
+                            <input type="hidden" name="limitedSeries" value={filters.limitedSeries.toString()} />
+                        )}
+                        {filters.running !== undefined && (
+                            <input type="hidden" name="running" value={filters.running.toString()} />
+                        )}
+                        {filters.currentlyAiring !== undefined && (
+                            <input type="hidden" name="currentlyAiring" value={filters.currentlyAiring.toString()} />
+                        )}
+                        {filters.sortBy !== undefined && (
+                            <input type="hidden" name="sortBy" value={filters.sortBy} />
+                        )}
+                        {/* Do not include page parameter - intentionally omitted */}
+                        
                         {searchResults && (
                             <ClearSearchButton href={clearSearchURL()} />
                         )}
                     </form>
-                    <div className="flex-1 space-x-2 w-full">
+                    <div className="flex-1 space-x-2 w-full flex flex-wrap gap-2 justify-end">
+                        {/* Sort Button - Positioned first for visibility */}
+                        <div className="min-w-32 block">
+                            <SortButton
+                                currentSort={filters.sortBy}
+                                pathname={pathname}
+                                currentFilters={filters}
+                            />
+                        </div>
+                        
                         {/* Current User Filters Button */}
                         <ShowSearchCurrentUserFilters 
                             filters={currentUserFilters} 

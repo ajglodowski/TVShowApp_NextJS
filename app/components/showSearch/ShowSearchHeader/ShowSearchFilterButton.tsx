@@ -48,6 +48,7 @@ export default function ShowSearchFilterButton({
         params.delete('running');
         params.delete('limitedSeries');
         params.delete('currentlyAiring');
+        params.delete('page'); // Remove page param to reset to first page
         
         // Add or update filter params
         if (updatedFilters.service.length > 0) {
@@ -381,6 +382,7 @@ export default function ShowSearchFilterButton({
                                             params.delete('running');
                                             params.delete('limitedSeries');
                                             params.delete('currentlyAiring');
+                                            params.delete('page'); // Remove page param to reset to first page
                                             
                                             // Build the new URL
                                             const basePathname = currentPathname || '/';
