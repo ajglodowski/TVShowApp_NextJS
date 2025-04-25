@@ -70,7 +70,7 @@ export function getShowImageURL(showName: string, tile: boolean): string {
 
 export const getImageURLFromCache = (fullPath: string): string | null => {
     const sessionStorageValue = JSON.parse(sessionStorage.getItem(fullPath) || "{}");
-    if (sessionStorageValue.timestamp > Date.now() - 60 * 10) { // 10 minutes
+    if (sessionStorageValue.timestamp > Date.now() - 60 * 1) { // 1 minute
         return sessionStorageValue.url;
     } else {
         sessionStorage.removeItem(fullPath);
@@ -96,7 +96,7 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
     const response = await fetch(showNameURL, {
         cache: 'force-cache',
         next: {
-            revalidate: 60 * 10 // 10 minutes
+            revalidate: 60 * 1 // 1 minute
         }
     });
     if (response.status !== 200) return null;
@@ -131,4 +131,13 @@ export async function getServices(): Promise<Service[] | null> {
     if (!serviceData) return null;
     const services: Service[] = serviceData;
     return services;
+}
+
+export async function searchShows(query: string): Promise<any[] | null> {
+  'use client'
+  const supabase = createClient();
+  const { data } = await supabase.from('show').select('id, name').ilike('name', `%${query}%`).limit(10);
+  
+  if (!data) return null;
+  return data;
 }

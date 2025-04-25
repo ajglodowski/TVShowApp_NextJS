@@ -39,7 +39,7 @@ const nextConfig = {
         minimumCacheTTL: 60 * 60 * 24 * 1, // 1 day
     },
     experimental: {
-        ppr: true,
+        // ppr: true,
         useCache: true,
     }
 }

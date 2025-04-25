@@ -118,19 +118,19 @@ export async function updateUserShowData({updateType, userId, showId, newValue }
         case UserUpdateCategory.AddedToWatchlist:
             response = await addToWatchList({userId: userId, showId: showId});
             if (response) update = {
-                id: -1, userId: userId, showId: Number(showId), updateType: UserUpdateCategory.AddedToWatchlist, updateDate: new Date()
+                id: -1, userId: userId, showId: Number(showId), updateType: UserUpdateCategory.AddedToWatchlist, updateDate: new Date(), hidden: false
             };
             break;
         case UserUpdateCategory.ChangedRating:
             response = await updateRating({userId: userId, showId: showId, newRating: newValue as Rating});
             if (response) update = {
-                id: -1, userId: userId, showId: Number(showId), ratingChange: newValue as Rating, updateType: UserUpdateCategory.ChangedRating,updateDate: new Date()
+                id: -1, userId: userId, showId: Number(showId), ratingChange: newValue as Rating, updateType: UserUpdateCategory.ChangedRating,updateDate: new Date(), hidden: false
             };
             break;
         case UserUpdateCategory.ChangedSeason:
             response = await updateCurrentSeason({userId: userId, showId: showId, newSeason: newValue as number});
             if (response) update = {
-                id: -1, userId: userId, showId: Number(showId), seasonChange: newValue as number, updateType: UserUpdateCategory.ChangedSeason,updateDate: new Date()
+                id: -1, userId: userId, showId: Number(showId), seasonChange: newValue as number, updateType: UserUpdateCategory.ChangedSeason,updateDate: new Date(), hidden: false
             };
             break;
         case UserUpdateCategory.RemovedFromWatchlist:
@@ -139,13 +139,13 @@ export async function updateUserShowData({updateType, userId, showId, newValue }
         case UserUpdateCategory.RemovedRating:
             response = await updateRating({userId: userId, showId: showId, newRating: newValue as Rating});
             if (response) update ={ 
-                id: -1, userId: userId, showId: Number(showId), updateType: UserUpdateCategory.RemovedRating,updateDate: new Date()
+                id: -1, userId: userId, showId: Number(showId), updateType: UserUpdateCategory.RemovedRating,updateDate: new Date(), hidden: false
             };
             break;
         case UserUpdateCategory.UpdatedStatus:
             response = await updateStatus({userId: userId, showId: showId, newStatus: newValue as Status});
             if (response) update = {
-                id: -1, userId: userId, showId: Number(showId), statusChange: newValue as Status, updateType: UserUpdateCategory.UpdatedStatus,updateDate: new Date()
+                id: -1, userId: userId, showId: Number(showId), statusChange: newValue as Status, updateType: UserUpdateCategory.UpdatedStatus,updateDate: new Date(), hidden: false
             };
             break;
         default:

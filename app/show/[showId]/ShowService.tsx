@@ -66,7 +66,7 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
   const response = await fetch(showNameURL, {
     cache: 'force-cache',
     next: {
-      revalidate: 60 * 10 // 10 minutes
+      revalidate: 60 * 1 // 1 minute
     }
   });
   if (response.status !== 200) return null;

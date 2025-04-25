@@ -154,7 +154,12 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
 
       <div className='flex'>
         <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
-          <h1 className='text-7xl font-bold tracking-tighter'>Actors</h1>
+          <span className='flex flex-row content-start justify-between text-xl'>
+            <h1 className='text-7xl font-bold tracking-tighter'>Actors</h1>
+            <Link href={`/show/${showId}/editActors`}>
+              <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'>Edit Actors</button>
+            </Link>
+          </span>
           <ActorsSection showId={parseInt(showId)} />
         </div>
       </div>

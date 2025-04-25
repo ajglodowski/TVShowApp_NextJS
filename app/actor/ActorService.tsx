@@ -17,3 +17,23 @@ export async function getShowsForActor( actorId: string ): Promise<Show[] | null
     const shows: Show[] = showData.map((obj) => obj.show as unknown as Show);
     return shows;
 }
+
+export async function addActorToShow(actorId: number, showId: number): Promise<boolean> {
+    const supabase = await createClient();
+    const { error } = await supabase.from("ActorShowRelationship").insert({ actorId, showId });
+    if (error) {
+        console.error(error);
+        return false;
+    }
+    return true;
+}
+
+export async function removeActorFromShow(actorId: number, showId: number): Promise<boolean> {
+    const supabase = await createClient();
+    const { error } = await supabase.from("ActorShowRelationship").delete().match({ actorId, showId });
+    if (error) {
+        console.error(error);
+        return false;
+    }
+    return true;
+}
