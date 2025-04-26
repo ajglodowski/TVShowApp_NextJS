@@ -4,13 +4,12 @@ import { Rating } from "@/app/models/rating";
 import { Status } from "@/app/models/status";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Users } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { use, useOptimistic, useTransition } from "react";
-import { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchCurrentUserFilters";
+import { useOptimistic, useTransition } from "react";
+import { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
 type ShowSearchWatchlistOwnerFiltersProps = {
@@ -18,7 +17,7 @@ type ShowSearchWatchlistOwnerFiltersProps = {
     pathname: string;
     currentFilters: ShowSearchFiltersType;
     userId?: string;
-    getStatusesFunction: Promise<Status[] | null>;
+    statuses: Status[] | null;
 }
 
 export default function ShowSearchWatchlistOwnerFilters({ 
@@ -26,21 +25,20 @@ export default function ShowSearchWatchlistOwnerFilters({
     pathname, 
     currentFilters,
     userId,
-    getStatusesFunction
+    statuses
 }: ShowSearchWatchlistOwnerFiltersProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [isPending, startTransition] = useTransition();
 
-    const statuses = use(getStatusesFunction);
-    
-    // Ensure filters is properly initialized with default values
+    // Ensure incoming filters is properly initialized
     const safeFilters: CurrentUserFilters = {
         addedToWatchlist: filters?.addedToWatchlist,
         ratings: filters?.ratings || [],
         statuses: filters?.statuses || []
     };
-    
-    const [isPending, startTransition] = useTransition();
+
+    // Re-introduce useOptimistic
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
         safeFilters,
         (state, update: Partial<CurrentUserFilters>) => ({
@@ -49,102 +47,62 @@ export default function ShowSearchWatchlistOwnerFilters({
         })
     );
 
-    const getStringFromBool = (bool: boolean | undefined): string => {
-        if (bool === true) return 'true';
-        if (bool === false) return 'false';
-        return 'undefined';
-    }
-
-    // Create URLs for various filter changes
-    const createFilterURL = (changes: Partial<CurrentUserFilters>) => {
-        // Create a URLSearchParams object to build the query string
+    // Create URL for applying filters (renamed)
+    const createFilterUrl = (applyFilters: CurrentUserFilters) => {
         const params = new URLSearchParams(searchParams?.toString() || "");
-        
-        // Remove the parameters we're going to update
         params.delete('ownerWatchlist');
         params.delete('ownerRatings');
         params.delete('ownerStatuses');
+        params.delete('page');
         
-        // Apply changes to user filters
-        const newFilters = { ...safeFilters, ...changes };
-        
-        // Add updated watchlist owner filter params
-        if (newFilters.addedToWatchlist !== undefined) params.set('ownerWatchlist', newFilters.addedToWatchlist.toString());
-        if (newFilters.ratings && newFilters.ratings.length > 0) params.set('ownerRatings', newFilters.ratings.join(','));
-        if (newFilters.statuses && newFilters.statuses.length > 0) {
-            params.set('ownerStatuses', newFilters.statuses.map(s => s.id).join(','));
+        if (applyFilters.addedToWatchlist !== undefined) params.set('ownerWatchlist', applyFilters.addedToWatchlist.toString());
+        if (applyFilters.ratings && applyFilters.ratings.length > 0) params.set('ownerRatings', applyFilters.ratings.join(','));
+        if (applyFilters.statuses && applyFilters.statuses.length > 0) {
+            params.set('ownerStatuses', applyFilters.statuses.map(s => s.id).join(','));
         }
         
-        // Build the new URL
         const queryString = params.toString();
         return pathname + (queryString ? `?${queryString}` : '');
     };
 
-    // Handle removing a rating with optimistic update
+    // --- Update Handlers to apply immediately with optimistic updates ---
     const handleRemoveRating = (rating: Rating) => {
+        const newRatings = optimisticFilters.ratings.filter(r => r !== rating);
         startTransition(() => {
-            const newRatings = optimisticFilters.ratings.filter(r => r !== rating);
             updateOptimisticFilters({ ratings: newRatings });
-            router.push(createFilterURL({ ratings: newRatings }));
+            router.push(createFilterUrl({ ...optimisticFilters, ratings: newRatings }), { scroll: false });
         });
     };
 
-    // Handle adding a rating with optimistic update
     const handleAddRating = (rating: Rating) => {
+        const newRatings = [...optimisticFilters.ratings, rating];
         startTransition(() => {
-            const newRatings = [...optimisticFilters.ratings, rating];
             updateOptimisticFilters({ ratings: newRatings });
-            router.push(createFilterURL({ ratings: newRatings }));
+            router.push(createFilterUrl({ ...optimisticFilters, ratings: newRatings }), { scroll: false });
         });
     };
 
-    // Handle removing a status with optimistic update
     const handleRemoveStatus = (status: Status) => {
+        const newStatuses = optimisticFilters.statuses.filter(s => s.id !== status.id);
         startTransition(() => {
-            const newStatuses = optimisticFilters.statuses.filter(s => s.id !== status.id);
             updateOptimisticFilters({ statuses: newStatuses });
-            router.push(createFilterURL({ statuses: newStatuses }));
+            router.push(createFilterUrl({ ...optimisticFilters, statuses: newStatuses }), { scroll: false });
         });
     };
 
-    // Handle adding a status with optimistic update
     const handleAddStatus = (status: Status) => {
+        const newStatuses = [...optimisticFilters.statuses, status];
         startTransition(() => {
-            const newStatuses = [...optimisticFilters.statuses, status];
             updateOptimisticFilters({ statuses: newStatuses });
-            router.push(createFilterURL({ statuses: newStatuses }));
+            router.push(createFilterUrl({ ...optimisticFilters, statuses: newStatuses }), { scroll: false });
         });
     };
 
-    // Handle setting watch list filter with optimistic update
     const handleWatchlistChange = (value: boolean | undefined) => {
+        const newValue = value === true ? true : undefined;
         startTransition(() => {
-            updateOptimisticFilters({ addedToWatchlist: value });
-            router.push(createFilterURL({ addedToWatchlist: value }));
-        });
-    };
-
-    // Handle clearing all filters
-    const handleClearFilters = () => {
-        startTransition(() => {
-            const clearedFilters = {
-                addedToWatchlist: undefined,
-                ratings: [],
-                statuses: []
-            };
-            updateOptimisticFilters(clearedFilters);
-            
-            // Create a URLSearchParams object to build the query string
-            const params = new URLSearchParams(searchParams?.toString() || "");
-            
-            // Remove owner filter parameters
-            params.delete('ownerWatchlist');
-            params.delete('ownerRatings');
-            params.delete('ownerStatuses');
-            
-            // Build the new URL
-            const queryString = params.toString();
-            router.push(pathname + (queryString ? `?${queryString}` : ''));
+            updateOptimisticFilters({ addedToWatchlist: newValue });
+            router.push(createFilterUrl({ ...optimisticFilters, addedToWatchlist: newValue }), { scroll: false });
         });
     };
 
@@ -153,6 +111,7 @@ export default function ShowSearchWatchlistOwnerFilters({
 
     const RatingButtons = () => {
         const allRatings = Object.values(Rating);
+        // Use optimisticFilters for display
         const unselectedRatings = allRatings.filter((rating) => !optimisticFilters.ratings.includes(rating));
 
         return (
@@ -162,6 +121,7 @@ export default function ShowSearchWatchlistOwnerFilters({
                         key={rating}
                         onClick={() => handleRemoveRating(rating)}
                         className={selectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {rating}
                     </div>
@@ -172,6 +132,7 @@ export default function ShowSearchWatchlistOwnerFilters({
                         key={rating}
                         onClick={() => handleAddRating(rating)}
                         className={unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {rating}
                     </div>
@@ -184,6 +145,7 @@ export default function ShowSearchWatchlistOwnerFilters({
         const allStatuses: Status[] = statuses || [];
         
         // Filter out already selected statuses from the list of all statuses
+        // Use optimisticFilters for display
         const unselectedStatuses = allStatuses.filter(status => 
             !optimisticFilters.statuses.some(s => s.id === status.id)
         );
@@ -191,13 +153,13 @@ export default function ShowSearchWatchlistOwnerFilters({
         return (
             <div className="grid grid-cols-2 gap-2">
                 {optimisticFilters.statuses.map((selectedStatus) => {
-                    // Try to find a matching full status from the fetched statuses list
                     const matchingStatus = allStatuses.find(s => s.id === selectedStatus.id);
                     return (
                         <div
                             key={`selected-${selectedStatus.id}`}
                             onClick={() => handleRemoveStatus(selectedStatus)}
                             className={selectedBubbleStyle}
+                            style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                         >
                             {matchingStatus?.name || `Status ${selectedStatus.id}`}
                         </div>
@@ -209,6 +171,7 @@ export default function ShowSearchWatchlistOwnerFilters({
                         key={`unselected-${status.id}`}
                         onClick={() => handleAddStatus(status)}
                         className={unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >   
                         {status.name || `Status ${status.id}`}
                     </div>
@@ -241,64 +204,58 @@ export default function ShowSearchWatchlistOwnerFilters({
                 <div className="text-lg font-medium">Filter by Their Watch List</div>
                 <div className="flex flex-col gap-2 mt-2">
                     <div 
-                        onClick={() => handleWatchlistChange(undefined)}
-                        className={optimisticFilters.addedToWatchlist === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
-                    >
-                        All
-                    </div>
-                    <div 
                         onClick={() => handleWatchlistChange(true)}
                         className={optimisticFilters.addedToWatchlist === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         In Their Watch List
                     </div>
                     <div 
-                        onClick={() => handleWatchlistChange(false)}
-                        className={optimisticFilters.addedToWatchlist === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                        onClick={() => handleWatchlistChange(undefined)}
+                        className={optimisticFilters.addedToWatchlist === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
-                        Not In Their Watch List
+                        Any (Show All Watchlist Items)
                     </div>
                 </div>
             </div>
         )
     }
 
+    // Calculate badge count based on applied filters (props)
+    const badgeCount = [
+        safeFilters.ratings.length,
+        safeFilters.statuses.length,
+        // Don't count addedToWatchlist for owner as it's implicit
+    ].reduce((acc, count) => acc + count, 0);
+
     return (
-        <>
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="outline" className="bg-white/5 space-x-2">
-                        <Users className="h-4 w-4" />
-                        <span>Their Filters</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent className={`w-[400px] ${backdropBackground}`}>
-                    <SheetHeader>
-                        <SheetTitle className="text-white">
-                            Watchlist Owner Filters
-                        </SheetTitle>
-                        <SheetDescription className="text-white/70">
-                            Filter shows based on the watchlist owner's ratings and status
-                        </SheetDescription>
-                    </SheetHeader>
-                    
-                    <div className="grid gap-4">
-                        <WatchListRow />
-                        <RatingsRow />
-                        <StatusesRow />
-                    </div>
-                    
-                    <div className="mt-8 flex justify-end">
-                        <Button 
-                            onClick={handleClearFilters}
-                            disabled={isPending}
-                            className={`${backdropBackground} hover:bg-white/10`}
-                        >
-                            Clear All
-                        </Button>
-                    </div>
-                </SheetContent>
-            </Sheet>
-        </>
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button variant="outline" className={`${backdropBackground} text-white relative`} disabled={isPending}>
+                    <Users className="h-4 w-4 mr-2" />
+                    <span>Owner Filters</span>
+                    {isPending && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
+                    {badgeCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {badgeCount}
+                        </span>
+                    )}
+                </Button>
+            </SheetTrigger>
+            <SheetContent className={`overflow-y-auto bg-black border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
+                <SheetHeader>
+                    <SheetTitle className="text-white">Owner Filters</SheetTitle>
+                    <SheetDescription>
+                        Filter shows based on the watchlist owner&apos;s interactions.
+                    </SheetDescription>
+                </SheetHeader>
+                
+                <ScrollArea className="h-[calc(100vh-150px)] pr-4">
+                    <RatingsRow />
+                    <StatusesRow />
+                </ScrollArea>
+            </SheetContent>
+        </Sheet>
     );
 } 

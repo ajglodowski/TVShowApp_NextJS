@@ -1,3 +1,5 @@
+"use server";
+
 import { createClient } from '@/app/utils/supabase/server';
 import { Status } from "@/app/models/status";
 import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
@@ -25,7 +27,6 @@ export async function getUserShowData({showId, userId}: {showId: string, userId:
 }
 
 export async function updateCurrentSeason({userId, showId, newSeason}: {showId: string, userId: string, newSeason: number}): Promise<boolean> {
-    "use server";    
     
     const supabase = await createClient();
     const { error} = await supabase.from("UserShowDetails").update({currentSeason: newSeason}).match({userId: userId, showId: showId});
@@ -37,7 +38,6 @@ export async function updateCurrentSeason({userId, showId, newSeason}: {showId: 
 }
 
 export async function updateStatus({userId, showId, newStatus}: {showId: string, userId: string, newStatus: Status}): Promise<boolean> {
-    "use server";    
     
     const supabase = await createClient();
     const { error} = await supabase.from("UserShowDetails").update({status: newStatus.id}).match({userId: userId, showId: showId});
@@ -49,7 +49,6 @@ export async function updateStatus({userId, showId, newStatus}: {showId: string,
 }
 
 export async function getAllStatuses(): Promise<Status[]|null> {
-    "use server";    
     
     const supabase = await createClient();
     const { data } = await supabase.from("status").select();
@@ -62,7 +61,7 @@ export async function getUserUpdates({showId, userId}: {showId: number, userId: 
   
     
     const supabase = await createClient();
-    const { data: updateData } = await supabase.from("UserUpdate").select('id, userId, showId, status:statusChange(id, name), seasonChange, ratingChange, updateDate, updateType').match({userId: userId, showId: showId});
+    const { data: updateData } = await supabase.from("UserUpdate").select('id, userId, showId, status:statusChange(id, name), seasonChange, ratingChange, updateDate, updateType, hidden').match({userId: userId, showId: showId});
 
     if (!updateData) return null;
 
@@ -82,7 +81,6 @@ export async function getUserUpdates({showId, userId}: {showId: number, userId: 
 }
 
 export async function updateRating({userId, showId, newRating}: {showId: string, userId: string, newRating: Rating | null}): Promise<boolean> {
-    "use server";    
     
     const supabase = await createClient();
     let error = null;
@@ -99,7 +97,6 @@ export async function updateRating({userId, showId, newRating}: {showId: string,
 }
 
 export async function addToWatchList({userId, showId}: {showId: string, userId: string}): Promise<boolean> {
-    "use server";    
     
     const supabase = await createClient();
     const error = (await supabase.from("UserShowDetails").insert({userId: userId, showId: showId, currentSeason: 1, status: 3})).error;
@@ -111,7 +108,6 @@ export async function addToWatchList({userId, showId}: {showId: string, userId: 
 }
 
 export async function updateUserShowData({updateType, userId, showId, newValue }: {updateType: UserUpdateCategory, userId: string, showId: string, newValue: number | Rating | Status | undefined }): Promise<boolean> {
-    "use server";
     let response = true;
     let update: UserUpdate | null = null;
     switch (updateType) {
@@ -160,7 +156,6 @@ export async function updateUserShowData({updateType, userId, showId, newValue }
 }
 
 export async function insertUpdate({update}: {update: UserUpdate}): Promise<boolean> {
-    "use server";    
 
     type UserUpdateInsert = {
         id: number | undefined;
@@ -183,5 +178,37 @@ export async function insertUpdate({update}: {update: UserUpdate}): Promise<bool
         console.error(error);
         return false;
     }
+    return true;
+}
+
+export async function toggleUpdateHiddenStatus({updateId}: {updateId: number}): Promise<boolean> {
+    
+    const supabase = await createClient();
+    
+    // First get the current hidden status
+    const { data: currentData, error: fetchError } = await supabase
+        .from("UserUpdate")
+        .select("hidden")
+        .match({id: updateId})
+        .single();
+    
+    if (fetchError) {
+        console.error(fetchError);
+        return false;
+    }
+    
+    // Toggle the hidden status
+    const newHiddenStatus = !(currentData?.hidden || false);
+    
+    const { error: updateError } = await supabase
+        .from("UserUpdate")
+        .update({hidden: newHiddenStatus})
+        .match({id: updateId});
+    
+    if (updateError) {
+        console.error(updateError);
+        return false;
+    }
+    
     return true;
 }

@@ -2,32 +2,32 @@
 import { AirDate } from "@/app/models/airDate";
 import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ShowSearchFiltersType } from "./ShowSearchHeader";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Filter, Loader2 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { use, useOptimistic, useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
+import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
 type ShowSearchFilterButtonProps = {
     filters: ShowSearchFiltersType;
     pathname: string;
-    getServicesFunction: Promise<Service[] | null>;
+    services: Service[] | null;
 }
 
 export default function ShowSearchFilterButton({ 
     filters, 
     pathname, 
-    getServicesFunction
+    services 
 }: ShowSearchFilterButtonProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const currentPathname = usePathname();
     const [isPending, startTransition] = useTransition();
+    
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
         filters,
         (state, update: Partial<ShowSearchFiltersType>) => ({
@@ -35,58 +35,35 @@ export default function ShowSearchFilterButton({
             ...update
         })
     );
-
-    // Helper function to safely update URL
-    const updateURL = (updatedFilters: ShowSearchFiltersType) => {
-        // Create a URLSearchParams object to build the query string
+    
+    const createFilterUrl = (updatedFilters: ShowSearchFiltersType) => {
         const params = new URLSearchParams(searchParams?.toString() || "");
-        
-        // Remove show filter parameters we're going to update
         params.delete('service');
         params.delete('length');
         params.delete('airDate');
         params.delete('running');
         params.delete('limitedSeries');
         params.delete('currentlyAiring');
-        params.delete('page'); // Remove page param to reset to first page
+        params.delete('page');
         
-        // Add or update filter params
-        if (updatedFilters.service.length > 0) {
-            params.set('service', updatedFilters.service.map(s => s.id).join(','));
-        }
+        if (updatedFilters.service.length > 0) params.set('service', updatedFilters.service.map(s => s.id).join(','));
+        if (updatedFilters.length.length > 0) params.set('length', updatedFilters.length.join(','));
+        if (updatedFilters.airDate.length > 0) params.set('airDate', updatedFilters.airDate.join(','));
+        if (updatedFilters.limitedSeries !== undefined) params.set('limitedSeries', updatedFilters.limitedSeries.toString());
+        if (updatedFilters.running !== undefined) params.set('running', updatedFilters.running.toString());
+        if (updatedFilters.currentlyAiring !== undefined) params.set('currentlyAiring', updatedFilters.currentlyAiring.toString());
         
-        if (updatedFilters.length.length > 0) {
-            params.set('length', updatedFilters.length.join(','));
-        }
-        
-        if (updatedFilters.airDate.length > 0) {
-            params.set('airDate', updatedFilters.airDate.join(','));
-        }
-        
-        if (updatedFilters.limitedSeries !== undefined) {
-            params.set('limitedSeries', updatedFilters.limitedSeries.toString());
-        }
-        
-        if (updatedFilters.running !== undefined) {
-            params.set('running', updatedFilters.running.toString());
-        }
-        
-        if (updatedFilters.currentlyAiring !== undefined) {
-            params.set('currentlyAiring', updatedFilters.currentlyAiring.toString());
-        }
-        
-        // Build the new URL
         const basePathname = currentPathname || '/';
         const queryString = params.toString();
         return basePathname + (queryString ? `?${queryString}` : '');
     };
-
+    
     const handleAddService = (service: Service) => {
         const newServices = [...optimisticFilters.service, service];
         const updatedFilters = { ...optimisticFilters, service: newServices };
         startTransition(() => {
             updateOptimisticFilters({ service: newServices });
-            router.replace(updateURL(updatedFilters));
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
 
@@ -95,7 +72,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, length: newLengths };
         startTransition(() => {
             updateOptimisticFilters({ length: newLengths });
-            router.replace(updateURL(updatedFilters));
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
 
@@ -104,7 +81,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, airDate: newAirDates };
         startTransition(() => {
             updateOptimisticFilters({ airDate: newAirDates });
-            router.replace(updateURL(updatedFilters));
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
 
@@ -113,7 +90,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, service: newServices };
         startTransition(() => {
             updateOptimisticFilters({ service: newServices });
-            router.replace(updateURL(updatedFilters));
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
 
@@ -122,7 +99,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, length: newLengths };
         startTransition(() => {
             updateOptimisticFilters({ length: newLengths });
-            router.replace(updateURL(updatedFilters));
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
 
@@ -131,7 +108,7 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, airDate: newAirDates };
         startTransition(() => {
             updateOptimisticFilters({ airDate: newAirDates });
-            router.replace(updateURL(updatedFilters));
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
 
@@ -139,18 +116,16 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, [key]: value };
         startTransition(() => {
             updateOptimisticFilters({ [key]: value });
-            router.replace(updateURL(updatedFilters));
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
-
-    const services = use(getServicesFunction);
-
+    
     const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black text-center cursor-pointer'
     const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto outline outline-1 outline-white hover:bg-white hover:text-black text-white text-center cursor-pointer'
 
     const ServiceButtons = () => {
         if (!services) return (<></>);
-        const unselectedStatuses = services?.filter((service) => !optimisticFilters.service.map(s => s.id).includes(service.id));
+        const unselectedServices = services?.filter((service) => !optimisticFilters.service.map(s => s.id).includes(service.id));
         return (
             <div className="grid grid-cols-2 gap-2">
                 {optimisticFilters.service.map((service) => (
@@ -158,16 +133,18 @@ export default function ShowSearchFilterButton({
                         <div 
                             className={selectedBubbleStyle}
                             onClick={() => handleRemoveService(service)}
+                            style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                         >
                             {service.name}
                         </div>
                     </div>
                 ))}
-                {unselectedStatuses?.map((service) => (
+                {unselectedServices?.map((service) => (
                     <div key={service.id}>
                         <div 
                             className={unselectedBubbleStyle}
                             onClick={() => handleAddService(service)}
+                            style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                         >
                             {service.name}
                         </div>
@@ -196,6 +173,7 @@ export default function ShowSearchFilterButton({
                         key={airdate}
                         className={selectedBubbleStyle}
                         onClick={() => handleRemoveAirDate(airdate)}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {airdate}
                     </div>
@@ -205,6 +183,7 @@ export default function ShowSearchFilterButton({
                         key={airdate}
                         className={unselectedBubbleStyle}
                         onClick={() => handleAddAirDate(airdate)}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {airdate}
                     </div>
@@ -232,6 +211,7 @@ export default function ShowSearchFilterButton({
                         key={length}
                         className={selectedBubbleStyle}
                         onClick={() => handleRemoveLength(length)}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {length}{length === ShowLength.NONE ? '' : 'm'}
                     </div>
@@ -241,6 +221,7 @@ export default function ShowSearchFilterButton({
                         key={length}
                         className={unselectedBubbleStyle}
                         onClick={() => handleAddLength(length)}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {length}{length === ShowLength.NONE ? '' : 'm'}
                     </div>
@@ -268,18 +249,21 @@ export default function ShowSearchFilterButton({
                             <div 
                                 onClick={() => handleSetFilter('running', undefined)}
                                 className={optimisticFilters.running === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Not Applied
                             </div>
                             <div 
                                 onClick={() => handleSetFilter('running', true)}
                                 className={optimisticFilters.running === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Yes
                             </div>
                             <div 
                                 onClick={() => handleSetFilter('running', false)}
                                 className={optimisticFilters.running === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 No
                             </div>
@@ -291,18 +275,21 @@ export default function ShowSearchFilterButton({
                             <div 
                                 onClick={() => handleSetFilter('limitedSeries', undefined)}
                                 className={optimisticFilters.limitedSeries === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Not Applied
                             </div>
                             <div 
                                 onClick={() => handleSetFilter('limitedSeries', true)}
                                 className={optimisticFilters.limitedSeries === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Yes
                             </div>
                             <div 
                                 onClick={() => handleSetFilter('limitedSeries', false)}
                                 className={optimisticFilters.limitedSeries === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 No
                             </div>
@@ -314,18 +301,21 @@ export default function ShowSearchFilterButton({
                             <div 
                                 onClick={() => handleSetFilter('currentlyAiring', undefined)}
                                 className={optimisticFilters.currentlyAiring === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Not Applied
                             </div>
                             <div 
                                 onClick={() => handleSetFilter('currentlyAiring', true)}
                                 className={optimisticFilters.currentlyAiring === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Yes
                             </div>
                             <div 
                                 onClick={() => handleSetFilter('currentlyAiring', false)}
                                 className={optimisticFilters.currentlyAiring === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 No
                             </div>
@@ -345,63 +335,40 @@ export default function ShowSearchFilterButton({
         );
     }
 
+    const badgeCount = [
+        filters.service.length,
+        filters.length.length,
+        filters.airDate.length,
+        filters.limitedSeries !== undefined ? 1 : 0,
+        filters.running !== undefined ? 1 : 0,
+        filters.currentlyAiring !== undefined ? 1 : 0,
+    ].reduce((acc, count) => acc + count, 0);
+
+
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button variant="outline" className={`${backdropBackground} outline-white hover:bg-white hover:text-black`}>
+                <Button variant="outline" className={`${backdropBackground} text-white relative`} disabled={isPending}>
                     <Filter className="h-4 w-4 mr-2" />
-                    Filters
+                    <span>Filters</span>
+                    {isPending && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
+                    {badgeCount > 0 && (
+                         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {badgeCount}
+                        </span>
+                    )}
                 </Button>
             </SheetTrigger>
-
-            <SheetContent className={`${backdropBackground} h-full pb-32`}>
-                <SheetHeader className="my-1">
-                    <SheetTitle className="text-white">
-                        <span className="flex justify-between my-auto items-center">
-                            Filter Shows
-                            <div className="my-auto mx-2">
-                                <Button 
-                                    onClick={() => {
-                                        startTransition(() => {
-                                            updateOptimisticFilters({
-                                                service: [],
-                                                length: [],
-                                                airDate: [],
-                                                running: undefined,
-                                                limitedSeries: undefined,
-                                                currentlyAiring: undefined
-                                            });
-                                            
-                                            // Create a URLSearchParams object to build the query string
-                                            const params = new URLSearchParams(searchParams?.toString() || "");
-                                            
-                                            // Remove show filter parameters
-                                            params.delete('service');
-                                            params.delete('length');
-                                            params.delete('airDate');
-                                            params.delete('running');
-                                            params.delete('limitedSeries');
-                                            params.delete('currentlyAiring');
-                                            params.delete('page'); // Remove page param to reset to first page
-                                            
-                                            // Build the new URL
-                                            const basePathname = currentPathname || '/';
-                                            const queryString = params.toString();
-                                            router.replace(basePathname + (queryString ? `?${queryString}` : ''));
-                                        });
-                                    }}
-                                    className={`${backdropBackground} me-2 outline outline-white hover:bg-white hover:text-black px-4 py-2 rounded-md`}
-                                >
-                                    Reset Filters
-                                </Button>
-                            </div>
-                        </span>
-                    </SheetTitle>
-                    <SheetDescription className="text-white/80">Apply filters to find shows that match your preferences.</SheetDescription>
+            <SheetContent className={`overflow-y-auto bg-black border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
+                <SheetHeader>
+                    <SheetTitle className="text-white">Show Filters</SheetTitle>
+                    <SheetDescription>
+                        Refine the results based on show characteristics.
+                    </SheetDescription>
                 </SheetHeader>
-                <ScrollArea className="h-full">
+                
+                <ScrollArea className="h-[calc(100vh-150px)] pr-4">
                     <FilterRows />
-                    <ScrollBar orientation="vertical" />
                 </ScrollArea>
             </SheetContent>
         </Sheet>

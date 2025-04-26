@@ -1,14 +1,25 @@
-import { Show, ShowPropertiesWithService, ShowAnalyticsProperties, ShowAnalytics, ShowWithAnalytics } from "@/app/models/show";
-import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
-import { createClient, publicClient } from "@/app/utils/supabase/server";
-import { Service } from "@/app/models/service";
-import { UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
-import { Status } from "@/app/models/status";
-import { Rating, RatingPoints } from "@/app/models/rating";
-import { ShowSearchType } from "@/app/models/showSearchType";
-import { UserBasicInfo } from "@/app/models/user";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
+"use server";
+
 import { AirDate } from "@/app/models/airDate";
+import { Rating, RatingPoints } from "@/app/models/rating";
+import { Service } from "@/app/models/service";
+import { ShowAnalytics, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics } from "@/app/models/show";
+import { ShowSearchType } from "@/app/models/showSearchType";
+import { Status } from "@/app/models/status";
+import { UserBasicInfo } from "@/app/models/user";
+import { UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
+import { createClient, publicClient } from "@/app/utils/supabase/server";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { cache } from "react";
+import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
+
+export const getServices = cache(async (): Promise<Service[] | null> => {
+    'use cache'
+    cacheLife('days');
+    const supabase = await publicClient();
+    const { data: serviceData } = await supabase.from("service").select();
+    return serviceData;
+});
 
 export async function fetchShows(filters: ShowSearchFiltersType, searchType: ShowSearchType, otherUserId?: string, currentUserId?: string): Promise<ShowWithAnalytics[] | null> {
     const supabase = await createClient();
@@ -213,7 +224,7 @@ export async function fetchUsersWatchlist(userId: string): Promise<UserWatchList
     return shows;
 }
 
-export function filterWatchlist(UserWatchListData: UserWatchListData[] | null, filters: ShowSearchFiltersType): UserWatchListData[] | null {
+export async function filterWatchlist(UserWatchListData: UserWatchListData[] | null, filters: ShowSearchFiltersType): Promise<UserWatchListData[] | null> {
     if (!UserWatchListData) return null;
     let filteredShows = [...UserWatchListData];
     if (filters.currentlyAiring !== undefined) filteredShows = filteredShows.filter((show) => show.show.currentlyAiring === filters.currentlyAiring);
@@ -267,16 +278,6 @@ export function filterWatchlist(UserWatchListData: UserWatchListData[] | null, f
     }
     
     return filteredShows;
-}
-
-export async function getServices(): Promise<Service[] | null> {
-    'use cache'
-    cacheLife('days');
-    const supabase = await publicClient();
-    const { data: serviceData } = await supabase.from("service").select();
-    if (!serviceData) return null;
-    const services: Service[] = serviceData;
-    return services;
 }
 
 export async function getUserShowData({showIds, userId}: {showIds: string[], userId: string | undefined}): Promise<UserShowDataWithUserInfo[] | null> {

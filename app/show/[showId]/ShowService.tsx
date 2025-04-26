@@ -57,7 +57,7 @@ export const getShowImageURL = cache((showName: string, tile: boolean): string =
   return showNameURL;
 });
 
-export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
+export const getPresignedShowImageURL = async (showName: string, tile: boolean): Promise<string | null> => {
   const apiURL = `${serverBaseURL}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
   const transformedName = encodeURIComponent(showName);
   const dimensions = tile ? "200x200" : "640x640";
@@ -66,13 +66,13 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
   const response = await fetch(showNameURL, {
     cache: 'force-cache',
     next: {
-      revalidate: 60 * 1 // 1 minute
+      revalidate: 60 * 90 // 90 minutes
     }
   });
   if (response.status !== 200) return null;
   const data = await response.json();
   return data.url;
-});
+};
 
 export const fetchAverageShowColor = cache(async function (showName: string): Promise<string> {
   'use cache';

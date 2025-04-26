@@ -1,17 +1,17 @@
-import { Show, ShowWithAnalytics } from '@/app/models/show';
-import { Skeleton } from '@/components/ui/skeleton';
-import Divider from '../Divider';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
-import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
-import ShowRow from '../show/ShowRow/ShowRow';
-import { ShowSearchFiltersType } from './ShowSearchHeader/ShowSearchHeader';
-import { ShowSearchType } from '@/app/models/showSearchType';
-import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
-import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } from './ShowSearchService';
-import ShowRowSkeleton from '../show/ShowRow/ShowRowSkeleton';
-import { Suspense } from 'react';
-import PaginationControls from './PaginationControls';
 import { Rating, RatingPoints } from '@/app/models/rating';
+import { ShowWithAnalytics } from '@/app/models/show';
+import { ShowSearchType } from '@/app/models/showSearchType';
+import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { Suspense } from 'react';
+import Divider from '../Divider';
+import ShowRow from '../show/ShowRow/ShowRow';
+import ShowRowSkeleton from '../show/ShowRow/ShowRowSkeleton';
+import PaginationControls from './PaginationControls';
+import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
+import { ShowSearchFiltersType } from './ShowSearchHeader/ShowSearchHeader';
+import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } from './ShowSearchService';
 
 // Number of items per page
 const ITEMS_PER_PAGE = 20;
@@ -56,7 +56,7 @@ export default async function ShowSearchShows({
     if (searchType === ShowSearchType.WATCHLIST && currentUserId) {
         // User is viewing their own watchlist
         const userData = await fetchUsersWatchlist(currentUserId);
-        const filteredUserData = filterWatchlist(userData, filters);
+        const filteredUserData = await filterWatchlist(userData, filters);
         shows = filteredUserData?.map((userShowData) => userShowData.show) as ShowWithAnalytics[];
         displayUserInfo = filteredUserData?.map((userShowData) => userShowData.userShowData);
         displayUserInfo?.forEach((info) => {
@@ -67,7 +67,7 @@ export default async function ShowSearchShows({
         
         // 1. Fetch and process profile user's watchlist
         const profileUserData = await fetchUsersWatchlist(userId);
-        const filteredProfileUserData = filterWatchlist(profileUserData, filters);
+        const filteredProfileUserData = await filterWatchlist(profileUserData, filters);
         shows = filteredProfileUserData?.map((userShowData) => userShowData.show) as ShowWithAnalytics[];
         displayUserInfo = filteredProfileUserData?.map((userShowData) => userShowData.userShowData);
         displayUserInfo?.forEach((info) => {

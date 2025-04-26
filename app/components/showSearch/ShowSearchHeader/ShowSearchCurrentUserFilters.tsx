@@ -5,18 +5,20 @@ import { ShowSearchType } from "@/app/models/showSearchType";
 import { Status } from "@/app/models/status";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { User } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { use, useOptimistic, useTransition } from "react";
+import { useOptimistic, useTransition } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
 export type CurrentUserFilters = {
     addedToWatchlist?: boolean;
     ratings: Rating[];
     statuses: Status[];
+    searchType?: ShowSearchType;
+    userId?: string;
+    currentUserId?: string;
 }
 
 export const defaultCurrentUserFilters: CurrentUserFilters = {
@@ -32,7 +34,7 @@ type ShowSearchCurrentUserFiltersProps = {
     searchType?: ShowSearchType;
     userId?: string;
     currentUserId?: string;
-    getStatusesFunction: Promise<Status[] | null>;
+    statuses: Status[] | null;
 }
 
 export default function ShowSearchCurrentUserFilters({ 
@@ -42,25 +44,20 @@ export default function ShowSearchCurrentUserFilters({
     searchType = ShowSearchType.UNRESTRICTED,
     userId,
     currentUserId,
-    getStatusesFunction
+    statuses 
 }: ShowSearchCurrentUserFiltersProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
-
-    const statuses = use(getStatusesFunction);
+    const [isPending, startTransition] = useTransition();
     
-    // Determine if viewing other user's watchlist where current user != watchlist owner
-    const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
-                                       currentUserId && userId && currentUserId !== userId;
-    
-    // Ensure filters is properly initialized with default values
+    // Ensure incoming filters is properly initialized
     const safeFilters: CurrentUserFilters = {
         addedToWatchlist: filters?.addedToWatchlist,
         ratings: filters?.ratings || [],
         statuses: filters?.statuses || []
     };
-    
-    const [isPending, startTransition] = useTransition();
+
+    // Re-introduce useOptimistic
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
         safeFilters,
         (state, update: Partial<CurrentUserFilters>) => ({
@@ -69,104 +66,65 @@ export default function ShowSearchCurrentUserFilters({
         })
     );
 
-    const getStringFromBool = (bool: boolean | undefined): string => {
-        if (bool === true) return 'true';
-        if (bool === false) return 'false';
-        return 'undefined';
-    }
+    // Determine if viewing other user's watchlist where current user != watchlist owner
+    const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
+                                       currentUserId && userId && currentUserId !== userId;
 
-    // Create URLs for various filter changes
-    const createFilterURL = (changes: Partial<CurrentUserFilters>) => {
-        // Create a URLSearchParams object to build the query string
+    // Create URL for applying filters (renamed)
+    const createFilterUrl = (applyFilters: CurrentUserFilters) => {
         const params = new URLSearchParams(searchParams?.toString() || "");
-        
-        // Remove the parameters we're going to update
         params.delete('addedToWatchlist');
         params.delete('ratings');
         params.delete('statuses');
-        params.delete('page'); // Remove page param to reset to first page
+        params.delete('page');
         
-        // Apply changes to user filters
-        const newFilters = { ...safeFilters, ...changes };
-        
-        // Add updated user filter params
-        if (newFilters.addedToWatchlist !== undefined) params.set('addedToWatchlist', newFilters.addedToWatchlist.toString());
-        if (newFilters.ratings && newFilters.ratings.length > 0) params.set('ratings', newFilters.ratings.join(','));
-        if (newFilters.statuses && newFilters.statuses.length > 0) {
-            params.set('statuses', newFilters.statuses.map(s => s.id).join(','));
+        if (applyFilters.addedToWatchlist !== undefined) params.set('addedToWatchlist', applyFilters.addedToWatchlist.toString());
+        if (applyFilters.ratings && applyFilters.ratings.length > 0) params.set('ratings', applyFilters.ratings.join(','));
+        if (applyFilters.statuses && applyFilters.statuses.length > 0) {
+            params.set('statuses', applyFilters.statuses.map(s => s.id).join(','));
         }
         
-        // Build the new URL
         const queryString = params.toString();
         return pathname + (queryString ? `?${queryString}` : '');
     };
 
-    // Handle removing a rating with optimistic update
+    // --- Update Handlers to apply immediately with optimistic updates ---
     const handleRemoveRating = (rating: Rating) => {
+        const newRatings = optimisticFilters.ratings.filter(r => r !== rating);
         startTransition(() => {
-            const newRatings = optimisticFilters.ratings.filter(r => r !== rating);
             updateOptimisticFilters({ ratings: newRatings });
-            router.push(createFilterURL({ ratings: newRatings }));
+            router.push(createFilterUrl({ ...optimisticFilters, ratings: newRatings }), { scroll: false });
         });
     };
 
-    // Handle adding a rating with optimistic update
     const handleAddRating = (rating: Rating) => {
+        const newRatings = [...optimisticFilters.ratings, rating];
         startTransition(() => {
-            const newRatings = [...optimisticFilters.ratings, rating];
             updateOptimisticFilters({ ratings: newRatings });
-            router.push(createFilterURL({ ratings: newRatings }));
+            router.push(createFilterUrl({ ...optimisticFilters, ratings: newRatings }), { scroll: false });
         });
     };
 
-    // Handle removing a status with optimistic update
     const handleRemoveStatus = (status: Status) => {
+        const newStatuses = optimisticFilters.statuses.filter(s => s.id !== status.id);
         startTransition(() => {
-            const newStatuses = optimisticFilters.statuses.filter(s => s.id !== status.id);
             updateOptimisticFilters({ statuses: newStatuses });
-            router.push(createFilterURL({ statuses: newStatuses }));
+            router.push(createFilterUrl({ ...optimisticFilters, statuses: newStatuses }), { scroll: false });
         });
     };
 
-    // Handle adding a status with optimistic update
     const handleAddStatus = (status: Status) => {
+        const newStatuses = [...optimisticFilters.statuses, status];
         startTransition(() => {
-            const newStatuses = [...optimisticFilters.statuses, status];
             updateOptimisticFilters({ statuses: newStatuses });
-            router.push(createFilterURL({ statuses: newStatuses }));
+            router.push(createFilterUrl({ ...optimisticFilters, statuses: newStatuses }), { scroll: false });
         });
     };
 
-    // Handle setting watch list filter with optimistic update
     const handleWatchlistChange = (value: boolean | undefined) => {
         startTransition(() => {
             updateOptimisticFilters({ addedToWatchlist: value });
-            router.push(createFilterURL({ addedToWatchlist: value }));
-        });
-    };
-
-    // Handle clearing all filters
-    const handleClearFilters = () => {
-        startTransition(() => {
-            const clearedFilters = {
-                addedToWatchlist: undefined,
-                ratings: [],
-                statuses: []
-            };
-            updateOptimisticFilters(clearedFilters);
-            
-            // Create a URLSearchParams object to build the query string
-            const params = new URLSearchParams(searchParams?.toString() || "");
-            
-            // Remove current user filter parameters
-            params.delete('addedToWatchlist');
-            params.delete('ratings');
-            params.delete('statuses');
-            params.delete('page'); // Remove page param to reset to first page
-            
-            // Build the new URL
-            const queryString = params.toString();
-            router.push(pathname + (queryString ? `?${queryString}` : ''));
+            router.push(createFilterUrl({ ...optimisticFilters, addedToWatchlist: value }), { scroll: false });
         });
     };
 
@@ -175,6 +133,7 @@ export default function ShowSearchCurrentUserFilters({
 
     const RatingButtons = () => {
         const allRatings = Object.values(Rating);
+        // Use optimisticFilters for display
         const unselectedRatings = allRatings.filter((rating) => !optimisticFilters.ratings.includes(rating));
 
         return (
@@ -184,6 +143,7 @@ export default function ShowSearchCurrentUserFilters({
                         key={rating}
                         onClick={() => handleRemoveRating(rating)}
                         className={selectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {rating}
                     </div>
@@ -194,6 +154,7 @@ export default function ShowSearchCurrentUserFilters({
                         key={rating}
                         onClick={() => handleAddRating(rating)}
                         className={unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {rating}
                     </div>
@@ -215,6 +176,7 @@ export default function ShowSearchCurrentUserFilters({
         const allStatuses: Status[] = statuses || [];
         
         // Filter out already selected statuses from the list of all statuses
+        // Use optimisticFilters for display
         const unselectedStatuses = allStatuses.filter(status => 
             !optimisticFilters.statuses.some(s => s.id === status.id)
         );
@@ -222,13 +184,13 @@ export default function ShowSearchCurrentUserFilters({
         return (
             <div className="grid grid-cols-2 gap-2">
                 {optimisticFilters.statuses.map((selectedStatus) => {
-                    // Try to find a matching full status from the fetched statuses list
                     const matchingStatus = allStatuses.find(s => s.id === selectedStatus.id);
                     return (
                         <div
                             key={`selected-${selectedStatus.id}`}
                             onClick={() => handleRemoveStatus(selectedStatus)}
                             className={selectedBubbleStyle}
+                            style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                         >
                             {matchingStatus?.name || `Status ${selectedStatus.id}`}
                         </div>
@@ -240,6 +202,7 @@ export default function ShowSearchCurrentUserFilters({
                         key={`unselected-${status.id}`}
                         onClick={() => handleAddStatus(status)}
                         className={unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >   
                         {status.name || `Status ${status.id}`}
                     </div>
@@ -267,18 +230,21 @@ export default function ShowSearchCurrentUserFilters({
                     <div 
                         onClick={() => handleWatchlistChange(undefined)}
                         className={optimisticFilters.addedToWatchlist === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         All
                     </div>
                     <div 
                         onClick={() => handleWatchlistChange(true)}
                         className={optimisticFilters.addedToWatchlist === true ? selectedBubbleStyle : unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {isViewingOtherUserWatchlist ? "In My Watch List" : "In Watch List"}
                     </div>
                     <div 
                         onClick={() => handleWatchlistChange(false)}
                         className={optimisticFilters.addedToWatchlist === false ? selectedBubbleStyle : unselectedBubbleStyle}
+                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >
                         {isViewingOtherUserWatchlist ? "Not In My Watch List" : "Not In Watch List"}
                     </div>
@@ -293,45 +259,42 @@ export default function ShowSearchCurrentUserFilters({
         }
         return "User Filters";
     };
+    
+    // Calculate badge count based on applied filters (props)
+    const badgeCount = [
+        safeFilters.ratings.length,
+        safeFilters.statuses.length,
+        safeFilters.addedToWatchlist !== undefined ? 1 : 0,
+    ].reduce((acc, count) => acc + count, 0);
 
     return (
-        <>
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="outline" className="bg-white/5 space-x-2">
-                        <User className="h-4 w-4" />
-                        <span>{getFilterButtonTitle()}</span>
-                    </Button>
-                </SheetTrigger>
-                <SheetContent className={`w-[400px] ${backdropBackground}`}>
-                    <SheetHeader>
-                        <SheetTitle className="text-white">
-                            {isViewingOtherUserWatchlist ? "My Show Filters" : "User Show Filters"}
-                        </SheetTitle>
-                        <SheetDescription className="text-white/70">
-                            {isViewingOtherUserWatchlist 
-                                ? "Filter shows based on your ratings and watchlist status"
-                                : "Filter shows based on your ratings and watchlist status"}
-                        </SheetDescription>
-                    </SheetHeader>
-                    
-                    <div className="grid gap-4">
-                        <WatchListRow />
-                        <RatingsRow />
-                        <StatusesRow />
-                    </div>
-                    
-                    <div className="mt-8 flex justify-end">
-                        <Button 
-                            onClick={handleClearFilters}
-                            disabled={isPending}
-                            className={`${backdropBackground} hover:bg-white/10`}
-                        >
-                            Clear All
-                        </Button>
-                    </div>
-                </SheetContent>
-            </Sheet>
-        </>
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button variant="outline" className={`${backdropBackground} text-white relative`} disabled={isPending}>
+                    <User className="h-4 w-4 mr-2" />
+                    <span>{getFilterButtonTitle()}</span>
+                    {isPending && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
+                    {badgeCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {badgeCount}
+                        </span>
+                    )}
+                </Button>
+            </SheetTrigger>
+            <SheetContent className={`overflow-y-auto bg-black border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
+                <SheetHeader>
+                    <SheetTitle className="text-white">{getFilterButtonTitle()}</SheetTitle>
+                    <SheetDescription>
+                        Filter shows based on your interactions.
+                    </SheetDescription>
+                </SheetHeader>
+                
+                <ScrollArea className="h-[calc(100vh-150px)] pr-4">
+                    <WatchListRow />
+                    <RatingsRow />
+                    <StatusesRow />
+                </ScrollArea>
+            </SheetContent>
+        </Sheet>
     );
 }

@@ -1,12 +1,11 @@
+import { AirDate } from "@/app/models/airDate";
+import { Rating } from "@/app/models/rating";
 import { ShowLength } from "@/app/models/showLength";
 import { ShowSearchProps } from "./ShowSearch";
-import { defaultFilters, ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
-import { getServices } from "./ShowSearchService";
-import { AirDate } from "@/app/models/airDate";
 import { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchHeader/ShowSearchCurrentUserFilters";
-import { Rating } from "@/app/models/rating";
-import { Status } from "@/app/models/status";
+import { defaultFilters, ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
 import { SortOption } from "./ShowSearchHeader/SortButton";
+import { getServices } from "./ShowSearchService";
 
 export async function parseFiltersFromSearchParams(searchParams: ShowSearchProps['searchParams'] = {}): Promise<ShowSearchFiltersType> {
     const { service, length, airDate, limitedSeries, running, currentlyAiring, sortBy } = searchParams || {};

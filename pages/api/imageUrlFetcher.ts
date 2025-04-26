@@ -35,7 +35,7 @@ export async function generatePresignedUrl(fileName: string) {
   const [url] = await file.getSignedUrl({
     version: 'v4',
     action: 'read',
-    expires: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
+    expires: Date.now() + 85 * 60 * 1000, // 85 minutes
   });
 
   return url;

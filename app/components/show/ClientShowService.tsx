@@ -70,7 +70,7 @@ export function getShowImageURL(showName: string, tile: boolean): string {
 
 export const getImageURLFromCache = (fullPath: string): string | null => {
     const sessionStorageValue = JSON.parse(sessionStorage.getItem(fullPath) || "{}");
-    if (sessionStorageValue.timestamp > Date.now() - 60 * 1) { // 1 minute
+    if (sessionStorageValue.timestamp > Date.now() - (60 * 90 * 1000)) { // 90 minutes in milliseconds
         return sessionStorageValue.url;
     } else {
         sessionStorage.removeItem(fullPath);
@@ -83,7 +83,7 @@ export const setImageURLInCache = (fullPath: string, url: string): void => {
     sessionStorage.setItem(fullPath, sessionStorageItem);
 }
 
-export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
+export const getPresignedShowImageURL = async (showName: string, tile: boolean): Promise<string | null> => {
     const apiURL = `${apiRoute}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
     const transformedName = encodeURIComponent(showName);
     const dimensions = tile ? "200x200" : "640x640";
@@ -93,17 +93,13 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
         return getImageURLFromCache(showNameURL);
     }
 
-    const response = await fetch(showNameURL, {
-        cache: 'force-cache',
-        next: {
-            revalidate: 60 * 1 // 1 minute
-        }
-    });
+    const response = await fetch(showNameURL);
+    
     if (response.status !== 200) return null;
     const data = await response.json();
     setImageURLInCache(showNameURL, data.url);
     return data.url;
-});
+};
 
 export async function addShowTag(showId: string, tag: ShowTag): Promise<boolean> {
     const supabase = createClient();

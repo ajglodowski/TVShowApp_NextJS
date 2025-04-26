@@ -103,7 +103,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
             <Skeleton className="w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] mx-auto object-contain rounded-md" />
           </div>}
         </div>
-        <h1 className='text-7xl sm:text-9xl font-extrabold tracking-tighter text-center -mt-16'>{show.name}</h1>
+        <h1 className='text-7xl sm:text-9xl font-extrabold tracking-tighter text-center -mt-16 break-words'>{show.name}</h1>
       </div>
       <h2 className='text-2xl tracking-tight text-center'>{show.length} minutes - {show.service.name}</h2>
       
@@ -145,7 +145,6 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
 
       <div className='flex'>
         <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
-          <h1 className='text-7xl font-bold tracking-tighter'>Your Updates</h1>
           <Suspense fallback={<LoadingUserUpdatesSection />}>
             <UserUpdatesSection showId={parseInt(showId)} currentUserId={currentUserId} />
           </Suspense>

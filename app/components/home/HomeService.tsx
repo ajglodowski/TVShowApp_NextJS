@@ -85,12 +85,12 @@ function formatUpdate(updateData: UserUpdateDTO): UserUpdateTileDTO {
     return update;
 }
 
-export async function getUserUpdates({userId, updateLimit, fetchHidden}: {userId: string, updateLimit: number, fetchHidden: boolean}): Promise<UserUpdateTileDTO[]|null> {
+export async function getUserUpdates({userId, updateLimit, fetchHidden}: {userId: string, updateLimit: number, fetchHidden?: boolean}): Promise<UserUpdateTileDTO[]|null> {
     
     const supabase = await createClient();
     let { data: updateData } = fetchHidden
         ? await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId}).order('updateDate', {ascending: false}).limit(updateLimit)
-        : await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId, hidden: false}).order('updateDate', {ascending: false}).limit(updateLimit);
+        : await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId, hidden: fetchHidden}).order('updateDate', {ascending: false}).limit(updateLimit);
     
     if (!updateData) return null;
     const updates = [];

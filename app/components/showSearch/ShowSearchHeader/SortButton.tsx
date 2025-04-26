@@ -1,14 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { ArrowDownWideNarrow, ArrowDownAZ, ArrowUpAZ, Star, TrendingUp, ArrowDownZA, ArrowUpZA, Calendar, Clock, Heart, ThumbsDown, ThumbsUp } from "lucide-react";
-import { 
-    DropdownMenu, 
-    DropdownMenuContent, 
-    DropdownMenuItem, 
-    DropdownMenuTrigger,
-    DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+'use client';
+
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { ArrowDownAZ, ArrowUpAZ, Calendar, Clock, Heart, Loader2, ThumbsDown, ThumbsUp, TrendingUp } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 
 export type SortDirection = "asc" | "desc";
 export type SortField = "alphabetical" | "weekly_popularity" | "monthly_popularity" | "yearly_popularity" | "rating" | "avg_rating";
@@ -21,6 +24,16 @@ type SortButtonProps = {
 }
 
 export default function SortButton({ currentSort, pathname, currentFilters }: SortButtonProps) {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+    
+    const handleSortChange = (sortOption: SortOption | undefined) => {
+        const url = createSortUrl(sortOption);
+        startTransition(() => {
+            router.push(url, { scroll: false });
+        });
+    };
+
     const createSortUrl = (sortOption: SortOption | undefined) => {
         const params = new URLSearchParams();
         
@@ -46,6 +59,9 @@ export default function SortButton({ currentSort, pathname, currentFilters }: So
         if (sortOption) {
             params.set('sortBy', sortOption);
         }
+        
+        // Ensure page param is removed for new sort
+        params.delete('page'); 
         
         return `${pathname}?${params.toString()}`;
     };
@@ -79,8 +95,11 @@ export default function SortButton({ currentSort, pathname, currentFilters }: So
         }
     };
     
-    // Get icon based on current sort
+    // Get icon based on current sort OR show spinner if pending
     const getIcon = () => {
+        if (isPending) {
+            return <Loader2 className="h-4 w-4 mr-2 animate-spin" />;
+        }
         if (!currentSort) return <ArrowDownAZ className="h-4 w-4 mr-2" />;
         
         const field = currentSortField || "alphabetical";
@@ -122,68 +141,86 @@ export default function SortButton({ currentSort, pathname, currentFilters }: So
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-black border border-white/20">
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("alphabetical-asc")} className="w-full flex items-center">
-                        <ArrowDownAZ className="h-4 w-4 mr-2" />
-                        <span className="capitalize font-medium">Alphabetical (A-Z)</span>
-                    </Link>
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("alphabetical-asc")}
+                    disabled={isPending}
+                >
+                    <ArrowDownAZ className="h-4 w-4 mr-2" />
+                    <span className="capitalize font-medium">Alphabetical (A-Z)</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("alphabetical-desc")} className="w-full flex items-center">
-                        <ArrowUpAZ className="h-4 w-4 mr-2" />
-                        <span className="capitalize font-medium">Alphabetical (Z-A)</span>
-                    </Link>
-                </DropdownMenuItem>
-                
-                <DropdownMenuSeparator className="bg-white/20" />
-                
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("weekly_popularity-desc")} className="w-full flex items-center">
-                        <Clock className="h-4 w-4 mr-2" />
-                        <span className="capitalize font-medium">Popularity (Weekly)</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("monthly_popularity-desc")} className="w-full flex items-center">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <span className="capitalize font-medium">Popularity (Monthly)</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("yearly_popularity-desc")} className="w-full flex items-center">
-                        <TrendingUp className="h-4 w-4 mr-2" />
-                        <span className="capitalize font-medium">Popularity (Yearly)</span>
-                    </Link>
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("alphabetical-desc")}
+                    disabled={isPending}
+                >
+                    <ArrowUpAZ className="h-4 w-4 mr-2" />
+                    <span className="capitalize font-medium">Alphabetical (Z-A)</span>
                 </DropdownMenuItem>
                 
                 <DropdownMenuSeparator className="bg-white/20" />
                 
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("rating-desc")} className="w-full flex items-center">
-                        <ThumbsUp className="h-4 w-4 mr-2" />
-                        <span className="capitalize font-medium">Rating (High-Low)</span>
-                    </Link>
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("weekly_popularity-desc")}
+                    disabled={isPending}
+                >
+                    <Clock className="h-4 w-4 mr-2" />
+                    <span className="capitalize font-medium">Popularity (Weekly)</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("rating-asc")} className="w-full flex items-center">
-                        <ThumbsDown className="h-4 w-4 mr-2" />
-                        <span className="capitalize font-medium">Rating (Low-High)</span>
-                    </Link>
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("monthly_popularity-desc")}
+                    disabled={isPending}
+                >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <span className="capitalize font-medium">Popularity (Monthly)</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("yearly_popularity-desc")}
+                    disabled={isPending}
+                >
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    <span className="capitalize font-medium">Popularity (Yearly)</span>
                 </DropdownMenuItem>
                 
                 <DropdownMenuSeparator className="bg-white/20" />
                 
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("avg_rating-desc")} className="w-full flex items-center">
-                        <Heart className="h-4 w-4 mr-2 text-red-500" />
-                        <span className="capitalize font-medium">Average Rating (High-Low)</span>
-                    </Link>
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("rating-desc")}
+                    disabled={isPending}
+                >
+                    <ThumbsUp className="h-4 w-4 mr-2" />
+                    <span className="capitalize font-medium">Rating (High-Low)</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-white/10 focus:text-white text-white">
-                    <Link href={createSortUrl("avg_rating-asc")} className="w-full flex items-center">
-                        <ThumbsDown className="h-4 w-4 mr-2" />
-                        <span className="capitalize font-medium">Average Rating (Low-High)</span>
-                    </Link>
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("rating-asc")}
+                    disabled={isPending}
+                >
+                    <ThumbsDown className="h-4 w-4 mr-2" />
+                    <span className="capitalize font-medium">Rating (Low-High)</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator className="bg-white/20" />
+                
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("avg_rating-desc")}
+                    disabled={isPending}
+                >
+                    <Heart className="h-4 w-4 mr-2 text-red-500" />
+                    <span className="capitalize font-medium">Average Rating (High-Low)</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                    className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
+                    onClick={() => handleSortChange("avg_rating-asc")}
+                    disabled={isPending}
+                >
+                    <ThumbsDown className="h-4 w-4 mr-2" />
+                    <span className="capitalize font-medium">Average Rating (Low-High)</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
