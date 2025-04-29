@@ -32,6 +32,7 @@ export type ShowSearchProps = {
         ownerRatings?: string;
         ownerStatuses?: string;
         sortBy?: string;
+        tags?: string;
     };
     pathname?: string;
 }

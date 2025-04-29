@@ -15,25 +15,31 @@ import ShowSearchInput from "./ShowSearchInput";
 import ShowSearchWatchlistOwnerFilters from "./ShowSearchWatchlistOwnerFilters";
 import ShowSearchWatchlistOwnerFiltersRow from "./ShowSearchWatchlistOwnerFiltersRow";
 import SortButton, { SortOption } from "./SortButton";
+import { ShowTag } from "@/app/models/showTag";
+import { getAllTags } from "@/app/show/[showId]/ShowService";
+import TagFilterButton from "./TagFilterButton";
+import ShowSearchTagsRow from "./ShowSearchTagsRow";
 
 export type ShowSearchFiltersType = {
     service: Service[];
     length: ShowLength[];
     airDate: AirDate[];
-    limitedSeries?: boolean;
-    running?: boolean;
-    currentlyAiring?: boolean;
-    sortBy?: SortOption;
+    limitedSeries: boolean | null;
+    running: boolean | null;
+    currentlyAiring: boolean | null;
+    sortBy: SortOption | undefined;
+    tags: ShowTag[];
 }
 
 export const defaultFilters: ShowSearchFiltersType = {
     service: [],
     length: [],
     airDate: [],
-    limitedSeries: undefined,
-    running: undefined,
-    currentlyAiring: undefined,
-    sortBy: undefined
+    limitedSeries: null,
+    running: null,
+    currentlyAiring: null,
+    sortBy: undefined,
+    tags: [],
 }
 
 type ShowSearchHeaderProps = {
@@ -64,6 +70,7 @@ export default async function ShowSearchHeader({
     // Fetch data directly in the Server Component
     const services: Service[] | null = await getServices(); 
     const statuses: Status[] | null = await getAllStatuses();
+    const tags: ShowTag[] | null = await getAllTags(); // Fetch all tags
     
     return (
         <div className="">
@@ -106,6 +113,15 @@ export default async function ShowSearchHeader({
                             />
                         )}
                         
+                        {/* Show Tag Filter Button */}
+                        <Suspense fallback={<ShowSearchFilterButtonSkeleton />}>
+                            <TagFilterButton
+                                filters={filters}
+                                pathname={pathname}
+                                tags={tags}
+                            />
+                        </Suspense>
+                        
                         {/* Show Filters Button */}
                         <Suspense fallback={<ShowSearchFilterButtonSkeleton />}>
                             <ShowSearchFilterButton 
@@ -121,6 +137,13 @@ export default async function ShowSearchHeader({
                     filters={filters} 
                     pathname={pathname}
                 />
+                
+                {/* Show Tags Row (will only display if there are selected tags) */}
+                <ShowSearchTagsRow 
+                    filters={filters} 
+                    pathname={pathname}
+                />
+                
                 <ShowSearchCurrentUserFiltersRow 
                     filters={currentUserFilters} 
                     pathname={pathname}

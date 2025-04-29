@@ -40,10 +40,12 @@ export default function SortButton({ currentSort, pathname, currentFilters }: So
         // Add all current filter params except page and sortBy
         Object.entries(currentFilters).forEach(([key, value]) => {
             if (key !== 'sortBy' && key !== 'page' && value !== undefined) {
-                // Handle arrays (like service, length, airDate)
+                // Handle arrays (like service, length, airDate, tags)
                 if (Array.isArray(value) && value.length > 0) {
                     if (key === 'service') {
                         params.set(key, value.map((s: any) => s.id).join(','));
+                    } else if (key === 'tags') {
+                        params.set(key, value.map((t: any) => t.id).join(','));
                     } else {
                         params.set(key, value.join(','));
                     }

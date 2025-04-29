@@ -6,9 +6,13 @@ import { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchHeade
 import { defaultFilters, ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
 import { SortOption } from "./ShowSearchHeader/SortButton";
 import { getServices } from "./ShowSearchService";
+import { getAllTags } from "@/app/show/[showId]/ShowService";
+import { ShowTag } from "@/app/models/showTag";
 
-export async function parseFiltersFromSearchParams(searchParams: ShowSearchProps['searchParams'] = {}): Promise<ShowSearchFiltersType> {
-    const { service, length, airDate, limitedSeries, running, currentlyAiring, sortBy } = searchParams || {};
+export async function parseFiltersFromSearchParams(
+    searchParams: ShowSearchProps['searchParams'] & { tags?: string } = {}
+): Promise<ShowSearchFiltersType> {
+    const { service, length, airDate, limitedSeries, running, currentlyAiring, sortBy, tags: tagsParam } = searchParams || {};
     const filters: ShowSearchFiltersType = {
         ...defaultFilters
     };
@@ -40,23 +44,48 @@ export async function parseFiltersFromSearchParams(searchParams: ShowSearchProps
         }
     }
 
+    // Parse tags
+    if (tagsParam) {
+        const tagIds = tagsParam.split(',')
+            .map((id: string) => parseInt(id.trim()))
+            .filter((id: number) => !isNaN(id));
+
+        if (tagIds.length > 0) {
+            try {
+                const allTags = await getAllTags();
+                if (allTags) {
+                    filters.tags = allTags.filter(tag => tagIds.includes(tag.id));
+                }
+            } catch (error) {
+                console.error("Failed to fetch or parse tags:", error);
+                filters.tags = []; 
+            }
+        }
+    }
+
     // Parse boolean fields - handle "true"/"false" strings specifically
     if (limitedSeries === 'true') {
         filters.limitedSeries = true;
     } else if (limitedSeries === 'false') {
         filters.limitedSeries = false;
+    } else {
+        filters.limitedSeries = null; // Explicitly set to null if param is absent or invalid
     }
     
     if (running === 'true') {
         filters.running = true;
     } else if (running === 'false') {
         filters.running = false;
+    } else {
+        filters.running = null; // Explicitly set to null
     }
     
     if (currentlyAiring === 'true') {
         filters.currentlyAiring = true;
     } else if (currentlyAiring === 'false') {
         filters.currentlyAiring = false;
+    } else {
+        filters.currentlyAiring = null; // Explicitly set to null
     }
     
     // Parse sortBy
@@ -70,7 +99,11 @@ export async function parseFiltersFromSearchParams(searchParams: ShowSearchProps
             // Default to ascending for alphabetical, descending for others
             const direction = sortBy === "alphabetical" ? "asc" : "desc";
             filters.sortBy = `${sortBy}-${direction}` as SortOption;
+        } else {
+            filters.sortBy = undefined; // Set to undefined if param is invalid
         }
+    } else {
+        filters.sortBy = undefined; // Set to undefined if param is absent
     }
 
     return filters;

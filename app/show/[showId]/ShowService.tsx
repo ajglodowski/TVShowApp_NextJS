@@ -39,11 +39,19 @@ export const getAllTags = async function (): Promise<ShowTag[] | null> {
   'use cache'
   cacheLife('days');
   const supabase = await publicClient();
-  const { data: tagData } = await supabase
+  const { data: tagData, error } = await supabase
     .from('showTag')
     .select('id, name, created_at');
 
-  if (!tagData) return null;
+  if (error) {
+    console.error("Error fetching tags:", error);
+    return null;
+  }
+
+  if (!tagData || tagData.length === 0) {
+    console.log("No tags found in the database");
+    return null;
+  }
 
   const tags = tagData as ShowTag[];
   return tags;

@@ -12,6 +12,7 @@ import { createClient, publicClient } from "@/app/utils/supabase/server";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cache } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
+import { ShowTag } from "@/app/models/showTag";
 
 export const getServices = cache(async (): Promise<Service[] | null> => {
     'use cache'
@@ -25,6 +26,67 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
     const supabase = await createClient();
     let queryBase;
     
+    // Check if we need to filter by tags
+    const hasTagFilters = filters.tags && filters.tags.length > 0;
+    
+    // First, determine if we're filtering to a specific set of shows (like a watchlist)
+    let filterShowIds: number[] | null = null;
+    
+    // Get show IDs for watchlist filtering if needed
+    if (searchType === ShowSearchType.WATCHLIST) {
+        if (!currentUserId) return null;
+        const watchlistShowData = await getUserShowData({showIds: [], userId: currentUserId});
+        if (!watchlistShowData) return null;
+        filterShowIds = watchlistShowData.map(showData => Number(showData.showId));
+    } 
+    else if (searchType === ShowSearchType.OTHER_USER_WATCHLIST) {
+        if (!otherUserId) return null;
+        const watchlistShowData = await getUserShowData({showIds: [], userId: otherUserId});
+        if (!watchlistShowData) return null;
+        filterShowIds = watchlistShowData.map(showData => Number(showData.showId));
+    }
+    
+    // If we have tag filters, get shows that match the tags
+    let tagFilteredShowIds: number[] | null = null;
+    if (hasTagFilters) {
+        const tagIds = filters.tags.map(tag => tag.id);
+        
+        if (tagIds && tagIds.length > 0) {
+            try {
+                const supabase = await createClient();
+                // Fetch shows with these tags from the ShowTagRelationship table
+                const { data: taggedShows, error: tagError } = await supabase
+                    .from('ShowTagRelationship')
+                    .select('showId')
+                    .in('tagId', tagIds);
+                
+                if (tagError) {
+                    console.error("Error fetching tagged shows:", tagError);
+                } else {
+                    if (taggedShows && taggedShows.length > 0) {
+                        // Extract unique show IDs
+                        const showIdMap = new Map();
+                        taggedShows.forEach(item => {
+                            showIdMap.set(Number(item.showId), true);
+                        });
+                        
+                        tagFilteredShowIds = Array.from(showIdMap.keys());
+                        
+                        if (tagFilteredShowIds.length === 0) {
+                            // If no shows have these tags, return empty array
+                            return [];
+                        }
+                    } else {
+                        // No shows match the selected tags
+                        return [];
+                    }
+                }
+            } catch (err) {
+                console.error("Exception in tag filtering:", err);
+            }
+        }
+    }
+    
     // Determine if we should use the analytics view based on sort field
     const sortField = filters.sortBy?.split('-')[0];
     const sortDirection = filters.sortBy?.split('-')[1] || 'desc';
@@ -33,6 +95,7 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
                             sortField === 'yearly_popularity' ||
                             sortField === 'avg_rating';
     
+    // Now set up the main query with correct show ID filters
     if (useAnalyticsView) {
         // Query the materialized view for sorting by popularity metrics
         queryBase = supabase.from("show_analytics")
@@ -50,23 +113,41 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
         }
         
         // Apply filters on the view columns
-        if (filters.currentlyAiring !== undefined) queryBase = queryBase.eq('currentlyAiring', filters.currentlyAiring);
-        if (filters.running !== undefined) queryBase = queryBase.eq('running', filters.running);
-        if (filters.limitedSeries !== undefined) queryBase = queryBase.eq('"limitedSeries"', filters.limitedSeries);
+        if (filters.currentlyAiring !== undefined && filters.currentlyAiring !== null) queryBase = queryBase.eq('currentlyAiring', filters.currentlyAiring);
+        if (filters.running !== undefined && filters.running !== null) queryBase = queryBase.eq('running', filters.running);
+        if (filters.limitedSeries !== undefined && filters.limitedSeries !== null) queryBase = queryBase.eq('"limitedSeries"', filters.limitedSeries);
         if (filters.service.length > 0) queryBase = queryBase.in('service_id', filters.service.map((service) => service.id));
         if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
         if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
+        
+        // Apply show ID filters from watchlist/tags
+        if (tagFilteredShowIds) {
+            // If we have tag filters, use those IDs
+            queryBase = queryBase.in('show_id', tagFilteredShowIds);
+        } else if (filterShowIds) {
+            // Otherwise use watchlist IDs if available
+            queryBase = queryBase.in('show_id', filterShowIds);
+        }
     } else {
         // Use the regular show table for other sorts
         queryBase = supabase.from("show").select(ShowPropertiesWithService);
         
         // Apply filters to the regular show table
-        if (filters.currentlyAiring !== undefined) queryBase = queryBase.eq('currentlyAiring', filters.currentlyAiring);
-        if (filters.running !== undefined) queryBase = queryBase.eq('running', filters.running);
-        if (filters.limitedSeries !== undefined) queryBase = queryBase.eq('limitedSeries', filters.limitedSeries);
+        if (filters.currentlyAiring !== undefined && filters.currentlyAiring !== null) queryBase = queryBase.eq('currentlyAiring', filters.currentlyAiring);
+        if (filters.running !== undefined && filters.running !== null) queryBase = queryBase.eq('running', filters.running);
+        if (filters.limitedSeries !== undefined && filters.limitedSeries !== null) queryBase = queryBase.eq('limitedSeries', filters.limitedSeries);
         if (filters.service.length > 0) queryBase = queryBase.in('service', filters.service.map((service) => service.id));
         if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
         if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
+        
+        // Apply show ID filters from watchlist/tags
+        if (tagFilteredShowIds) {
+            // If we have tag filters, use those IDs
+            queryBase = queryBase.in('id', tagFilteredShowIds);
+        } else if (filterShowIds) {
+            // Otherwise use watchlist IDs if available
+            queryBase = queryBase.in('id', filterShowIds);
+        }
         
         // Apply sorting for the regular show table
         if (sortField === 'alphabetical') {
@@ -80,34 +161,14 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
             queryBase = queryBase.order('name', { ascending: true });
         }
     }
-
-    // Handle filters for different search types
-    if (searchType === ShowSearchType.WATCHLIST) {
-        if (!currentUserId) return null;
-        const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
-        if (!showIds) return null;
+    
+    // Handle special case for DISCOVER_NEW (shows not in user's watchlist)
+    if (searchType === ShowSearchType.DISCOVER_NEW && currentUserId) {
+        const userShowData = await getUserShowData({showIds: [], userId: currentUserId});
         
-        if (useAnalyticsView) {
-            queryBase = queryBase.in('show_id', showIds);
-        } else {
-            queryBase = queryBase.in('id', showIds);
-        }
-    } 
-    if (searchType === ShowSearchType.OTHER_USER_WATCHLIST) {
-        if (!otherUserId) return null;
-        const showIds = (await getUserShowData({showIds: [], userId: otherUserId}))?.map((showData) => showData.showId);
-        if (!showIds) return null;
+        const showIds = userShowData?.map((showData) => showData.showId);
         
-        if (useAnalyticsView) {
-            queryBase = queryBase.in('show_id', showIds);
-        } else {
-            queryBase = queryBase.in('id', showIds);
-        }
-    }
-    if (searchType === ShowSearchType.DISCOVER_NEW) {
-        if (!!currentUserId) {
-            const showIds = (await getUserShowData({showIds: [], userId: currentUserId}))?.map((showData) => showData.showId);
-            if (!showIds) return null;
+        if (showIds && showIds.length > 0) {
             let showIdsString = '(';
             for (let i = 0; i < showIds.length; i++) {
                 showIdsString += showIds[i];
@@ -125,7 +186,12 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
         }
     }
 
-    const { data: showData } = await queryBase;
+    const { data: showData, error } = await queryBase;
+    
+    if (error) {
+        console.error("Error fetching shows:", error);
+        return null;
+    }
     
     if (!showData) return null;
     
@@ -227,12 +293,64 @@ export async function fetchUsersWatchlist(userId: string): Promise<UserWatchList
 export async function filterWatchlist(UserWatchListData: UserWatchListData[] | null, filters: ShowSearchFiltersType): Promise<UserWatchListData[] | null> {
     if (!UserWatchListData) return null;
     let filteredShows = [...UserWatchListData];
-    if (filters.currentlyAiring !== undefined) filteredShows = filteredShows.filter((show) => show.show.currentlyAiring === filters.currentlyAiring);
-    if (filters.running !== undefined) filteredShows = filteredShows.filter((show) => show.show.running === filters.running);
-    if (filters.limitedSeries !== undefined) filteredShows = filteredShows.filter((show) => show.show.limitedSeries === filters.limitedSeries);
-    if (filters.service.length > 0) filteredShows = filteredShows.filter((show) => filters.service.map((service) => service.id).includes(show.show.service.id));
-    if (filters.airDate.length > 0) filteredShows = filteredShows.filter((show) => filters.airDate.includes(show.show.airdate as AirDate));
-    if (filters.length.length > 0) filteredShows = filteredShows.filter((show) => filters.length.includes(show.show.length));
+    
+    // Apply tag filters first
+    if (filters.tags && filters.tags.length > 0) {
+        // Get the tag IDs from the filters
+        const tagIds = filters.tags.map(tag => tag.id);
+        
+        // Access the correct show ID from the data structure 
+        const showIds = filteredShows.map(item => item.show.id);
+        
+        // If no shows in watchlist, return empty array
+        if (showIds.length === 0) {
+            return [];
+        }
+        
+        // Query tag relationships for all shows in the watchlist
+        const supabase = await createClient();
+        const { data: taggedShowsData, error } = await supabase
+            .from('ShowTagRelationship')
+            .select('showId, tagId')
+            .in('showId', showIds) // Only get relationships for shows in the watchlist
+            .in('tagId', tagIds);  // Only get relationships for the selected tags
+        
+        if (taggedShowsData && taggedShowsData.length > 0) {
+            // Get unique show IDs that have any of the selected tags
+            const showIdsWithTags = Array.from(new Set(taggedShowsData.map(relation => relation.showId)));
+            
+            // Filter the watchlist to only include shows with matching tags
+            filteredShows = filteredShows.filter(item => showIdsWithTags.includes(item.show.id));
+        } else {
+            // If no shows match the tags, return empty array
+            return [];
+        }
+    }
+    
+    // Apply standard filters after tag filtering
+    if (filters.currentlyAiring !== undefined && filters.currentlyAiring !== null) {
+        filteredShows = filteredShows.filter((show) => show.show.currentlyAiring === filters.currentlyAiring);
+    }
+    
+    if (filters.running !== undefined && filters.running !== null) {
+        filteredShows = filteredShows.filter((show) => show.show.running === filters.running);
+    }
+    
+    if (filters.limitedSeries !== undefined && filters.limitedSeries !== null) {
+        filteredShows = filteredShows.filter((show) => show.show.limitedSeries === filters.limitedSeries);
+    }
+    
+    if (filters.service.length > 0) {
+        filteredShows = filteredShows.filter((show) => filters.service.map((service) => service.id).includes(show.show.service.id));
+    }
+    
+    if (filters.airDate.length > 0) {
+        filteredShows = filteredShows.filter((show) => filters.airDate.includes(show.show.airdate as AirDate));
+    }
+    
+    if (filters.length.length > 0) {
+        filteredShows = filteredShows.filter((show) => filters.length.includes(show.show.length));
+    }
     
     // Sort the filtered watchlist data if a sort option is provided
     if (filters.sortBy) {

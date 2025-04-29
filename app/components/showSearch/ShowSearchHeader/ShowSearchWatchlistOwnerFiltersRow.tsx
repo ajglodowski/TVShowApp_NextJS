@@ -49,9 +49,9 @@ export default function ShowSearchWatchlistOwnerFiltersRow({
         if (currentFilters.service.length > 0) url.searchParams.set('service', currentFilters.service.map(s => s.id).join(','));
         if (currentFilters.length.length > 0) url.searchParams.set('length', currentFilters.length.join(','));
         if (currentFilters.airDate.length > 0) url.searchParams.set('airDate', currentFilters.airDate.join(','));
-        if (currentFilters.limitedSeries !== undefined) url.searchParams.set('limitedSeries', currentFilters.limitedSeries.toString());
-        if (currentFilters.running !== undefined) url.searchParams.set('running', currentFilters.running.toString());
-        if (currentFilters.currentlyAiring !== undefined) url.searchParams.set('currentlyAiring', currentFilters.currentlyAiring.toString());
+        if (currentFilters.limitedSeries !== undefined && currentFilters.limitedSeries !== null) url.searchParams.set('limitedSeries', currentFilters.limitedSeries.toString());
+        if (currentFilters.running !== undefined && currentFilters.running !== null) url.searchParams.set('running', currentFilters.running.toString());
+        if (currentFilters.currentlyAiring !== undefined && currentFilters.currentlyAiring !== null) url.searchParams.set('currentlyAiring', currentFilters.currentlyAiring.toString());
         
         // Handle watchlist owner filter params
         if (key === 'ratings') {
@@ -172,9 +172,9 @@ export default function ShowSearchWatchlistOwnerFiltersRow({
         if (currentFilters.service.length > 0) url.searchParams.set('service', currentFilters.service.map(s => s.id).join(','));
         if (currentFilters.length.length > 0) url.searchParams.set('length', currentFilters.length.join(','));
         if (currentFilters.airDate.length > 0) url.searchParams.set('airDate', currentFilters.airDate.join(','));
-        if (currentFilters.limitedSeries !== undefined) url.searchParams.set('limitedSeries', currentFilters.limitedSeries.toString());
-        if (currentFilters.running !== undefined) url.searchParams.set('running', currentFilters.running.toString());
-        if (currentFilters.currentlyAiring !== undefined) url.searchParams.set('currentlyAiring', currentFilters.currentlyAiring.toString());
+        if (currentFilters.limitedSeries !== undefined && currentFilters.limitedSeries !== null) url.searchParams.set('limitedSeries', currentFilters.limitedSeries.toString());
+        if (currentFilters.running !== undefined && currentFilters.running !== null) url.searchParams.set('running', currentFilters.running.toString());
+        if (currentFilters.currentlyAiring !== undefined && currentFilters.currentlyAiring !== null) url.searchParams.set('currentlyAiring', currentFilters.currentlyAiring.toString());
         
         return pathname + url.search;
     };

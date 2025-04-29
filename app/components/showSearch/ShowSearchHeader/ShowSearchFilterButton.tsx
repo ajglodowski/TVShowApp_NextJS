@@ -49,9 +49,9 @@ export default function ShowSearchFilterButton({
         if (updatedFilters.service.length > 0) params.set('service', updatedFilters.service.map(s => s.id).join(','));
         if (updatedFilters.length.length > 0) params.set('length', updatedFilters.length.join(','));
         if (updatedFilters.airDate.length > 0) params.set('airDate', updatedFilters.airDate.join(','));
-        if (updatedFilters.limitedSeries !== undefined) params.set('limitedSeries', updatedFilters.limitedSeries.toString());
-        if (updatedFilters.running !== undefined) params.set('running', updatedFilters.running.toString());
-        if (updatedFilters.currentlyAiring !== undefined) params.set('currentlyAiring', updatedFilters.currentlyAiring.toString());
+        if (updatedFilters.limitedSeries !== null) params.set('limitedSeries', updatedFilters.limitedSeries.toString());
+        if (updatedFilters.running !== null) params.set('running', updatedFilters.running.toString());
+        if (updatedFilters.currentlyAiring !== null) params.set('currentlyAiring', updatedFilters.currentlyAiring.toString());
         
         const basePathname = currentPathname || '/';
         const queryString = params.toString();
@@ -112,7 +112,7 @@ export default function ShowSearchFilterButton({
         });
     };
 
-    const handleSetFilter = (key: 'running' | 'limitedSeries' | 'currentlyAiring', value: boolean | undefined) => {
+    const handleSetFilter = (key: 'running' | 'limitedSeries' | 'currentlyAiring', value: boolean | null) => {
         const updatedFilters = { ...optimisticFilters, [key]: value };
         startTransition(() => {
             updateOptimisticFilters({ [key]: value });
@@ -247,8 +247,8 @@ export default function ShowSearchFilterButton({
                         <Label className="font-medium text-sm">Running?</Label>
                         <div className="flex flex-col gap-2 mt-2">
                             <div 
-                                onClick={() => handleSetFilter('running', undefined)}
-                                className={optimisticFilters.running === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                                onClick={() => handleSetFilter('running', null)}
+                                className={optimisticFilters.running === null ? selectedBubbleStyle : unselectedBubbleStyle}
                                 style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Not Applied
@@ -273,8 +273,8 @@ export default function ShowSearchFilterButton({
                         <Label className="font-medium text-sm">Limited Series?</Label>
                         <div className="flex flex-col gap-2 mt-2">
                             <div 
-                                onClick={() => handleSetFilter('limitedSeries', undefined)}
-                                className={optimisticFilters.limitedSeries === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                                onClick={() => handleSetFilter('limitedSeries', null)}
+                                className={optimisticFilters.limitedSeries === null ? selectedBubbleStyle : unselectedBubbleStyle}
                                 style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Not Applied
@@ -299,8 +299,8 @@ export default function ShowSearchFilterButton({
                         <Label className="font-medium text-sm">Currently Airing?</Label>
                         <div className="flex flex-col gap-2 mt-2">
                             <div 
-                                onClick={() => handleSetFilter('currentlyAiring', undefined)}
-                                className={optimisticFilters.currentlyAiring === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
+                                onClick={() => handleSetFilter('currentlyAiring', null)}
+                                className={optimisticFilters.currentlyAiring === null ? selectedBubbleStyle : unselectedBubbleStyle}
                                 style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                             >
                                 Not Applied
@@ -339,9 +339,10 @@ export default function ShowSearchFilterButton({
         filters.service.length,
         filters.length.length,
         filters.airDate.length,
-        filters.limitedSeries !== undefined ? 1 : 0,
-        filters.running !== undefined ? 1 : 0,
-        filters.currentlyAiring !== undefined ? 1 : 0,
+        filters.limitedSeries !== null ? 1 : 0,
+        filters.running !== null ? 1 : 0,
+        filters.currentlyAiring !== null ? 1 : 0,
+        // Exclude tags from the count - they're handled by the TagFilterButton
     ].reduce((acc, count) => acc + count, 0);
 
 

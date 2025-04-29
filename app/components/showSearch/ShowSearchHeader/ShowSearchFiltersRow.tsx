@@ -67,15 +67,15 @@ export default function ShowSearchFiltersRow({
             }
         }
         
-        if (optimisticFilters.limitedSeries !== undefined && key !== 'limitedSeries') {
+        if (optimisticFilters.limitedSeries !== null && key !== 'limitedSeries') {
             url.searchParams.set('limitedSeries', optimisticFilters.limitedSeries.toString());
         }
         
-        if (optimisticFilters.running !== undefined && key !== 'running') {
+        if (optimisticFilters.running !== null && key !== 'running') {
             url.searchParams.set('running', optimisticFilters.running.toString());
         }
         
-        if (optimisticFilters.currentlyAiring !== undefined && key !== 'currentlyAiring') {
+        if (optimisticFilters.currentlyAiring !== null && key !== 'currentlyAiring') {
             url.searchParams.set('currentlyAiring', optimisticFilters.currentlyAiring.toString());
         }
         
@@ -97,8 +97,11 @@ export default function ShowSearchFiltersRow({
     const renderFilterBubbles = (): ReactNode[] => {
         const bubbles: ReactNode[] = [];
 
-        // Handle array filters (service, length, airDate)
+        // Handle array filters (service, length, airDate) but NOT tags
         Object.entries(optimisticFilters).forEach(([key, value]) => {
+            // Skip the tags property since it's handled separately
+            if (key === 'tags') return;
+            
             if (Array.isArray(value) && value.length > 0) {
                 value.forEach((item) => {
                     let displayValue: string = "";
@@ -139,13 +142,13 @@ export default function ShowSearchFiltersRow({
                 });
             }
             // Handle boolean filters (limitedSeries, running, currentlyAiring)
-            else if (typeof value === 'boolean') {
+            else if (typeof value === 'boolean' && value !== null) {
                 bubbles.push(
                     <div
                         key={key}
                         onClick={() => {
                             startTransition(() => {
-                                updateOptimisticFilters({ [key]: undefined });
+                                updateOptimisticFilters({ [key]: null });
                                 router.push(createRemoveFilterURL(key as keyof ShowSearchFiltersType, value));
                             });
                         }}
@@ -163,10 +166,11 @@ export default function ShowSearchFiltersRow({
     };
 
     const hasActiveFilters = () => {
-        return Object.values(optimisticFilters).some(value => 
-            (Array.isArray(value) && value.length > 0) || 
-            (typeof value === 'boolean' && value !== undefined)
-        );
+        // Skip 'tags' property when checking for active filters
+        return Object.entries(optimisticFilters).some(([key, value]) => {
+            if (key === 'tags') return false;
+            return (Array.isArray(value) && value.length > 0) || (typeof value === 'boolean' && value !== null);
+        });
     };
 
     return (
