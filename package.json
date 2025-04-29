@@ -61,7 +61,7 @@
     "react-hook-form": "^7.53.2",
     "react-image-crop": "^11.0.7",
     "react-resizable-panels": "^2.1.7",
-    "recharts": "^2.14.1",
+    "recharts": "^2.15.3",
     "sharp": "^0.32.6",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.2.1",

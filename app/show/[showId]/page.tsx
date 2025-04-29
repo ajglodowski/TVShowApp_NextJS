@@ -14,6 +14,7 @@ import { LoadingShowTagsSection, ShowTagsSection } from "./components/ShowTagsSe
 import StatusStatsSection from './components/StatusStatsSection';
 import { UserUpdatesSection, LoadingUserUpdatesSection } from './components/UserUpdatesSection';
 import { LoadingYourInfoSection, YourInfoSection } from './components/YourInfoSection';
+import { LoadingSimilarShowsSection, SimilarShowsSection } from './components/SimilarShowsSection';
 
 function ShowNotFound() {
   return (
@@ -162,6 +163,17 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
           <ActorsSection showId={parseInt(showId)} />
         </div>
       </div>
+
+
+      <div className='flex'>
+        <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg overflow-hidden'>
+          <h1 className='text-7xl font-bold tracking-tighter'>Similar Shows</h1>
+          <div className='flex'>
+            <SimilarShowsSection showId={parseInt(showId)} />
+          </div>
+        </div>
+      </div>
+
 
       <div className='flex flex-wrap md:flex-nowrap'>
         <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>

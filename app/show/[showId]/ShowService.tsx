@@ -139,3 +139,31 @@ export async function getActorsForShow(showId: number): Promise<Actor[] | null> 
   const actors = actorData.map((obj) => obj.actor) as unknown as Actor[];
   return actors;
 }
+
+export async function getSimilarShows(showId: number, limit: number = 10): Promise<number[] | null> {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.rpc('get_similar_show_ids', {
+      input_show_id: showId,
+      limit_count: limit
+    });
+
+    if (error) {
+      console.error('Error fetching similar shows:', error.message);
+      return null;
+    }
+
+    if (data && Array.isArray(data)) {
+      const showIds = data.map((item: { similar_show_id: number }) => item.similar_show_id);
+      return showIds;
+    } else {
+      console.warn('No similar shows found or unexpected data format for showId:', showId);
+      return [];
+    }
+
+  } catch (err) {
+    console.error('Unexpected error in getSimilarShows:', err);
+    return null;
+  }
+}

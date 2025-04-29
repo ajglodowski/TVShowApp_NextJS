@@ -2,7 +2,23 @@
 
 import { StatusCount } from '@/app/models/statusCount';
 import React from 'react';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { TrendingUp } from "lucide-react"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
 
 export default function StatusStatsSection ({ statusCounts }: { statusCounts: StatusCount[]| null }) {
 
@@ -20,39 +36,46 @@ export default function StatusStatsSection ({ statusCounts }: { statusCounts: St
         return out;
     };
 
-
-
+    const chartConfig = {
+        total: {
+          label: "Count",
+        },
+        name: {
+            label: "Status"
+        }
+    } satisfies ChartConfig
 
     return (
         <div className='text-left'>
             <div>
                 <h1 className='text-7xl font-bold tracking-tighter'>Status Counts</h1>
             </div>
-            <div className='min-w-48'>
+            <div className="w-full -mx-4">
                 {data().length > 0 &&
-                    <ResponsiveContainer width="100%" height={200}>
-                        <BarChart data={data()}>
-                            <XAxis
-                                dataKey="name"
-                                stroke="#FFFFFF"
-                                fontSize={12}
-                                tickLine={false}
-                                axisLine={false}
-                            />
-                            <YAxis
-                                stroke="#FFFFFF"
-                                fontSize={12}
-                                tickLine={false}
-                                axisLine={false}
-                            />
-                            <Bar
-                                dataKey="total"
-                                fill="#FFFFFF"
-                                radius={[4, 4, 0, 0]}
-                                className="fill-primary"
-                            />
+                    <ChartContainer config={chartConfig} className="h-52 w-full">
+                        <BarChart accessibilityLayer data={data()}>
+                          <CartesianGrid vertical={false} />
+                          <XAxis
+                            dataKey="name"
+                            tickLine={false}
+                            tickMargin={10}
+                            axisLine={false}
+                            stroke="#FFFFFF"
+                            // tickFormatter={(value) => value.slice(0, 3)} // Optional: Shorten labels if needed
+                          />
+                          <YAxis
+                           tickLine={false}
+                           tickMargin={10}
+                           axisLine={false}
+                           stroke="#FFFFFF"
+                           />
+                          <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent indicator="dashed" />}
+                          />
+                          <Bar dataKey="total" fill="#FFFFFF" radius={4} />
                         </BarChart>
-                    </ResponsiveContainer>
+                      </ChartContainer>
                 }
             </div>
         </div>
