@@ -1,5 +1,5 @@
 import { Show } from "@/app/models/show";
-import { getShow } from "@/app/show/[showId]/ShowService";
+import { getShow, getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
 import Link from "next/link";
 import ShowTileContent, { ShowTileBadgeProps } from "./ShowTileContent";
 
@@ -25,9 +25,15 @@ export default async function ShowTile(props: ShowTileProps) {
         return <div key={showId}>Show not found</div>
     }
 
+    // Fetch presigned URL on the server
+    let presignedUrl: string | null = null;
+    if (showData.pictureUrl) {
+        presignedUrl = await getPresignedShowImageURL(showData.pictureUrl, true);
+    }
+
     return (
         <Link key={showId} href={`/show/${showId}`}>
-            <ShowTileContent showData={showData} badges={props.badges}/>
+            <ShowTileContent showData={showData} presignedUrl={presignedUrl} badges={props.badges}/>
         </Link>
     );
 };

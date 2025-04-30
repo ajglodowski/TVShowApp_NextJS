@@ -20,8 +20,8 @@ export default function ProfileBubbleClient({ user, profilePicUrl }: ProfileBubb
                     <Image
                         src={profilePicUrl}
                         alt={`${username}'s profile photo`}
-                        layout="fill"
-                        objectFit="cover"
+                        fill
+                        style={{objectFit:"cover"}}
                         className="rounded-full"
                     />
                     </>

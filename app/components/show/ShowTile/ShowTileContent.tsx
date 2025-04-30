@@ -1,11 +1,11 @@
 import { Show } from "@/app/models/show";
-import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
 import { Clock, LucideIcon } from 'lucide-react';
 import Image from "next/image";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 
 export type ShowTileContentProps = {
     showData: Show
+    presignedUrl: string | null
     badges?: ShowTileBadgeProps[]
 }
 
@@ -15,12 +15,9 @@ export type ShowTileBadgeProps = {
   }
   
 
-export default async function ShowTileContent({showData, badges}: ShowTileContentProps) {
+export default function ShowTileContent({showData, presignedUrl, badges}: ShowTileContentProps) {
     const show = showData;
-    let showImageUrl: string | null = null;
-    if (show.pictureUrl) {
-        showImageUrl = await getPresignedShowImageURL(show.pictureUrl, true);
-    }
+    const showImageUrl = presignedUrl;
 
     const ShowImage = () => {
         if (!showImageUrl) return <LoadingImageSkeleton />;

@@ -41,8 +41,8 @@ export async function ProfileRow({ userId, profileData }: ProfileRowProps) {
                         <Image
                             src={imageUrl}
                             alt={`${userData.username}'s profile photo`}
-                            layout="fill"
-                            objectFit="cover"
+                            fill
+                            style={{objectFit:"cover"}}
                             className="rounded-full"
                         />
                         </>

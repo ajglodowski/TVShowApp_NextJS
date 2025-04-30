@@ -10,6 +10,8 @@ import { StatusCount } from "@/app/models/statusCount";
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { cache } from 'react';
 import { Actor } from "@/app/models/actor";
+import { cookies } from "next/headers";
+import { generatePresignedUrlAction } from "@/app/actions/imageActions";
 
 export const getShow = cache(async (showId: string): Promise<Show | null> => {
   'use cache'
@@ -65,22 +67,19 @@ export const getShowImageURL = cache((showName: string, tile: boolean): string =
   return showNameURL;
 });
 
-export const getPresignedShowImageURL = async (showName: string, tile: boolean): Promise<string | null> => {
-  const apiURL = `${serverBaseURL}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
-  const transformedName = encodeURIComponent(showName);
+export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
+  // Construct the image name and path WITHOUT encoding the showName here
   const dimensions = tile ? "200x200" : "640x640";
-  const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
+  // Use the raw showName to construct the imageName
+  const imageName = `${showName}_${dimensions}.jpeg`; 
+  const path = 'showImages/resizedImages';
 
-  const response = await fetch(showNameURL, {
-    cache: 'force-cache',
-    next: {
-      revalidate: 60 * 90 // 90 minutes
-    }
-  });
-  if (response.status !== 200) return null;
-  const data = await response.json();
-  return data.url;
-};
+  // Call the server action directly with the raw imageName
+  const presignedUrl = await generatePresignedUrlAction(path, imageName);
+  
+  // Return the result from the action
+  return presignedUrl;
+});
 
 export const fetchAverageShowColor = cache(async function (showName: string): Promise<string> {
   'use cache';

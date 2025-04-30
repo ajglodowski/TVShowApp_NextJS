@@ -1,20 +1,25 @@
 "use client"
-import { useEffect, useState } from "react"
-import { getYourShows } from "../HomeClientService"
-import ClientShowTile from "../../show/ShowTile/ClientShowTile"
+import { Show } from "@/app/models/show"
 import type { Status } from "@/app/models/status"
-import type { UserShowData } from "@/app/models/userShowData"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { backdropTabs } from "@/app/utils/stylingConstants"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { X } from "lucide-react"
+import { use, useEffect, useState } from "react"
+import ClientShowTile from "../../show/ShowTile/ClientShowTile"
 import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton"
-import { backdropTabs } from "@/app/utils/stylingConstants"
+import { getYourShows } from "../HomeClientService"
 
-export default function YourShowsRowClient({ userId, allStatuses }: { userId: string; allStatuses: Status[] | null }) {
+type YourShowsRowClientProps = {
+  userId: string
+  allStatuses: Status[] | null
+}
+
+export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRowClientProps) {
   const [selectedStatus, setSelectedStatus] = useState<Status[]>([])
-  const [displayedShows, setDisplayedShows] = useState<UserShowData[] | null | undefined>(undefined)
+  const [displayedShows, setDisplayedShows] = useState<Show[] | null | undefined>(undefined)
 
   const handleStatusChange = (status: Status) => {
     if (selectedStatus.includes(status)) {
@@ -31,10 +36,10 @@ export default function YourShowsRowClient({ userId, allStatuses }: { userId: st
   useEffect(() => {
     // On page load
     setDisplayedShows(undefined)
-    getYourShows({ userId: userId, selectedStatuses: selectedStatus }).then((shows) => {
+    getYourShows({userId, selectedStatuses: selectedStatus}).then((shows) => {
       if (!shows) setDisplayedShows(null)
       else setDisplayedShows(shows)
-    })
+    });
   }, [selectedStatus, userId])
 
   const LoadingShows = () => {
@@ -63,8 +68,8 @@ export default function YourShowsRowClient({ userId, allStatuses }: { userId: st
         <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
           <div className="flex">
             {displayedShows.map((showData) => (
-              <div key={showData.showId} className="m-2">
-                <ClientShowTile showId={showData.showId.toString()} />
+              <div key={showData.id} className="m-2">
+                <ClientShowTile key={showData.id} showDto={showData} />
               </div>
             ))}
           </div>

@@ -4,33 +4,24 @@ import { cache } from "react";
 import { serverBaseURL } from "../envConfig";
 import { ProfileFormValues } from "../components/editProfile/EditProfileClient";
 import { createClient } from "../utils/supabase/server";
+import { cookies } from "next/headers";
+import { UserFollowRelationship } from "../models/userFollowRelationship";
+import { generatePresignedUrlAction } from "@/app/actions/imageActions";
 
 export async function getProfilePic (username: string): Promise<string|null> {
     return getUserImageURL(username);
 }
 
 export const getPresignedUserImageURL = cache(async (picLocation: string): Promise<string | null> => {
-    // "use cache";
-    // cacheLife({
-    //   stale: 300, // 5 minutes
-    //   revalidate: 300, // 5 minutes
-    //   expire: 300, // 10 minutes
-    // });
-    const apiURL = `${serverBaseURL}/api/imageUrlFetcher?path=profilePics&imageName=`;
-    const transformedName = encodeURIComponent(picLocation);
-    //const dimensions = tile ? "200x200" : "640x640";
-    const showNameURL = `${apiURL}${transformedName}`;
+    // Construct the image name and path WITHOUT encoding the picLocation
+    const imageName = picLocation; // Assuming picLocation is the full file name (e.g., 'some-uuid.jpeg')
+    const path = 'profilePics';
 
+    // Call the server action directly
+    const presignedUrl = await generatePresignedUrlAction(path, imageName);
 
-    const response = await fetch(showNameURL, {
-      cache: 'force-cache',
-      next: {
-        revalidate: 60 * 5 // 5 minutes
-      }
-    });
-    if (response.status !== 200) return null;
-    const data = await response.json();
-    return data.url;
+    // Return the result from the action
+    return presignedUrl;
   });
 
 export const updateUserProfile = async (userId: string, profileData: ProfileFormValues): Promise<boolean> => {
