@@ -1,4 +1,4 @@
-import { Show, ShowPropertiesWithService } from "./show";
+import { Show, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics } from "./show";
 
 export type ShowList = {    
     id: string;
@@ -15,10 +15,10 @@ export type ShowList = {
 export type ShowListEntry = {
     id: string;
     listId: string;
-    show: Show;
+    show: ShowWithAnalytics;
     position: number;
     created_at: Date;
 }
 
 export const ShowListParams = 'id, name, description, ordered, private, creator, created_at, updated_at';
-export const ShowListEntryParams = `id, listId, show (${ShowPropertiesWithService}), position, created_at`;
+export const ShowListEntryParams = `id, listId, show_analytics (${ShowAnalyticsProperties}), position, created_at`;

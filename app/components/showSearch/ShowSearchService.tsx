@@ -3,7 +3,7 @@
 import { AirDate } from "@/app/models/airDate";
 import { Rating, RatingPoints } from "@/app/models/rating";
 import { Service } from "@/app/models/service";
-import { ShowAnalytics, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics } from "@/app/models/show";
+import { convertRawShowAnalyticsToShowWithAnalytics, ShowAnalytics, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics } from "@/app/models/show";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { Status } from "@/app/models/status";
 import { UserBasicInfo } from "@/app/models/user";
@@ -198,30 +198,7 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
     const shows: ShowWithAnalytics[] = showData.map((show: any) => {
         if (useAnalyticsView) {
             // Map analytics view fields to ShowWithAnalytics type
-            const analyticsData = show as ShowAnalytics;
-            const result = {
-                id: analyticsData.show_id,
-                name: analyticsData.show_name,
-                created_at: new Date(), // Default value as it's not in the view
-                lastUpdated: new Date(), // Default value as it's not in the view
-                length: show.length || null,
-                limitedSeries: analyticsData.limitedSeries || false,
-                currentlyAiring: show.currentlyAiring || false,
-                running: analyticsData.running || false,
-                service: {
-                    id: analyticsData.service_id,
-                    name: analyticsData.service_name
-                },
-                totalSeasons: analyticsData.totalSeasons || 1,
-                airdate: show.airdate,
-                releaseDate: analyticsData.releaseDate,
-                pictureUrl: analyticsData.pictureUrl,
-                weekly_updates: typeof analyticsData.weekly_updates === 'number' ? analyticsData.weekly_updates : 0,
-                monthly_updates: typeof analyticsData.monthly_updates === 'number' ? analyticsData.monthly_updates : 0,
-                yearly_updates: typeof analyticsData.yearly_updates === 'number' ? analyticsData.yearly_updates : 0,
-                avg_rating_points: typeof analyticsData.avg_rating_points === 'number' ? analyticsData.avg_rating_points : 0
-            };
-            return result;
+            return convertRawShowAnalyticsToShowWithAnalytics(show);
         } else {
             // Regular show table mapping (no analytics data)
             return {

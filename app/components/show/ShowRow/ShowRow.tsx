@@ -24,17 +24,32 @@ export default async function ShowRow({ show, currentUserInfo, otherUsersInfo, f
     if (!showData) return <ShowRowSkeleton />;
     let showImageUrl: string | null = null;
     if (showData.pictureUrl) {
-        showImageUrl =  await getPresignedShowImageURL(showData.pictureUrl as string, true);
+        try {
+            showImageUrl = await getPresignedShowImageURL(showData.pictureUrl as string, true);
+        } catch (error) {
+            console.error(`Error fetching presigned URL for show ${showData.id} (${showData.name}):`, error);
+            showImageUrl = null; // Handle error case, e.g., set to null
+        }
     }
 
     // Fetch friends' data if not provided and requested
     if (otherUsersInfo === undefined && fetchFriendsInfo) {
-        otherUsersInfo = await getFriendsUserDetails(showData.id);
+        try {
+            otherUsersInfo = await getFriendsUserDetails(showData.id);
+        } catch (error) {
+            console.error(`Error fetching friends' details for show ${showData.id} (${showData.name}):`, error);
+            // Handle error case if needed, e.g., otherUsersInfo = [];
+        }
     }
     
     // Fetch current user's data if not provided and requested
     if (currentUserInfo === undefined && fetchCurrentUsersInfo) {
-        currentUserInfo = await getCurrentUsersShowDetails(showData.id);
+        try {
+            currentUserInfo = await getCurrentUsersShowDetails(showData.id);
+        } catch (error) {
+            console.error(`Error fetching current user's details for show ${showData.id} (${showData.name}):`, error);
+            // Handle error case if needed, e.g., currentUserInfo = null;
+        }
     }
     
     return (
