@@ -1,17 +1,16 @@
+import { generatePresignedUrlAction, getAverageColorAction } from "@/app/actions/imageActions";
+import { serverBaseURL } from '@/app/envConfig';
+import { Actor } from "@/app/models/actor";
+import { Rating } from "@/app/models/rating";
+import { RatingCounts } from "@/app/models/ratingCounts";
 import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
-import { createClient, publicClient } from '@/app/utils/supabase/server';
-import { serverBaseURL } from '@/app/envConfig';
-import { Rating } from "@/app/models/rating";
-import { RatingCounts } from "@/app/models/ratingCounts";
 import { Status } from "@/app/models/status";
 import { StatusCount } from "@/app/models/statusCount";
+import { createClient, publicClient } from '@/app/utils/supabase/server';
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { cache } from 'react';
-import { Actor } from "@/app/models/actor";
-import { cookies } from "next/headers";
-import { generatePresignedUrlAction } from "@/app/actions/imageActions";
 
 export const getShow = cache(async (showId: string): Promise<Show | null> => {
   'use cache'
@@ -84,13 +83,12 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
 export const fetchAverageShowColor = cache(async function (showName: string): Promise<string> {
   'use cache';
   cacheLife('days');
-  const imagePath = `showImages/resizedImages/${showName}_200x200.jpeg`;
-  const encodedImagePath = encodeURIComponent(imagePath); // Encode the path
-  const apiURL = `${serverBaseURL}/api/averageColor?imagePath=${encodedImagePath}`;
-  const response = await fetch(apiURL);
-  if (response.status !== 200) return "rgb(0,0,0)";
-  const { averageColor } = await response.json();
-  return averageColor;
+  // Construct the image path using the raw showName
+  const imagePath = `showImages/resizedImages/${showName}_200x200.jpeg`; 
+  // Call the server action directly
+  const averageColor = await getAverageColorAction(imagePath);
+  // Return the result from the action, defaulting to black if null
+  return averageColor || "rgb(0,0,0)";
 });
 
 export async function getRatingCounts(showId: string): Promise<RatingCounts | null> {

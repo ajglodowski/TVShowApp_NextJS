@@ -18,7 +18,7 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
         <div className="m-2">
             <button 
                 onClick={() => addShowToWatchlist()}
-                className="p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black">
+                className="p-0.5 px-1 rounded-md text-sm outline outline-white hover:bg-white hover:text-black">
                 Add to your shows
             </button>
         </div>
@@ -40,19 +40,19 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
 
     return (
         <div className="w-full">
-            <h1 className="text-2xl">Current Status: {currentStatus?.name}</h1>
+            <h1 className="text-xl">Current Status: {currentStatus?.name}</h1>
             {allStatuses && <div className="">
                 <span className="flex items-center">
-                    <button onClick={() => setShowOptions(!showOptions)} className="py-1 px-2 m-1 rounded-lg outline outline-white hover:bg-white hover:text-black">
+                    <button onClick={() => setShowOptions(!showOptions)} className="py-0.5 px-1 m-1 rounded-md text-sm outline outline-white hover:bg-white hover:text-black">
                         {showOptions ? 'Hide other statuses' : 'Change status'}
                     </button>
                 </span>
-                {showOptions && <div className="whitespace-nowrap overflow-x-auto w-full">
+                {showOptions && <div className="whitespace-nowrap overflow-x-auto w-full mt-1">
                     {otherStatuses!.map((status: Status) => (
                         <button
                             key={status.id}
                             onClick={() => changeCurrentStatus(status)}
-                            className={`py-1 px-2 m-1 rounded-lg outline outline-white hover:bg-white hover:text-black`}
+                            className={`py-0.5 px-1 m-1 rounded-md text-sm outline outline-white hover:bg-white hover:text-black`}
                         >
                             {status.name}
                         </button>

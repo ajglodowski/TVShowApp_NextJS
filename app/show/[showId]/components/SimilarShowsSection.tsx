@@ -2,9 +2,17 @@ import ShowTile from "@/app/components/show/ShowTile/ShowTile";
 import { getSimilarShows } from "../ShowService";
 import ShowTileSkeleton from "@/app/components/show/ShowTile/ShowTileSkeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Suspense } from "react";
 
 export async function SimilarShowsSection({showId}: {showId: number} ) {
-    
+    return (
+        <Suspense fallback={<LoadingSimilarShowsSection />}>
+            <SimilarShowsContent showId={showId} />
+        </Suspense>
+    );
+}
+
+const SimilarShowsContent = async ({showId}: {showId: number}) => {
     const similarShows = await getSimilarShows(showId);
 
     if (similarShows == null) {
@@ -29,7 +37,7 @@ export async function SimilarShowsSection({showId}: {showId: number} ) {
             <ScrollBar orientation="horizontal" />
         </ScrollArea>
     );
-}
+};
 
 export const LoadingSimilarShowsSection = () => {
     return (

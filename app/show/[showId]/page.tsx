@@ -1,20 +1,21 @@
 import type { Show } from '@/app/models/show';
-import { boolToEmoji } from '@/app/utils/boolToEmoji';
 import { RGBAToHexA } from '@/app/utils/colorUtil';
+import { backdropTabsTrigger } from '@/app/utils/stylingConstants';
 import { createClient } from '@/app/utils/supabase/server';
-import { dateToString, releaseDateToString } from '@/app/utils/timeUtils';
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { fetchAverageShowColor, getAllTags, getPresignedShowImageURL, getRatingCounts, getShow, getStatusCounts, getTags } from './ShowService';
+import { fetchAverageShowColor, getPresignedShowImageURL, getRatingCounts, getShow, getStatusCounts } from './ShowService';
 import ActorsSection from './components/ActorsSection';
 import RatingsStatsSection from './components/RatingsStatsSection';
-import { LoadingShowTagsSection, ShowTagsSection } from "./components/ShowTagsSection";
+import ShowInfoSection from './components/ShowInfoSection';
+import { SimilarShowsSection } from './components/SimilarShowsSection';
 import StatusStatsSection from './components/StatusStatsSection';
-import { UserUpdatesSection, LoadingUserUpdatesSection } from './components/UserUpdatesSection';
-import { LoadingYourInfoSection, YourInfoSection } from './components/YourInfoSection';
-import { LoadingSimilarShowsSection, SimilarShowsSection } from './components/SimilarShowsSection';
+import { LoadingUserUpdatesSection, UserUpdatesSection } from './components/UserUpdatesSection';
+import { LoadingYourInfoSection, YourInfoSection } from './components/YourInfoSection/YourInfoSection';
 
 function ShowNotFound() {
   return (
@@ -87,7 +88,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   }
 
   return (
-    <div style={gradientStyle(50)}  className='w-full h-full'>
+    <div style={gradientStyle(50)}  className='w-full h-full min-h-screen'>
       <div className=''>
         <div className='w-full'>
           {showImageUrl && <div className='w-9/12 md:4/12 max-w-xl min-w-64 mx-auto'>
@@ -108,91 +109,76 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
       </div>
       <h2 className='text-2xl tracking-tight text-center'>{show.length} minutes - {show.service.name}</h2>
       
-      <div className='flex flex-wrap md:flex-nowrap'>
+      <div className='flex flex-wrap md:flex-nowrap w-full px-4'>
         <Suspense fallback={<LoadingYourInfoSection />}>
           <YourInfoSection show={show} backgroundColor={backgroundColor} />
         </Suspense>
+      </div>
 
-        <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 h-auto shadow-2xl rounded-lg'>
-          <span className='flex justify-between my-auto'>
-            <h2 className='text-7xl font-bold my-auto tracking-tighter'>Show Info</h2>
-            <div className='my-auto text-right'>
-              <h3 className='text-lg'>Name - {show.name}</h3>
-              <h3 className='text-lg'>Service - {show.service.name}</h3>
-              <Link href={`/editShow/${showId}`}>
-                <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'>Edit Show</button>
+      <Tabs defaultValue="show-info" className="w-full px-4 mt-4">
+        <ScrollArea className={`w-full whitespace-nowrap rounded-lg`}>
+          <TabsList style={flatStyle()} className={`flex w-max p-1 gap-1 text-white`}>
+            <TabsTrigger value="show-info" className={backdropTabsTrigger}>Show Info</TabsTrigger>
+            <TabsTrigger value="actors" className={backdropTabsTrigger}>Actors</TabsTrigger>
+            <TabsTrigger value="similar-shows" className={backdropTabsTrigger}>Similar Shows</TabsTrigger>
+            <TabsTrigger value="your-updates" className={backdropTabsTrigger}>Your Updates</TabsTrigger>
+            <TabsTrigger value="friends-updates" className={backdropTabsTrigger}>Friend's Updates</TabsTrigger>
+            <TabsTrigger value="stats" className={backdropTabsTrigger}>Stats</TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" className="h-2 [&>div]:bg-black/40" />
+        </ScrollArea>
+
+        <TabsContent value="show-info">
+          <ShowInfoSection show={show} flatStyle={flatStyle} showId={showId} />
+        </TabsContent>
+
+        <TabsContent value="actors">
+          <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
+            <span className='flex flex-row content-start justify-between text-xl'>
+              <h1 className='text-7xl font-bold tracking-tighter'>Actors</h1>
+              <Link href={`/show/${showId}/editActors`}>
+                <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black my-auto'>Edit Actors</button>
               </Link>
-            </div>
-          </span>
-          <span className='flex flex-row content-start justify-between text-xl'>
-            <h2>Running: {boolToEmoji(show.running)} </h2>
-            <h2 >Currently Airing: {boolToEmoji(show.currentlyAiring)}</h2>
-          </span>
-          <span className='flex flex-row content-start justify-between text-xl'>
-            <h2>Total Seasons: {show.totalSeasons} </h2>
-            <h2>Limited Series: {boolToEmoji(show.limitedSeries)}</h2>
-          </span>
-          <span className='flex flex-row content-start justify-between text-xl'>
-            {!!show.releaseDate && <h2>Release Date: {releaseDateToString(show.releaseDate)}</h2>}
-            {!!show.airdate && <h2>Airdate: {show.airdate}</h2>}
-          </span>
-          <span className='flex flex-row content-start justify-between text-md'>
-            <h4 className=''>Show created at: {dateToString(show.created_at)}</h4>
-            <h4 className=''>Last updated: {dateToString(show.lastUpdated)}</h4>
-          </span>
-          <p className='text-xs'>Show ID: {showId}</p>
-        </div>
-      </div>
-
-      <div className='flex'>
-        <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
-          <Suspense fallback={<LoadingUserUpdatesSection />}>
-            <UserUpdatesSection showId={parseInt(showId)} currentUserId={currentUserId} />
-          </Suspense>
-        </div>
-      </div>
-
-      <div className='flex'>
-        <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
-          <span className='flex flex-row content-start justify-between text-xl'>
-            <h1 className='text-7xl font-bold tracking-tighter'>Actors</h1>
-            <Link href={`/show/${showId}/editActors`}>
-              <button className='p-1 mx-2 rounded-lg outline outline-white hover:bg-white hover:text-black'>Edit Actors</button>
-            </Link>
-          </span>
-          <ActorsSection showId={parseInt(showId)} />
-        </div>
-      </div>
-
-
-      <div className='flex'>
-        <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg overflow-hidden'>
-          <h1 className='text-7xl font-bold tracking-tighter'>Similar Shows</h1>
-          <div className='flex'>
-            <SimilarShowsSection showId={parseInt(showId)} />
+            </span>
+            <ActorsSection showId={parseInt(showId)} />
           </div>
-        </div>
-      </div>
+        </TabsContent>
 
+        <TabsContent value="similar-shows">
+          <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg overflow-hidden'>
+            <h1 className='text-7xl font-bold tracking-tighter'>Similar Shows</h1>
+            <div className='flex'>
+              <SimilarShowsSection showId={parseInt(showId)} />
+            </div>
+          </div>
+        </TabsContent>
 
-      <div className='flex flex-wrap md:flex-nowrap'>
-        <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
-          <h1 className='text-7xl font-bold tracking-tighter text-right'>Tags</h1>
-          <Suspense fallback={<LoadingShowTagsSection />}>
-            <ShowTagsSection showId={showId} />
-          </Suspense>
-        </div>
-        <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
-          <RatingsStatsSection ratingCounts={ratingCounts} />
-        </div>
-      </div>
+        <TabsContent value="your-updates">
+          <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
+            <Suspense fallback={<LoadingUserUpdatesSection />}>
+              <UserUpdatesSection showId={parseInt(showId)} currentUserId={currentUserId} />
+            </Suspense>
+          </div>
+        </TabsContent>
 
-      <div className='flex'>
-        <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
-          <StatusStatsSection statusCounts={statusCounts} />
-        </div>
-      </div>
+        <TabsContent value="friends-updates">
+           <div style={flatStyle()} className='text-left w-full m-4 p-2 shadow-xl rounded-lg'>
+             <h1 className='text-7xl font-bold tracking-tighter'>Friend's Updates</h1>
+             <p>Friend's updates feature coming soon!</p>
+           </div>
+        </TabsContent>
 
+        <TabsContent value="stats">
+          <div className='flex flex-wrap md:flex-nowrap w-full'>
+            <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
+               <RatingsStatsSection ratingCounts={ratingCounts} />
+            </div>
+            <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
+               <StatusStatsSection statusCounts={statusCounts} />
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
 
     </div>
 

@@ -1,11 +1,12 @@
 import Divider from "@/app/components/Divider";
-import ShowStatusSection from "./ShowStatusSection";
-import UserRatingsSection from "./UserRatingsSection";
-import SeasonsRow from "./SeasonsRow";
-import { createClient } from "@/app/utils/supabase/server";
-import { getAllStatuses, getUserShowData, updateUserShowData } from "../UserShowDataService";
 import { Show } from "@/app/models/show";
 import { RGBAToHexA } from "@/app/utils/colorUtil";
+import { createClient } from "@/app/utils/supabase/server";
+import { getAllStatuses, getUserShowData, updateUserShowData } from "../../UserShowDataService";
+import SeasonsRow from "./SeasonsRow";
+import ShowStatusSection from "./ShowStatusSection";
+import UserRatingsSection from "./UserRatingsSection";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type YourInfoSectionProps = {
     show: Show;
@@ -36,12 +37,12 @@ export async function YourInfoSection ({ show, backgroundColor }: YourInfoSectio
     const showId = show.id.toString();
 
     return (
-        <div style={flatStyle()} className='text-left w-full md:w-1/2 m-4 p-2 shadow-xl rounded-lg'>
-          <span className='flex flex-wrap md:flex-nowrap justify-between my-auto'>
-            <div className='mx-auto'>
+        <div style={flatStyle()} className='text-left w-full m-2 p-2 shadow-xl rounded-lg'>
+          <span className='flex flex-wrap justify-between items-center my-1'>
+            <h2 className='text-4xl md:text-5xl font-bold tracking-tighter order-1'>Your History</h2>
+            <div className='order-2 mx-auto md:mx-0 md:ml-auto'>
               {loggedIn && <UserRatingsSection userInfo={userInfoData} updateFunction={updateUserShowData}/> }
             </div>
-            <h2 className='text-5xl md:text-7xl font-bold tracking-tighter md:text-center my-auto'>Your History</h2>
           </span>
           <Divider />
           <ShowStatusSection showId={showId} userId={currentUserId} userShowData={userInfoData} allStatuses={allStatuses} updateFunction={updateUserShowData} loggedIn={loggedIn}/>
@@ -53,8 +54,17 @@ export async function YourInfoSection ({ show, backgroundColor }: YourInfoSectio
 
 export const LoadingYourInfoSection = () => {
     return (
-        <div>
-            <h2>Loading...</h2>
+        <div className='text-left w-full m-2 p-2 shadow-xl rounded-lg'>
+          <span className='flex flex-wrap justify-between items-center my-1'>
+            <h2 className='text-4xl md:text-5xl font-bold tracking-tighter order-1'>Your History</h2>
+            <div className='order-2 mx-auto md:mx-0 md:ml-auto'>
+              <Skeleton className='h-8 w-24' />
+            </div>
+          </span>
+          <Divider />
+          <Skeleton className='h-10 w-full mb-2' />
+          <Divider />
+          <Skeleton className='h-8 w-full' />
         </div>
     );
 }

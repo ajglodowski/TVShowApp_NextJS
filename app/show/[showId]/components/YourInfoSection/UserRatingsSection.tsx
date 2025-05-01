@@ -1,4 +1,3 @@
-
 'use client'
 
 import { Rating } from '@/app/models/rating';
@@ -55,22 +54,21 @@ export default function UserRatingsSection ({ userInfo, updateFunction }: { user
 
     return (
         <div className='my-auto'>
-            <div className='flex items-center'>
+            <div className='flex items-center text-sm'>
                 Your Rating: {currentRating ? currentRating : 'No Rating'}
-                {/*currentRating && <div className='px-1'>{currentRatingIcon()}</div>*/}
                 {currentRating && <button 
                     onClick={() => updateRating(null)}
-                    className='p-1 mx-2 my-2 rounded-lg outline outline-white hover:bg-white hover:text-black'>
+                    className='p-0.5 px-1 mx-2 my-1 rounded-md text-xs outline outline-white hover:bg-white hover:text-black'>
                     Remove Rating
                 </button> }
             </div>
-            <div className='flex text-center justify-center'>
+            <div className='flex text-center justify-center mt-1'>
                 {ratings.map((rating) => {
                     if (rating === currentRating) {
                         return (
                             <div key={rating} className=''>
                                 <div className='px-1'>{currentRatingIcon()}</div>
-                                <h4>{currentRating}</h4>
+                                <h4 className='text-xs'>{currentRating}</h4>
                             </div>
                         );
                     } else
