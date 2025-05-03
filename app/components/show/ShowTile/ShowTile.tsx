@@ -1,5 +1,5 @@
 import { Show } from "@/app/models/show";
-import { getShow, getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
+import { getShow, getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
 import Link from "next/link";
 import ShowTileContent, { ShowTileBadgeProps } from "./ShowTileContent";
 

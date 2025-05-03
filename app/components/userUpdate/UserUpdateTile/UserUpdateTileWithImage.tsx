@@ -1,4 +1,4 @@
-import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
+import { getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
 import Image from "next/image";
 import { Suspense } from "react";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";

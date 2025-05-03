@@ -6,6 +6,8 @@ import { parseCurrentUserFilters, parseFiltersFromSearchParams, parseWatchlistOw
 import ShowSearchHeader, { ShowSearchFiltersType } from './ShowSearchHeader/ShowSearchHeader';
 import ShowSearchShows from './ShowSearchShows';
 import ShowSearchShowsLoading from './ShowSearchShowsLoading';
+import ShowSearchHeaderLoading from './ShowSearchHeader/ShowSearchHeaderLoading';
+import { defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
 
 export type ShowSearchData = {
     shows: Show[]| undefined | null;
@@ -38,7 +40,7 @@ export type ShowSearchProps = {
 }
 
 export default async function ShowSearch(props: ShowSearchProps) {
-    
+
     const {searchType, userId, currentUserId} = props;
     const searchParams = await props.searchParams || {};
     
@@ -95,5 +97,28 @@ export default async function ShowSearch(props: ShowSearchProps) {
                 </Suspense>
             </div>
         </div>       
+    );
+}
+
+export async function LoadingShowSearch() {
+    const searchParams = {};
+    
+    const pathname = '/';
+
+    
+    const filters = await parseFiltersFromSearchParams(searchParams);
+    return (
+        <div className='w-full overflow-x-hidden'>
+            <ShowSearchHeaderLoading 
+                filters={filters}
+                searchResults={''}
+                currentUserFilters={defaultCurrentUserFilters}
+                watchlistOwnerFilters={defaultCurrentUserFilters}
+                pathname={pathname}
+            />
+            <div className='w-full overflow-x-hidden'>
+                <ShowSearchShowsLoading />
+            </div>
+        </div>      
     );
 }

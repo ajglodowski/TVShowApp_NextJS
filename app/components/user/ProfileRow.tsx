@@ -1,6 +1,6 @@
 import { UserBasicInfo } from "@/app/models/user";
 import { getUser } from "@/app/utils/userService";
-import { getPresignedUserImageURL } from "../../profile/UserService";
+import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
 import { LoadingImageSkeleton } from "../image/LoadingImageSkeleton";
 import Image from 'next/image';
 import Link from "next/link";

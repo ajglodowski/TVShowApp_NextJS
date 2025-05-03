@@ -4,10 +4,10 @@ import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import Link from "next/dist/client/link";
 import Image from "next/image";
 import { UserDetailsDropdown } from "./UserDetailsDropdown";
-import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
 import { Suspense } from "react";
 import ShowRowSkeleton from "./ShowRowSkeleton";
 import { getCurrentUsersShowDetails, getFriendsUserDetails } from "./ShowRowService";
+import { getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
 
 type ShowRowProps = {
     show: Show | ShowWithAnalytics | undefined;

@@ -3,7 +3,6 @@ import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { Status } from "@/app/models/status";
-import { getAllStatuses } from "@/app/show/[showId]/UserShowDataService";
 import { Suspense } from "react";
 import { getServices } from "../ShowSearchService";
 import ShowSearchCurrentUserFilters, { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchCurrentUserFilters";
@@ -16,9 +15,10 @@ import ShowSearchWatchlistOwnerFilters from "./ShowSearchWatchlistOwnerFilters";
 import ShowSearchWatchlistOwnerFiltersRow from "./ShowSearchWatchlistOwnerFiltersRow";
 import SortButton, { SortOption } from "./SortButton";
 import { ShowTag } from "@/app/models/showTag";
-import { getAllTags } from "@/app/show/[showId]/ShowService";
 import TagFilterButton from "./TagFilterButton";
 import ShowSearchTagsRow from "./ShowSearchTagsRow";
+import { getAllTags } from "@/app/(main)/show/[showId]/ShowService";
+import { getAllStatuses } from "@/app/(main)/show/[showId]/UserShowDataService";
 
 export type ShowSearchFiltersType = {
     service: Service[];
@@ -42,7 +42,7 @@ export const defaultFilters: ShowSearchFiltersType = {
     tags: [],
 }
 
-type ShowSearchHeaderProps = {
+export type ShowSearchHeaderProps = {
     filters: ShowSearchFiltersType;
     searchResults?: string;
     currentUserFilters: CurrentUserFilters;

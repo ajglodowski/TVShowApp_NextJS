@@ -4,6 +4,7 @@ import { getComingSoon } from "./HomeService";
 import { Calendar, Clock } from "lucide-react";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
 import { releaseDateToString } from "@/app/utils/timeUtils";
+import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
 
 export type ComingSoonDTO = {
     showId: string
@@ -59,3 +60,20 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
         </div>
     )
 };
+
+export async function LoadingComingSoonRow() {
+    return (
+        <div className="flex items-center justify-center mx-2">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+                <div className="flex">
+                    {Array.from({ length: 10 }).map((_, index) => (
+                        <div key={index} className="m-2">
+                            <ShowTileSkeleton />
+                        </div>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+        </div>
+        )
+    }

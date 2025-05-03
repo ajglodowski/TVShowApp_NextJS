@@ -6,7 +6,7 @@ import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import Image from "next/image";
 import { backdropBackground } from "@/app/utils/stylingConstants";
-import { getPresignedUserImageURL } from "@/app/profile/UserService";
+import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
 import { Skeleton } from "@/components/ui/skeleton";
 export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
 

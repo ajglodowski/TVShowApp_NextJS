@@ -1,13 +1,15 @@
 
-import { createClient } from '@/app/utils/supabase/server'
-import WatchListRow from './WatchlistRow';
-import Top10Row from './Top10Row';
-import YourShowsRow from './YourShowsRow/YourShowsRow';
+import { createClient } from '@/app/utils/supabase/server';
 import { ClientSearch } from '../search/ClientSearch';
+import ComingSoonRow, { LoadingComingSoonRow } from './ComingSoonRow';
+import CurrentlyAiringLoading from './CurrentlyAiringRow/CurrentlyAiringLoading';
 import CurrentlyAiringRow from './CurrentlyAiringRow/CurrentlyAiringRow';
-import ComingSoonRow from './ComingSoonRow';
-import YourUpdatesRow from './YourUpdatesRow';
+import Top10Row, { LoadingTop10Row } from './Top10Row';
+import WatchListRow, { LoadingWatchlistRow } from './WatchlistRow';
 import WelcomeBanner from './WelcomeBanner';
+import { LoadingYourShowsRow } from './YourShowsRow/LoadingYourShowsRow';
+import YourShowsRow from './YourShowsRow/YourShowsRow';
+import YourUpdatesRow, { LoadingYourUpdatesRow } from './YourUpdatesRow';
 
 export default async function Home () {
 
@@ -42,3 +44,29 @@ export default async function Home () {
         </div>
     )
 };
+
+export async function LoadingHome() {
+
+    const rows = [
+        {header: "Search", component: <ClientSearch/>}, 
+        {header: "Your Recent Updates", component: <LoadingYourUpdatesRow />},
+        {header: "Your shows", component: <LoadingYourShowsRow />}, 
+        {header: "Currently Airing", component: <CurrentlyAiringLoading />}, 
+        {header: "Top 10 this week", component: <LoadingTop10Row />},
+        {header: "Coming Soon", component: <LoadingComingSoonRow />}, 
+        {header: "Shows for you to start", component: <LoadingWatchlistRow />}, 
+    ]
+
+    return (
+        <div className="px-2">
+            <WelcomeBanner />
+            {rows.map((row) => (
+                <div key={row.header} className="w-full overflow-x-auto">
+                    <h3 className='text-xl font-bold mt-1'>{row.header}</h3>
+                    {row.component}
+                </div>
+            ))}
+        </div>
+    )
+    
+}

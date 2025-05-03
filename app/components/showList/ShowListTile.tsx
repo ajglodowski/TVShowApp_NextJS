@@ -1,9 +1,9 @@
-import { getListData, getListEntries } from "@/app/list/[listId]/ListService";
-import { getPresignedShowImageURL } from "@/app/show/[showId]/ShowService";
+import { getListData, getListEntries } from "@/app/(main)/list/[listId]/ListService";
+import { getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import Image from "next/image";
 import Link from "next/link";
-import ProfileBubble from "../user/ProfileBubble";
+import ProfileBubble from "@/app/components/user/ProfileBubble";
 
 export default async function ShowsListTile({listId}: {listId: number}) {
 

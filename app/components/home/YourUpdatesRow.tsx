@@ -1,6 +1,6 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getUserUpdates } from "./HomeService";
-import UserUpdateTile from "../userUpdate/UserUpdateTile/UserUpdateTile";
+import UserUpdateTile, { LoadingUserUpdateTile } from "../userUpdate/UserUpdateTile/UserUpdateTile";
 
 export default async function YourUpdatesRow ({userId}: {userId: string}) {
 
@@ -24,3 +24,20 @@ export default async function YourUpdatesRow ({userId}: {userId: string}) {
         </div>
     )
 };
+
+export async function LoadingYourUpdatesRow() {
+    return (
+        <div className="w-full">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+                <div className="flex space-x-4 p-4">
+                    {Array.from({ length: 10 }).map((_, index) => (
+                        <div key={index} className="flex-shrink-0">
+                            <LoadingUserUpdateTile />
+                        </div>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+        </div>
+    )
+}

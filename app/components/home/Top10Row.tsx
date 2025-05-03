@@ -3,6 +3,8 @@ import ShowTile from "../show/ShowTile/ShowTile";
 import { getTop10 } from "./HomeService";
 import { Info } from "lucide-react";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
+import { Skeleton } from "@/components/ui/skeleton";
+import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
 
 export default async function Top10Row() {
 
@@ -41,3 +43,20 @@ export default async function Top10Row() {
         </div>
     )
 };
+
+export async function LoadingTop10Row() {
+    return (
+        <div className="flex items-center justify-center mx-2">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+                <div className="flex">
+                    {Array.from({ length: 10 }).map((_, index) => (
+                        <div key={index} className="rounded-md p-2">
+                            <ShowTileSkeleton />
+                        </div>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+        </div>
+    )
+}

@@ -1,6 +1,7 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowTile from "../show/ShowTile/ShowTile";
 import { getWatchList } from "./HomeService";
+import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
 
 export default async function WatchListRow ({userId}: {userId: string}) {
 
@@ -24,3 +25,20 @@ export default async function WatchListRow ({userId}: {userId: string}) {
         </div>
     )
 };
+
+export async function LoadingWatchlistRow() {
+    return (
+        <div className="flex items-center justify-center mx-2">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+                <div className="flex">
+                    {Array.from({ length: 10 }).map((_, index) => (
+                        <div key={index} className="m-2">
+                            <ShowTileSkeleton />
+                        </div>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+        </div>
+    )
+}

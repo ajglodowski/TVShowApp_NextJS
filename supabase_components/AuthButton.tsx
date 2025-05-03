@@ -5,7 +5,7 @@ import { getUser, getUserImageURL } from '@/app/utils/userService'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import Image from "next/image";
-import { getPresignedUserImageURL } from '@/app/profile/UserService'
+import { getPresignedUserImageURL } from '@/app/(main)/profile/UserService'
 import { backdropBackground } from '@/app/utils/stylingConstants'
 
 export default async function AuthButton() {

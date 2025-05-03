@@ -1,3 +1,4 @@
+import { getAllTags } from "@/app/(main)/show/[showId]/ShowService";
 import { AirDate } from "@/app/models/airDate";
 import { Rating } from "@/app/models/rating";
 import { ShowLength } from "@/app/models/showLength";
@@ -6,8 +7,6 @@ import { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchHeade
 import { defaultFilters, ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
 import { SortOption } from "./ShowSearchHeader/SortButton";
 import { getServices } from "./ShowSearchService";
-import { getAllTags } from "@/app/show/[showId]/ShowService";
-import { ShowTag } from "@/app/models/showTag";
 
 export async function parseFiltersFromSearchParams(
     searchParams: ShowSearchProps['searchParams'] & { tags?: string } = {}

@@ -4,6 +4,8 @@ import type { AirDate, CurrentlyAiringDTO } from "@/app/models/airDate"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ClientShowTile from "../../show/ShowTile/ClientShowTile"
 import { backdropTabs } from "@/app/utils/stylingConstants"
+import { ScrollBar } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type AirDateInfo = {
   day: AirDate
@@ -87,13 +89,16 @@ export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { cur
 
         {sortedDays.map(({ day, shows }) => (
           <TabsContent key={day} value={day} className="mt-0">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {shows.map((show) => (
-                <div key={show.id}>
-                  <ClientShowTile showId={show.id.toString()} />
+             <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+                <div className="flex">
+                {shows.map((show) => (
+                    <div key={show.id} className="m-2">
+                      <ClientShowTile showId={show.id.toString()} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </TabsContent>
         ))}
       </Tabs>

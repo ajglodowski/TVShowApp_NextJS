@@ -11,11 +11,14 @@ import { use, useEffect, useState } from "react"
 import ClientShowTile from "../../show/ShowTile/ClientShowTile"
 import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton"
 import { getYourShows } from "../HomeClientService"
+import { Skeleton } from "@/components/ui/skeleton"
+import { LoadingShows, LoadingStatusFilters } from "./LoadingYourShowsRow"
 
 type YourShowsRowClientProps = {
   userId: string
   allStatuses: Status[] | null
 }
+
 
 export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRowClientProps) {
   const [selectedStatus, setSelectedStatus] = useState<Status[]>([])
@@ -42,22 +45,7 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
     });
   }, [selectedStatus, userId])
 
-  const LoadingShows = () => {
-    return (
-      <div className="flex items-center justify-center mx-2">
-        <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
-          <div className="flex">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <div key={index} className="m-2">
-              <ShowTileSkeleton />
-            </div>
-          ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
-    )
-  }
+
 
   function ShowRow() {
     if (displayedShows === undefined) return <LoadingShows />;
@@ -80,7 +68,7 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
   }
 
   function StatusFilters() {
-    if (!allStatuses) return null
+    if (!allStatuses) return <LoadingStatusFilters />
 
     return (
       <div className="space-y-2">
@@ -151,4 +139,6 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
     </div>
   )
 }
+
+
 

@@ -1,6 +1,7 @@
 import { getUser } from "@/app/utils/userService";
 import ProfileBubbleClient from "./ProfileBubbleClient";
-import { getPresignedUserImageURL } from "@/app/profile/UserService";
+import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
+
 
 type ProfileBubbleProps = { userId: string; };
 

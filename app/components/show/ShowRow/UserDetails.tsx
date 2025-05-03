@@ -5,7 +5,7 @@ import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import { Rating } from "@/app/models/rating";
 import Image from "next/image";
-import { getPresignedUserImageURL } from "@/app/profile/UserService";
+import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 export async function UserDetails({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {

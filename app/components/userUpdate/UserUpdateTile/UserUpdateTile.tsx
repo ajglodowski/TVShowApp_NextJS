@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { UserUpdateTileDTO, getUserUpdate } from "../UserUpdateService";
 import UserUpdateTileWithImage from "./UserUpdateTileWithImage";
-
+import { Skeleton } from "@/components/ui/skeleton";
 type UserUpdateTileProps =
     { updateId: number; } | 
     { updateDto: UserUpdateTileDTO; };
@@ -21,3 +21,9 @@ export default async function UserUpdateTile(props: UserUpdateTileProps) {
         </Link>
     );
 };
+
+export async function LoadingUserUpdateTile() {
+    return (
+        <Skeleton className="relative flex-shrink-0 w-48 h-48 overflow-hidden rounded-xl" />
+    )
+}
