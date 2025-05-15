@@ -3,6 +3,9 @@ import { getList, getShowsForList } from "./ListService";
 import { dateToString } from "@/app/utils/timeUtils";
 import ListShowsSection from "./components/ListShowsSection";
 import ProfileBubble from "@/app/components/user/ProfileBubble";
+import { Suspense } from "react";
+import ListLoading from "./loading";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 function ListNotFound() {
   return (
@@ -14,8 +17,8 @@ function ListNotFound() {
   );
 }
 
-
 export default async function ListPage({ params }: { params: Promise<{ listId: string }> }) {
+  
   const listId = (await params).listId;
 
   // User Data

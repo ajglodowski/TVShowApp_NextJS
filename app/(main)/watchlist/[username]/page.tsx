@@ -2,6 +2,9 @@ import ShowSearch from "@/app/components/showSearch/ShowSearch";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { createClient } from "@/app/utils/supabase/server";
 import { getUserByUsername } from "@/app/utils/userService";
+import { Suspense } from "react";
+import LoadingOtherUserWatchlist from "./loading";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 interface PageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -9,6 +12,7 @@ interface PageProps {
 }
 
 export default async function WatchlistPage({ searchParams, params }: PageProps) {
+    
     const awaitedParams = await params;
     const username = awaitedParams.username;
     const awaitedSearchParams = await searchParams;

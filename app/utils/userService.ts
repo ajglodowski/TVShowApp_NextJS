@@ -1,5 +1,5 @@
 import { serverBaseURL } from "@/app/envConfig";
-import { createClient } from "./supabase/server";
+import { createClient, publicClient } from "./supabase/server";
 import { User, UserBasicInfo } from "@/app/models/user";
 import { UserFollowRelationship } from "@/app/models/userFollowRelationship";
 import { ShowTag } from "@/app/models/showTag";
@@ -7,7 +7,7 @@ import { cache } from 'react';
 import { Service } from "../models/service";
 
 export const getUser = cache(async (userId: string): Promise<User | null> => {
-  const supabase = await createClient();
+  const supabase = await publicClient();
   const { data: userData } = await supabase.from("user").select().match({id: userId}).single();
   if (!userData) return null;
   return userData as User;

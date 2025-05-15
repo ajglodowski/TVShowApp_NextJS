@@ -68,19 +68,20 @@ export default async function ShowSearch(props: ShowSearchProps) {
     const nextPageUrl = createPageUrl(currentPage + 1);
 
     return (
-        <div className='w-full overflow-x-hidden'>
-            <ShowSearchHeader 
-                filters={filters}
-                searchResults={searchResults}
-                currentUserFilters={currentUserFilters}
-                watchlistOwnerFilters={watchlistOwnerFilters}
-                pathname={pathname}
-                searchType={searchType}
-                userId={userId}
-                currentUserId={currentUserId}
-            />
-            <div className='w-full overflow-x-hidden'>
-                
+        <div className='w-full flex flex-col h-[calc(100vh)] overflow-hidden'>
+            <div className="flex-shrink-0">
+                <ShowSearchHeader 
+                    filters={filters}
+                    searchResults={searchResults}
+                    currentUserFilters={currentUserFilters}
+                    watchlistOwnerFilters={watchlistOwnerFilters}
+                    pathname={pathname}
+                    searchType={searchType}
+                    userId={userId}
+                    currentUserId={currentUserId}
+                />
+            </div>
+            <div className='w-full flex flex-col flex-grow min-h-0 overflow-hidden'>
                 <Suspense fallback={<ShowSearchShowsLoading />}>
                     <ShowSearchShows 
                         filters={filters}

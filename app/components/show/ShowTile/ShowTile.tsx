@@ -2,6 +2,7 @@ import { Show } from "@/app/models/show";
 import { getShow, getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
 import Link from "next/link";
 import ShowTileContent, { ShowTileBadgeProps } from "./ShowTileContent";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 type ShowTileProps = 
     | { showId: string; badges?: ShowTileBadgeProps[] }

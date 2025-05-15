@@ -18,7 +18,7 @@ export default function CurrentlyAiringLoading() {
           ))}
         </TabsList>
 
-        <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+        <ScrollArea className="w-full whitespace-nowrap rounded-md">
             <div className="flex">
                 {Array.from({ length: 5 }).map((_, index) => (
                     <div key={index} className="m-2">

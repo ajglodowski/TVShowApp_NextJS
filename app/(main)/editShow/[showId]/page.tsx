@@ -1,7 +1,12 @@
 import EditShowPage from "@/app/components/editShow/EditShow";
 import { getPresignedShowImageURL, getShow } from "@/app/(main)/show/[showId]/ShowService";
+import { Suspense } from "react";
+import EditShowLoading from "./loading";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
+
 
 export default async function EditShow({ params }: { params: Promise<{ showId: string }> }) {
+
   const showId = (await params).showId;
   const show = await getShow(showId);
   const presignedShowImageUrl = show?.pictureUrl

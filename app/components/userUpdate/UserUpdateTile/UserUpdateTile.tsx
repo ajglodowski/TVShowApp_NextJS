@@ -2,11 +2,15 @@ import Link from "next/link";
 import { UserUpdateTileDTO, getUserUpdate } from "../UserUpdateService";
 import UserUpdateTileWithImage from "./UserUpdateTileWithImage";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 type UserUpdateTileProps =
     { updateId: number; } | 
     { updateDto: UserUpdateTileDTO; };
 
 export default async function UserUpdateTile(props: UserUpdateTileProps) {
+
+    'use cache'
+    cacheLife('minutes');
 
     let updateData;
     if ('updateDto' in props) updateData = props.updateDto;

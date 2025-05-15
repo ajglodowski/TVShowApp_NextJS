@@ -23,6 +23,7 @@ const config = {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+			theme: '#ED8B28',
   			btn: {
   				background: 'hsl(var(--btn-background))',
   				'background-hover': 'hsl(var(--btn-background-hover))'

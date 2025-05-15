@@ -44,11 +44,12 @@ export type ShowWithAnalytics = Show & {
 }
 
 export const convertRawShowAnalyticsToShowWithAnalytics = (analyticsData: any): ShowWithAnalytics => {
+    
     const result: ShowWithAnalytics = {
         id: analyticsData.show_id,
         name: analyticsData.show_name,
-        created_at: new Date(), // Default value as it's not in the view
-        lastUpdated: new Date(), // Default value as it's not in the view
+        created_at: new Date(8.64e15), // Default value as it's not in the view
+        lastUpdated: new Date(8.64e15), // Default value as it's not in the view
         length: analyticsData.length || null,
         limitedSeries: analyticsData.limitedSeries || false,
         currentlyAiring: analyticsData.currentlyAiring || false,
@@ -73,18 +74,3 @@ export const ShowProperties = 'id, name, created_at, lastUpdated, length, limite
 export const ShowPropertiesWithService = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service (id, name), totalSeasons, airdate, releaseDate, pictureUrl';
 export const ShowAnalyticsProperties = 'show_id, show_name, service_id, service_name, "pictureUrl", running, "limitedSeries", "totalSeasons", "releaseDate", weekly_updates, monthly_updates, yearly_updates, avg_rating_points';
 
-export const NewShow: Show = {
-    id: 0,
-    name: "",
-    created_at: new Date(),
-    lastUpdated: new Date(),
-    length: ShowLength.NONE,
-    limitedSeries: false,
-    currentlyAiring: false,
-    running: false,
-    service: OtherService,
-    totalSeasons: 1,
-    airdate: undefined,
-    releaseDate: undefined,
-    pictureUrl: null
-}

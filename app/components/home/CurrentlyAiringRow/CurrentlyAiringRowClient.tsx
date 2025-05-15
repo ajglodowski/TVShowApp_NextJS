@@ -1,11 +1,8 @@
-"use client"
-import { useEffect, useState } from "react"
 import type { AirDate, CurrentlyAiringDTO } from "@/app/models/airDate"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import ClientShowTile from "../../show/ShowTile/ClientShowTile"
 import { backdropTabs } from "@/app/utils/stylingConstants"
-import { ScrollBar } from "@/components/ui/scroll-area"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import ShowTile from "../../show/ShowTile/ShowTile"
 
 type AirDateInfo = {
   day: AirDate
@@ -14,7 +11,6 @@ type AirDateInfo = {
 
 export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { currentlyAiringShows: CurrentlyAiringDTO[] | null }) {
   const shows = currentlyAiringShows;
-  const [activeDay, setActiveDay] = useState<AirDate | null>(null);
 
   const dayToAirdate = (day: number): AirDate => {
     switch (day) {
@@ -39,10 +35,6 @@ export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { cur
 
   const today = dayToAirdate(new Date().getDay());
   const hasShowsToday = shows?.some((show) => show.airdate === today);
-  useEffect(() => {
-    if (hasShowsToday) setActiveDay(today);
-    else if (shows && shows.length > 0) setActiveDay(shows[0].airdate);
-  }, [hasShowsToday, shows, today]);
 
   const groupedShows = (): AirDateInfo[] => {
     if (shows === null) return []
@@ -64,24 +56,29 @@ export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { cur
     return days.indexOf(a.day) - days.indexOf(b.day)
   })
 
+  let initialDefaultDay: AirDate | undefined = undefined;
+  if (hasShowsToday) {
+    initialDefaultDay = today;
+  } else if (sortedDays.length > 0) {
+    initialDefaultDay = sortedDays[0].day;
+  }
+
   return (
     <div className="w-full">
       <Tabs
-        defaultValue={activeDay || sortedDays[0]?.day}
-        onValueChange={(value) => setActiveDay(value as AirDate)}
+        defaultValue={initialDefaultDay}
         className="w-full"
       >
         <TabsList className={`${backdropTabs} my-2`}>
           {sortedDays.map(({ day }) => (
-            <TabsTrigger key={day} value={day} 
-                className={
-                    activeDay === day
-                        ? "data-[state=active]:bg-white data-[state=active]:text-black hover:bg-gray-200 hover:text-black rounded-lg"
-                        : "text-white hover:bg-white hover:text-black rounded-lg"
-                }>
+            <TabsTrigger 
+                key={day} 
+                value={day} 
+                className="rounded-lg text-white hover:bg-white hover:text-black data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:hover:bg-gray-200"
+            >
                 <div className="flex-wrap">
                     <p className="flex-row"> {day} </p>
-                    { day==today && <p className="flex-row font-bold"> Today </p>}
+                    { day === today && <p className="flex-row font-bold"> Today </p>}
                 </div>
             </TabsTrigger>
           ))}
@@ -89,11 +86,11 @@ export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { cur
 
         {sortedDays.map(({ day, shows }) => (
           <TabsContent key={day} value={day} className="mt-0">
-             <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                 {shows.map((show) => (
                     <div key={show.id} className="m-2">
-                      <ClientShowTile showId={show.id.toString()} />
+                      <ShowTile showId={show.id.toString()} />
                     </div>
                   ))}
                 </div>

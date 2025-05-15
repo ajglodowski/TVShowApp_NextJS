@@ -4,17 +4,29 @@ import { backdropBackground } from "@/app/utils/stylingConstants";
 import Image from "next/image";
 import Link from "next/link";
 import ProfileBubble from "@/app/components/user/ProfileBubble";
+import ShowsListTileSkeleton from "./ShowListTileSkeleton";
+import { Suspense } from "react";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 export default async function ShowsListTile({listId}: {listId: number}) {
 
-    const listData = await getListData(listId);
+    return (
+        <Suspense fallback={<ShowsListTileSkeleton listId={listId}/>}>
+            <ShowListTileContent listId={listId} />
+        </Suspense>
+    );
+
+}
+
+async function ShowListTileContent({listId}: {listId: number}) {
+
+  'use cache'
+  cacheLife('minutes');
+
+  const listData = await getListData(listId);
     const listEntries = await getListEntries(listId, 5);
     if (!listData || !listEntries) {
-        return (
-            <div>
-                Error Loading list
-            </div>
-        );
+        return <ShowsListTileSkeleton listId={listId}/>
     };
 
     const imageUrlPromises = listEntries.map(async (entry) => {

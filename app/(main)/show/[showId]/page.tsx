@@ -17,6 +17,8 @@ import { SimilarShowsSection } from './components/SimilarShowsSection';
 import StatusStatsSection from './components/StatusStatsSection';
 import { LoadingUserUpdatesSection, UserUpdatesSection } from './components/UserUpdatesSection';
 import { LoadingYourInfoSection, YourInfoSection } from './components/YourInfoSection/YourInfoSection';
+import LoadingShowPage from './loading';
+import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 
 function ShowNotFound() {
   return (
@@ -28,8 +30,8 @@ function ShowNotFound() {
   );
 }
 
-
 export default async function ShowPage({ params }: { params: Promise<{ showId: string }> }) {
+  
   const showId = (await params).showId;
 
   // User Data

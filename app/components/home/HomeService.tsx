@@ -1,5 +1,5 @@
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
-import { Status } from "@/app/models/status";
+import { Status, WatchlistStatusId } from "@/app/models/status";
 import { createClient, publicClient } from "@/app/utils/supabase/server";
 import { ComingSoonDTO } from "./ComingSoonRow";
 import { UserUpdateTileDTO } from "../userUpdate/UserUpdateService";
@@ -11,8 +11,8 @@ import { cacheLife } from "next/dist/server/use-cache/cache-life";
 export async function getWatchList({userId}: {userId: string}): Promise<Show[] | null> {
     if (!userId) return null;
     
-    const supabase = await createClient();
-    const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: 3}).limit(10);
+    const supabase = await publicClient();
+    const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: WatchlistStatusId}).limit(10);
     if (!showData) return null;   
     const output = showData.map((obj) => obj.show) as unknown as Show[];
     return output;
@@ -45,7 +45,7 @@ export async function getComingSoon({userId}: {userId: string}): Promise<ComingS
     if (!userId) return null;
     
     
-    const supabase = await createClient();
+    const supabase = await publicClient();
     const { data: showData } = await supabase.from("UserShowDetails").select('show: showId (name, releaseDate, id)').match({userId: userId, status: 9});
     if (!showData) return null;
     let output = [];
@@ -87,7 +87,7 @@ function formatUpdate(updateData: UserUpdateDTO): UserUpdateTileDTO {
 
 export async function getUserUpdates({userId, updateLimit, fetchHidden}: {userId: string, updateLimit: number, fetchHidden?: boolean}): Promise<UserUpdateTileDTO[]|null> {
     
-    const supabase = await createClient();
+    const supabase = await publicClient();
     let { data: updateData } = fetchHidden
         ? await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId}).order('updateDate', {ascending: false}).limit(updateLimit)
         : await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId, hidden: fetchHidden}).order('updateDate', {ascending: false}).limit(updateLimit);

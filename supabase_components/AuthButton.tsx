@@ -1,16 +1,28 @@
-import { createClient } from '@/app/utils/supabase/server'
-import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { getUser, getUserImageURL } from '@/app/utils/userService'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import Image from "next/image";
 import { getPresignedUserImageURL } from '@/app/(main)/profile/UserService'
 import { backdropBackground } from '@/app/utils/stylingConstants'
+import { createClient, publicClient } from '@/app/utils/supabase/server'
+import { getUser } from '@/app/utils/userService'
+import { Avatar } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { revalidateTag } from 'next/cache'
+import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
+import Image from "next/image"
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default async function AuthButton() {
+export default function AuthButton() {
+  return (
+    <Suspense fallback={<Avatar className='w-10 h-10' />}>
+      <AuthButtonContent />
+    </Suspense>
+  )
+}
+
+async function AuthButtonContent() {
+
   const supabase = await createClient();
-  
   const { data: { user }, } = await supabase.auth.getUser();
 
   const userInfo = user ? await getUser(user.id) : null 
@@ -20,6 +32,7 @@ export default async function AuthButton() {
 
     const supabase = await createClient();
     await supabase.auth.signOut()
+    revalidateTag('currentUser');
     return redirect('/login')
   }
 

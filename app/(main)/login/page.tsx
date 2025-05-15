@@ -4,6 +4,7 @@ import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { backdropBackground } from '@/app/utils/stylingConstants'
+import { revalidateTag } from 'next/cache'
 
 export default async function Login({
   searchParams,
@@ -23,6 +24,7 @@ export default async function Login({
     if (error) {
       return redirect('/login?message=Could not authenticate user')
     }
+    revalidateTag('currentUser');
     return redirect('/')
   }
 

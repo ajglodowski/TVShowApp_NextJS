@@ -5,13 +5,16 @@ import { Calendar, Clock } from "lucide-react";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
 import { releaseDateToString } from "@/app/utils/timeUtils";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
-
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 export type ComingSoonDTO = {
     showId: string
     releaseDate: Date
 }
 
 export default async function ComingSoonRow ({userId}: {userId: string}) {
+
+    'use cache'
+    cacheTag('currentUserShowData');
 
     const shows = await getComingSoon({userId: userId});
 
@@ -44,7 +47,7 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
 
     return (
         <div className="flex items-center justify-center mx-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {shows.map((show) => (
                         <div key={show.showId} className="m-2">
@@ -63,8 +66,8 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
 
 export async function LoadingComingSoonRow() {
     return (
-        <div className="flex items-center justify-center mx-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+        <div className="w-full">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {Array.from({ length: 10 }).map((_, index) => (
                         <div key={index} className="m-2">

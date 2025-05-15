@@ -1,5 +1,8 @@
-
+import { ComingSoonStatusId, CurrentlyAiringStatusId, WatchlistStatusId } from '@/app/models/status';
 import { createClient } from '@/app/utils/supabase/server';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import { ClientSearch } from '../search/ClientSearch';
 import ComingSoonRow, { LoadingComingSoonRow } from './ComingSoonRow';
 import CurrentlyAiringLoading from './CurrentlyAiringRow/CurrentlyAiringLoading';
@@ -22,24 +25,46 @@ export default async function Home () {
         )
     }
 
-    const rows = [
+    type HomeRow = {
+        header: string;
+        component: React.ReactNode;
+        link?: string;
+    }
+
+    
+    const rows: HomeRow[] = [
         {header: "Search", component: <ClientSearch/>}, 
         {header: "Your Recent Updates", component: <YourUpdatesRow userId={currentUserId}/>},
-        {header: "Your shows", component: <YourShowsRow userId={currentUserId}/>}, 
-        {header: "Currently Airing", component: <CurrentlyAiringRow userId={currentUserId}/>}, 
+        {header: "Your shows", component: <YourShowsRow userId={currentUserId}/>, link: "/watchlist"}, 
+        {header: "Currently Airing", component: <CurrentlyAiringRow userId={currentUserId}/>, link: "/watchlist?statuses=" + CurrentlyAiringStatusId}, 
         {header: "Top 10 this week", component: <Top10Row/>},
-        {header: "Coming Soon", component: <ComingSoonRow userId={currentUserId}/>}, 
-        {header: "Shows for you to start", component: <WatchListRow userId={currentUserId}/>}, 
+        {header: "Coming Soon", component: <ComingSoonRow userId={currentUserId}/>, link: "/watchlist?statuses=" + ComingSoonStatusId}, 
+        {header: "Shows for you to start", component: <WatchListRow userId={currentUserId}/>, link: "/watchlist?statuses=" + WatchlistStatusId}, 
     ]
 
     return (
-        <div className="px-2">
+        <div className="px-2 space-y-2">
             <WelcomeBanner />
             {rows.map((row) => (
-                <div key={row.header} className="w-full overflow-x-auto">
-                    <h3 className='text-xl font-bold mt-1'>{row.header}</h3>
-                    {row.component}
-                </div>
+                <Card key={row.header} className={` bg-black bg-opacity-50 rounded-md text-white border-none`}>
+                    <CardHeader className="px-2 mx-2 py-0 pt-4">
+                            { row.link && 
+                                <Link href={row.link} className="flex-row justify-between hover:underline">
+                                    <span className='flex justify-between'>
+                                        <CardTitle>{row.header}</CardTitle>
+                                        <ChevronRight className="w-6 h-6" />
+                                    </span>
+                                </Link> 
+                            }
+                            {
+                                !row.link &&
+                                <CardTitle>{row.header}</CardTitle>
+                            }
+                    </CardHeader>
+                    <CardContent className="m-0 p-0">
+                        {row.component}
+                    </CardContent>
+                </Card>
             ))}
         </div>
     )

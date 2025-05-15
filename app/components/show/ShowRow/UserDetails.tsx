@@ -8,8 +8,12 @@ import Image from "next/image";
 import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 export async function UserDetails({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
     
+    'use cache'
+    cacheLife('minutes');
+
     let profilePicUrl: string | null = null
     if (userInfo.user.profilePhotoURL) {
         profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);

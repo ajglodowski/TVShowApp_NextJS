@@ -2,8 +2,12 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowTile from "../show/ShowTile/ShowTile";
 import { getWatchList } from "./HomeService";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
-
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 export default async function WatchListRow ({userId}: {userId: string}) {
+
+    'use cache'
+    cacheTag('currentUserShowData');
 
     const shows = await getWatchList({userId: userId});
 
@@ -11,8 +15,8 @@ export default async function WatchListRow ({userId}: {userId: string}) {
     if (shows.length === 0) return (<div>No Shows in Watchlist. Add some shows to watch</div>);
 
     return (
-        <div className="flex items-center justify-center mx-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+        <div className="w-full">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {shows.map((show) => (
                         <div key={show.id} className="m-2">
@@ -28,8 +32,8 @@ export default async function WatchListRow ({userId}: {userId: string}) {
 
 export async function LoadingWatchlistRow() {
     return (
-        <div className="flex items-center justify-center mx-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+        <div className="w-full">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {Array.from({ length: 10 }).map((_, index) => (
                         <div key={index} className="m-2">

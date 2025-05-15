@@ -10,7 +10,7 @@ import { backdropTabs } from "@/app/utils/stylingConstants"
 
 export const LoadingShows = () => {
     return (
-      <div className="flex items-center justify-center mx-2">
+      <div className="w-full">
         <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
           <div className="flex">
           {Array.from({ length: 10 }).map((_, index) => (

@@ -1,6 +1,6 @@
 import { convertRawShowAnalyticsToShowWithAnalytics } from "@/app/models/show";
 import { ShowList, ShowListEntry, ShowListEntryParams, ShowListParams } from "@/app/models/showList";
-import { createClient } from "@/app/utils/supabase/server";
+import { createClient, publicClient } from "@/app/utils/supabase/server";
 
 export async function getList( listId: string ): Promise<ShowList | null> {
     
@@ -30,7 +30,7 @@ export async function getShowsForList( listId: string ): Promise<ShowListEntry[]
 }
 
 export async function getListData(listId: number): Promise<ShowList | null> {
-    const supabase = await createClient();
+    const supabase = await publicClient();
     const { data: listData } = await supabase.from("showList").select().match({id: listId}).single();
     if (!listData) return null;
     const showList = listData as unknown as ShowList;
@@ -38,7 +38,7 @@ export async function getListData(listId: number): Promise<ShowList | null> {
 }
 
 export async function getListEntries(listId: number, limit: number| null): Promise<ShowListEntry[] | null> {
-    const supabase = await createClient();
+    const supabase = await publicClient();
     let baseQuery = supabase.from("ShowListRelationship").select('id, show: showId (name, releaseDate, id, pictureUrl), created_at, listId, position').match({listId: listId});
     if (limit) baseQuery = baseQuery.limit(limit);
     baseQuery = baseQuery.order('position', {ascending: true});

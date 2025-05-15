@@ -314,14 +314,14 @@ export default async function ShowSearchShows({
     }
 
     return (
-        <div className='px-2'>
-            <div>
+        <div className='px-2 flex flex-col h-full'>
+            <div className="flex-shrink-0">
                 <span className='flex my-auto space-x-2'>
                     <h3 className='text-2xl font-bold'>Results:</h3>
                     <h5 className='my-auto'>{totalShowsCount} shows</h5>
                 </span>
             </div>
-            <ScrollArea className='rounded-md border-2 h-96 overflow-auto'>
+            <ScrollArea className='flex-grow min-h-0 rounded-md bg-white/20 overflow-y-auto'>
                 <div className='py-2'>
                     {paginatedData.map((show: ShowWithAnalytics) => (
                         <div className='px-4' key={show.id}>
@@ -339,12 +339,14 @@ export default async function ShowSearchShows({
                     ))}
                 </div>
             </ScrollArea>
-            <PaginationControls 
-                currentPage={currentPage} 
-                previousPageUrl={previousPageUrl}
-                nextPageUrl={nextPageUrl}
-                totalPages={totalPages}
-            />
+            <div className="flex-shrink-0">
+                <PaginationControls 
+                    currentPage={currentPage} 
+                    previousPageUrl={previousPageUrl}
+                    nextPageUrl={nextPageUrl}
+                    totalPages={totalPages}
+                />
+            </div>
         </div>
     );
 }

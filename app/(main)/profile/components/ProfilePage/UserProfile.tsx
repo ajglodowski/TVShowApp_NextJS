@@ -36,7 +36,7 @@ export default async function UserProfile({username}: {username: string}) {
    
   return (
     <div className="container mx-auto py-6 px-4 md:px-6">
-      <div className="grid gap-6 lg:grid-cols-[1fr_300px] bg-black">
+      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
         <div className="space-y-6">
             <Card className={`${backdropBackground} text-white border-2 border-white/10 shadow-lg rounded-lg`}>
                 <CardContent className="p-4">
@@ -60,9 +60,7 @@ export default async function UserProfile({username}: {username: string}) {
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {showLists && showLists.map((listId) => (
-                  <Suspense key={listId} fallback={<ShowListTileSkeleton listId={listId} />}>
-                    <ShowsListTile key={listId} listId={listId}/>
-                  </Suspense>
+                  <ShowsListTile key={listId} listId={listId}/>
                 ))}
               </div>
             </TabsContent>
@@ -93,7 +91,7 @@ export default async function UserProfile({username}: {username: string}) {
 export async function LoadingUserProfile() {
   return (
     <div className="container mx-auto py-6 px-4 md:px-6">
-      <div className="grid gap-6 lg:grid-cols-[1fr_300px] bg-black">
+      <div className="grid gap-6 lg:grid-cols-[1fr_300px]">
 
       <div className="space-y-6">
             <Card className={`${backdropBackground} text-white border-2 border-white/10 shadow-lg rounded-lg`}>

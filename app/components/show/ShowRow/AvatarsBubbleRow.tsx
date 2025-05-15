@@ -1,5 +1,6 @@
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import AvatarBubble from "./AvatarBubble";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 export const AvatarsBubbleRow = ({ currentUserInfo, otherUsersInfo }: { currentUserInfo: UserShowDataWithUserInfo, otherUsersInfo: UserShowDataWithUserInfo[] }) => {
     

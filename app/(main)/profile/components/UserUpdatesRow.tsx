@@ -1,8 +1,17 @@
 import { getUserUpdates } from "@/app/components/home/HomeService";
 import UserUpdateTile from "@/app/components/userUpdate/UserUpdateTile/UserUpdateTile";
+import { Suspense } from "react";
 
 export default async function UserUpdatesRow ({userId}: {userId: string}) {
 
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <UserUpdatesRowContent userId={userId} />
+        </Suspense>
+    );
+};
+
+async function UserUpdatesRowContent({userId}: {userId: string}) {
     const updates = await getUserUpdates({userId: userId, updateLimit: 10, fetchHidden: false});
 
     if (updates === null) return (<div>Error loading updates</div>);
@@ -17,4 +26,5 @@ export default async function UserUpdatesRow ({userId}: {userId: string}) {
             ))}
         </div>
     )
-};
+    
+}

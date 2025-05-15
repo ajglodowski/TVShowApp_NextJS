@@ -5,8 +5,10 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 export default async function EditActorShowsPage({ params }: { params: Promise<{ actorId: string }> }) {
+    
     const actorId = (await params).actorId;
     let [fetchedActor, fetchedShows] = await Promise.all([getActor(actorId), getShowsForActor(actorId)]);
     const actor = fetchedActor || null;
@@ -50,4 +52,4 @@ export default async function EditActorShowsPage({ params }: { params: Promise<{
             </Card>
         </div>
     );
-} 
+}

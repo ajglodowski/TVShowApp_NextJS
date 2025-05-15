@@ -8,7 +8,11 @@ import Image from "next/image";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
+
+    'use cache'
+    cacheLife('hours');
 
     let profilePicUrl: string | null = null;
     if (userInfo.user.profilePhotoURL) {

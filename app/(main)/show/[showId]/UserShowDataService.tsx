@@ -6,6 +6,7 @@ import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
 import { Rating } from "@/app/models/rating";
 import { UserUpdate } from "@/app/models/userUpdate";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
+import { revalidateTag } from 'next/cache';
 
 export async function getUserShowData({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserShowData | null> {
 
@@ -45,6 +46,7 @@ export async function updateStatus({userId, showId, newStatus}: {showId: string,
         console.error(error);
         return false;
     }
+    revalidateTag('currentUserShowData');
     return true;
 }
 

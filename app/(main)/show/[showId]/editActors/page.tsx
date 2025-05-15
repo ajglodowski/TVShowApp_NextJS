@@ -5,8 +5,17 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { backdropBackground } from "@/app/utils/stylingConstants";
-
+import { Suspense } from "react";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 export default async function EditActorsPage({ params }: { params: Promise<{ showId: string }> }) {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditActorsPageContent params={params} />
+        </Suspense>
+    );
+}
+
+async function EditActorsPageContent({ params }: { params: Promise<{ showId: string }> }) {
     const showId = parseInt((await params).showId);
     const actors = await getActorsForShow(showId) || [];
     

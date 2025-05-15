@@ -52,8 +52,8 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
     if (displayedShows === null) return <div>Error Loading your shows</div>;
     if (displayedShows.length === 0) return <div>No Shows match this criteria</div>;
     return (
-      <div className="flex items-center justify-center mx-2">
-        <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
+      <div className="w-full">
+        <ScrollArea className="w-full whitespace-nowrap rounded-md">
           <div className="flex">
             {displayedShows.map((showData) => (
               <div key={showData.id} className="m-2">
@@ -131,8 +131,8 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
   }
 
   return (
-    <div className="w-full">
-      <div className="mb-2">
+    <div className="">
+      <div className="mx-2 mb-2">
         <StatusFilters />
       </div>
       <ShowRow />

@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={GeistSans.className} style={{ scrollPaddingTop: "56px" }}>
       <head></head>
-      <body className="bg-background text-foreground overflow-x-hidden">
+      <body className="bg-[radial-gradient(circle_at_0%_0%,rgb(120,60,20)_0%,rgb(60,25,5)_50%,rgb(5,5,5)_100%)] text-foreground overflow-x-hidden">
         <Navbar />
         <ScrollToTop />
         <main className="flex flex-col items-center">

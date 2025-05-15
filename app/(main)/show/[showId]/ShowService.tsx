@@ -67,16 +67,11 @@ export const getShowImageURL = cache((showName: string, tile: boolean): string =
 });
 
 export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
-  // Construct the image name and path WITHOUT encoding the showName here
   const dimensions = tile ? "200x200" : "640x640";
-  // Use the raw showName to construct the imageName
   const imageName = `${showName}_${dimensions}.jpeg`; 
   const path = 'showImages/resizedImages';
 
-  // Call the server action directly with the raw imageName
   const presignedUrl = await generatePresignedUrlAction(path, imageName);
-  
-  // Return the result from the action
   return presignedUrl;
 });
 
