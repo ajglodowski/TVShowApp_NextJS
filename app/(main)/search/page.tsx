@@ -14,12 +14,12 @@ export default async function SearchPage({
 
     return (
         <div className="w-full">
-            <h1 className="text-5xl font-bold">Search</h1>
             <ShowSearch 
                 searchType={ShowSearchType.UNRESTRICTED} 
                 searchParams={await searchParams}
                 currentUserId={user?.id}
                 pathname="/search"
+                pageTitle="Search"
             />
         </div>
     );

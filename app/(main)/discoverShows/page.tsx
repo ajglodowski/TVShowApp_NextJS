@@ -14,12 +14,12 @@ export default async function DiscoverNewShows({
 
     return (
         <div className="w-full">
-            <h1 className="text-5xl font-bold">Discover New Shows</h1>
             <ShowSearch 
                 searchType={ShowSearchType.DISCOVER_NEW} 
                 searchParams={await searchParams}
                 currentUserId={user?.id}
                 pathname="/discoverShows"
+                pageTitle="Discover New Shows"
             />
         </div>
     );

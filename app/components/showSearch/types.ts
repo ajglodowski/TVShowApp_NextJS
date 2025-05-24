@@ -14,6 +14,7 @@ export type ShowSearchProps = {
     searchType: ShowSearchType;
     userId?: string;
     currentUserId?: string;
+    pageTitle?: string;
     searchParams?: {
         page?: string;
         search?: string;
@@ -44,7 +45,6 @@ export type ShowSearchShowsProps = {
     currentUserFilters: CurrentUserFilters;
     watchlistOwnerFilters?: CurrentUserFilters;
     currentPage: number;
-    setTotalPages?: (totalPages: number) => void;
     previousPageUrl?: string;
     nextPageUrl?: string;
 };

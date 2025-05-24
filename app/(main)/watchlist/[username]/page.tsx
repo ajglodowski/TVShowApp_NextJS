@@ -34,13 +34,13 @@ export default async function WatchlistPage({ searchParams, params }: PageProps)
 
     return (
         <div className="w-full">
-            <h1 className="text-2xl font-bold mx-4 mt-2">{username}'s Watchlist</h1>
             <ShowSearch 
                 searchType={ShowSearchType.OTHER_USER_WATCHLIST} 
                 userId={userId}
                 currentUserId={currentUser?.id}
                 searchParams={awaitedSearchParams}
                 pathname={`/watchlist/${username}`}
+                pageTitle={`${username}'s Watchlist`}
             />
         </div>
     );

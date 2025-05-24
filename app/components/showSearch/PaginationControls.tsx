@@ -25,17 +25,18 @@ export default function PaginationControls({ currentPage, previousPageUrl, nextP
     }
 
     return (
-        <div className="flex justify-center items-center mt-6 mb-8">
+        <div className="flex justify-center items-center py-4 px-4">
             <Button 
                 variant="outline"
                 onClick={() => handlePreviousPage()}
                 className={`px-4 py-2 mr-2 rounded-md ${backdropBackground} ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`}
                 disabled={currentPage === 1 || !previousPageUrl}
+                size="sm"
             >
                 Previous
             </Button>
             
-            <div className="mx-4">
+            <div className="mx-4 text-sm text-muted-foreground">
                 Page {currentPage} of {totalPages}
             </div>
             
@@ -44,6 +45,7 @@ export default function PaginationControls({ currentPage, previousPageUrl, nextP
                 onClick={() => handleNextPage()}
                 className={`px-4 py-2 ml-2 rounded-md ${backdropBackground} ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`}
                 disabled={currentPage === totalPages || !nextPageUrl}
+                size="sm"
             >
                 Next
             </Button>

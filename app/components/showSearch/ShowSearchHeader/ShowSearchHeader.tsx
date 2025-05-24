@@ -51,6 +51,8 @@ export type ShowSearchHeaderProps = {
     searchType?: ShowSearchType;
     userId?: string;
     currentUserId?: string;
+    pageTitle?: string;
+    resultsCount?: number;
 }
 
 export default async function ShowSearchHeader({ 
@@ -61,7 +63,9 @@ export default async function ShowSearchHeader({
     pathname,
     searchType = ShowSearchType.UNRESTRICTED,
     userId,
-    currentUserId
+    currentUserId,
+    pageTitle,
+    resultsCount
 }: ShowSearchHeaderProps) {
     // Determine if viewing other user's watchlist where current user != watchlist owner
     const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
@@ -74,11 +78,18 @@ export default async function ShowSearchHeader({
     
     return (
         <div className="">
-            <div className="">
+            {/* Page Title Section */}
+            {pageTitle && (
+                <div className="px-4 py-4 border-b border-border/20">
+                    <h1 className="text-3xl font-bold">{pageTitle}</h1>
+                </div>
+            )}
+
+            <div className="px-4 py-4">
                 {/* Main Header Section */}
                 <div className="space-y-4">
                     {/* Top Row: Search and Primary Actions */}
-                    <div className="flex flex-col lg:flex-row lg:items-center gap-4 md:px-4">
+                    <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                         {/* Search Input - Takes priority on mobile */}
                         <div className="flex-1 max-w-lg">
                             <ShowSearchInput 
@@ -145,7 +156,7 @@ export default async function ShowSearchHeader({
                 </div>
 
                 {/* Active Filters Display Section */}
-                <div className="mt-6 space-y-3">
+                <div className="space-y-1">
                     {/* Main Show Filters */}
                     <ShowSearchFiltersRow 
                         filters={filters} 
@@ -180,6 +191,16 @@ export default async function ShowSearchHeader({
                         />
                     )}
                 </div>
+
+                {/* Results Count Section */}
+                {resultsCount !== undefined && (
+                    <div className="mt-4 pt-3 border-t border-border/20">
+                        <span className='flex items-center space-x-2 text-lg'>
+                            <span className='font-semibold'>Results:</span>
+                            <span className='text-muted-foreground'>{resultsCount} shows</span>
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );

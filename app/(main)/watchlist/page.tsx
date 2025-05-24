@@ -21,12 +21,12 @@ export default async function CurrentUserWatchlist({
 
     return (
         <div className="w-full h-full">
-            <h1 className="text-2xl font-bold mx-4 mt-2">Your Watchlist</h1>
             <ShowSearch 
                 searchType={ShowSearchType.WATCHLIST} 
                 currentUserId={user.id}
                 searchParams={await searchParams}
                 pathname="/watchlist"
+                pageTitle="Your Watchlist"
             />
         </div>
     );

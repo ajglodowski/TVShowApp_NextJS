@@ -20,7 +20,9 @@ export default function ShowSearchHeaderLoading({
     pathname,
     searchType = ShowSearchType.UNRESTRICTED,
     userId,
-    currentUserId
+    currentUserId,
+    pageTitle,
+    resultsCount
 }: ShowSearchHeaderProps) {
 
     const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
@@ -28,8 +30,15 @@ export default function ShowSearchHeaderLoading({
 
     return (
         <div className="">
-            <div className="text-white px-4 py-1 flex-wrap justify-between">
-                <div className="flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 items-center mt-4">
+            {/* Page Title Section */}
+            {pageTitle && (
+                <div className="px-4 py-4 border-b border-border/20">
+                    <h1 className="text-3xl font-bold">{pageTitle}</h1>
+                </div>
+            )}
+
+            <div className="px-4 py-4">
+                <div className="flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 items-center">
                     <ShowSearchInput 
                         searchResults={searchResults}
                         pathname={pathname} 
@@ -75,37 +84,47 @@ export default function ShowSearchHeaderLoading({
                     </div>
                 </div>
 
-                <ShowSearchFiltersRow 
-                    filters={filters} 
-                    pathname={pathname}
-                />
-                
-                {/* Show Tags Row (will only display if there are selected tags) */}
-                <ShowSearchTagsRow 
-                    filters={filters} 
-                    pathname={pathname}
-                />
-                
-                <ShowSearchCurrentUserFiltersRow 
-                    filters={currentUserFilters} 
-                    pathname={pathname}
-                    currentFilters={filters}
-                    searchType={searchType}
-                    userId={userId}
-                    currentUserId={currentUserId}
-                    statuses={[]}
-                />
-                
-                {/* Show Watchlist Owner Filters Row when viewing other user's watchlist */}
-                {isViewingOtherUserWatchlist && (
-                    <ShowSearchWatchlistOwnerFiltersRow 
-                        filters={watchlistOwnerFilters}
+                <div className="space-y-1">
+                    <ShowSearchFiltersRow 
+                        filters={filters} 
+                        pathname={pathname}
+                    />
+                    
+                    {/* Show Tags Row (will only display if there are selected tags) */}
+                    <ShowSearchTagsRow 
+                        filters={filters} 
+                        pathname={pathname}
+                    />
+                    
+                    <ShowSearchCurrentUserFiltersRow 
+                        filters={currentUserFilters} 
                         pathname={pathname}
                         currentFilters={filters}
+                        searchType={searchType}
                         userId={userId}
+                        currentUserId={currentUserId}
                         statuses={[]}
                     />
-                )}
+                    
+                    {/* Show Watchlist Owner Filters Row when viewing other user's watchlist */}
+                    {isViewingOtherUserWatchlist && (
+                        <ShowSearchWatchlistOwnerFiltersRow 
+                            filters={watchlistOwnerFilters}
+                            pathname={pathname}
+                            currentFilters={filters}
+                            userId={userId}
+                            statuses={[]}
+                        />
+                    )}
+                </div>
+
+                {/* Results Count Section */}
+                <div className="mt-4 pt-3 border-t border-border/20">
+                    <span className='flex items-center space-x-2 text-lg'>
+                        <span className='font-semibold'>Results:</span>
+                        <Skeleton className='w-20 h-6' />
+                    </span>
+                </div>
             </div>
         </div>
     );
