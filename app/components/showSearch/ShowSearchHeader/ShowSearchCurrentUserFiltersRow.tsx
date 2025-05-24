@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 import { Button } from "@/components/ui/button";
 import { useOptimistic, useTransition } from "react";
+import { StatusIcon } from "@/app/utils/StatusIcon";
 
 type ShowSearchCurrentUserFiltersProps = {
     filters: CurrentUserFilters;
@@ -50,6 +51,15 @@ export default function ShowSearchCurrentUserFiltersRow({
         const status = statuses.find(s => s.id === statusId);
         return status?.name || `Status ${statusId}`;
     };
+
+    const mockStatus = (name: string): Status => {
+        return {
+            id: 0,
+            name: name,
+            created_at: new Date(),
+            update_at: new Date()
+        }
+    }   
 
     const createRemoveFilterURL = (key: keyof CurrentUserFilters, value: Rating | Status | boolean | undefined) => {
         const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
@@ -129,8 +139,11 @@ export default function ShowSearchCurrentUserFiltersRow({
                             });
                         }}
                     >
-                        <Button variant="outline" className={bubbleStyle}>  
-                            Status: {getStatusName(status.id)}
+                        <Button variant="outline" className={bubbleStyle}>
+                            <div className="flex items-center gap-1">
+                                <StatusIcon {...mockStatus(getStatusName(status.id))} />
+                                {getStatusName(status.id)}
+                            </div>
                             <X className="ml-1 h-4 w-4" />
                         </Button>
                     </div>

@@ -13,6 +13,7 @@ import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cache } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
 import { ShowTag } from "@/app/models/showTag";
+import { UserWatchListData } from './types';
 
 export const getServices = cache(async (): Promise<Service[] | null> => {
     'use cache'
@@ -209,11 +210,6 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
     });
     
     return shows;
-}
-
-export type UserWatchListData = {
-    show: ShowWithAnalytics;
-    userShowData: UserShowDataWithUserInfo;
 }
 
 export async function fetchUsersWatchlist(userId: string): Promise<UserWatchListData[] | null> {

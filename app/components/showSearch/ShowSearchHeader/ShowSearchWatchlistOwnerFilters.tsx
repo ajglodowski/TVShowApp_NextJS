@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
 import { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
+import { StatusIcon } from "@/app/utils/StatusIcon";
 
 type ShowSearchWatchlistOwnerFiltersProps = {
     filters: CurrentUserFilters;
@@ -161,7 +162,10 @@ export default function ShowSearchWatchlistOwnerFilters({
                             className={selectedBubbleStyle}
                             style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                         >
-                            {matchingStatus?.name || `Status ${selectedStatus.id}`}
+                            <div className="flex items-center gap-1">
+                                <StatusIcon {...selectedStatus} />
+                                {matchingStatus?.name || `Status ${selectedStatus.id}`}
+                            </div>
                         </div>
                     );
                 })}
@@ -173,7 +177,10 @@ export default function ShowSearchWatchlistOwnerFilters({
                         className={unselectedBubbleStyle}
                         style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >   
-                        {status.name || `Status ${status.id}`}
+                        <div className="flex items-center gap-1">
+                            <StatusIcon {...status} />
+                            {status.name || `Status ${status.id}`}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -243,7 +250,7 @@ export default function ShowSearchWatchlistOwnerFilters({
                     )}
                 </Button>
             </SheetTrigger>
-            <SheetContent className={`overflow-y-auto bg-black border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
+            <SheetContent className={`p-0 overflow-y-auto bg-black/80 border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
                 <SheetHeader>
                     <SheetTitle className="text-white">Owner Filters</SheetTitle>
                     <SheetDescription>

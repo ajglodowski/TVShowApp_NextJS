@@ -12,23 +12,10 @@ import PaginationControls from './PaginationControls';
 import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
 import { ShowSearchFiltersType } from './ShowSearchHeader/ShowSearchHeader';
 import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } from './ShowSearchService';
+import { ShowSearchShowsProps } from './types';
 
 // Number of items per page
 const ITEMS_PER_PAGE = 20;
-
-type ShowSearchShowsProps = {
-    filters: ShowSearchFiltersType;
-    searchType: ShowSearchType;
-    userId?: string;
-    currentUserId?: string;
-    searchResults: string;
-    currentUserFilters: CurrentUserFilters;
-    watchlistOwnerFilters?: CurrentUserFilters;
-    currentPage: number;
-    setTotalPages?: (totalPages: number) => void;
-    previousPageUrl?: string;
-    nextPageUrl?: string;
-};
 
 export default async function ShowSearchShows({ 
     filters, 

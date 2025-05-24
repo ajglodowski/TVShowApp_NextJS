@@ -1,43 +1,14 @@
 'use server';
-import { Show } from '@/app/models/show';
-import { ShowSearchType } from '@/app/models/showSearchType';
 import { Suspense } from 'react';
 import { parseCurrentUserFilters, parseFiltersFromSearchParams, parseWatchlistOwnerFilters } from './ShowSearchFilterParsing';
-import ShowSearchHeader, { ShowSearchFiltersType } from './ShowSearchHeader/ShowSearchHeader';
+import { defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
+import ShowSearchHeader from './ShowSearchHeader/ShowSearchHeader';
+import ShowSearchHeaderLoading from './ShowSearchHeader/ShowSearchHeaderLoading';
 import ShowSearchShows from './ShowSearchShows';
 import ShowSearchShowsLoading from './ShowSearchShowsLoading';
-import ShowSearchHeaderLoading from './ShowSearchHeader/ShowSearchHeaderLoading';
-import { defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
+import { ShowSearchProps } from './types';
 
-export type ShowSearchData = {
-    shows: Show[]| undefined | null;
-    filters: ShowSearchFiltersType;
-    showCurrentUserInfo: boolean;
-}
 
-export type ShowSearchProps = {
-    searchType: ShowSearchType;
-    userId?: string;
-    currentUserId?: string;
-    searchParams?: {
-        page?: string;
-        search?: string;
-        service?: string;
-        length?: string;
-        airDate?: string;
-        limitedSeries?: string;
-        running?: string;
-        currentlyAiring?: string;
-        addedToWatchlist?: string;
-        ratings?: string;
-        ownerWatchlist?: string;
-        ownerRatings?: string;
-        ownerStatuses?: string;
-        sortBy?: string;
-        tags?: string;
-    };
-    pathname?: string;
-}
 
 export default async function ShowSearch(props: ShowSearchProps) {
 
@@ -50,7 +21,7 @@ export default async function ShowSearch(props: ShowSearchProps) {
     const currentUserFilters = parseCurrentUserFilters(searchParams);
     const watchlistOwnerFilters = parseWatchlistOwnerFilters(searchParams);
     const searchResults = searchParams.search || '';
-    
+
     const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
     const createPageUrl = (pageNum: number) => {
         const params = new URLSearchParams();

@@ -2,6 +2,7 @@
 
 import { addShowTag, removeShowTag } from "@/app/components/show/ClientShowService";
 import { ShowTag } from "@/app/models/showTag";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function ShowTagsSectionContent({showId, currentTags, allTags}: {showId: string, currentTags: ShowTag[] | null, allTags: ShowTag[] | null} ) {
@@ -53,7 +54,9 @@ export default function ShowTagsSectionContent({showId, currentTags, allTags}: {
                                 </button>
                             }
                             {!editingTags &&
-                                <h2 className='p-1 px-2 mx-2 rounded-full outline outline-white'>{tag.name}</h2>
+                                <Link href={`/search?tags=${tag.id}`}>
+                                    <h2 className='p-1 px-2 mx-2 rounded-full outline outline-white hover:bg-white hover:text-black'>{tag.name}</h2>
+                                </Link>
                             }
                         </li>
                     ))}

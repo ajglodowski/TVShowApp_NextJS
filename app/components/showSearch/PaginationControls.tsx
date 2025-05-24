@@ -3,13 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { backdropBackground } from '@/app/utils/stylingConstants';
-
-type PaginationControlsProps = {
-    currentPage: number;
-    previousPageUrl?: string;
-    nextPageUrl?: string;
-    totalPages: number;
-};
+import { PaginationControlsProps } from './types';
 
 export default function PaginationControls({ currentPage, previousPageUrl, nextPageUrl, totalPages }: PaginationControlsProps) {
     const router = useRouter();

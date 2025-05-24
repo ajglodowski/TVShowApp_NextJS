@@ -11,6 +11,7 @@ import { Loader2, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
+import { StatusIcon } from "@/app/utils/StatusIcon";
 
 export type CurrentUserFilters = {
     addedToWatchlist?: boolean;
@@ -165,7 +166,7 @@ export default function ShowSearchCurrentUserFilters({
 
     const RatingsRow = () => {
         return (
-            <div className="p-6 pb-0">
+            <div className="p-2 pb-0">
                 <div className="text-lg font-medium">Filter by Rating</div>
                 <RatingButtons />
             </div>
@@ -192,7 +193,10 @@ export default function ShowSearchCurrentUserFilters({
                             className={selectedBubbleStyle}
                             style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                         >
-                            {matchingStatus?.name || `Status ${selectedStatus.id}`}
+                            <div className="flex items-center gap-1">
+                                <StatusIcon {...selectedStatus} />
+                                {matchingStatus?.name || `Status ${selectedStatus.id}`}
+                            </div>
                         </div>
                     );
                 })}
@@ -204,7 +208,10 @@ export default function ShowSearchCurrentUserFilters({
                         className={unselectedBubbleStyle}
                         style={{ pointerEvents: isPending ? 'none' : 'auto' }}
                     >   
-                        {status.name || `Status ${status.id}`}
+                        <div className="flex items-center gap-1">
+                            <StatusIcon {...status} />
+                            {status.name || `Status ${status.id}`}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -213,7 +220,7 @@ export default function ShowSearchCurrentUserFilters({
 
     const StatusesRow = () => {
         return (
-            <div className="p-6 pb-0">
+            <div className="p-2 pb-0">
                 <div className="text-lg font-medium">Filter by Status</div>
                 <StatusButtons />
             </div>
@@ -224,7 +231,7 @@ export default function ShowSearchCurrentUserFilters({
         const watchlistLabel = isViewingOtherUserWatchlist ? "Filter by My Watch List" : "Filter by Watch List";
         
         return (
-            <div className="p-6 pb-0">
+            <div className="p-2 pb-0">
                 <div className="text-lg font-medium">{watchlistLabel}</div>
                 <div className="flex flex-col gap-2 mt-2">
                     <div 
@@ -281,7 +288,7 @@ export default function ShowSearchCurrentUserFilters({
                     )}
                 </Button>
             </SheetTrigger>
-            <SheetContent className={`overflow-y-auto bg-black border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
+            <SheetContent className={`p-0 overflow-y-auto bg-black/80 border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
                 <SheetHeader>
                     <SheetTitle className="text-white">{getFilterButtonTitle()}</SheetTitle>
                     <SheetDescription>

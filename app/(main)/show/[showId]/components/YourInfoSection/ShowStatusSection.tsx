@@ -3,6 +3,7 @@
 import { Status } from "@/app/models/status";
 import { UserShowData } from "@/app/models/userShowData";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
+import { StatusIcon } from "@/app/utils/StatusIcon";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -40,7 +41,12 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
 
     return (
         <div className="w-full">
-            <h1 className="text-xl">Current Status: {currentStatus?.name}</h1>
+            <h1 className="text-xl flex flex-row">Current Status: 
+                <div className="flex items-center gap-1 ml-2">
+                    <StatusIcon {...currentStatus!} />
+                    {currentStatus?.name}
+                </div>
+            </h1>
             {allStatuses && <div className="">
                 <span className="flex items-center">
                     <button onClick={() => setShowOptions(!showOptions)} className="py-0.5 px-1 m-1 rounded-md text-sm outline outline-white hover:bg-white hover:text-black">
@@ -54,7 +60,10 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
                             onClick={() => changeCurrentStatus(status)}
                             className={`py-0.5 px-1 m-1 rounded-md text-sm outline outline-white hover:bg-white hover:text-black`}
                         >
-                            {status.name}
+                            <div className="flex items-center gap-1">
+                                <StatusIcon {...status} />
+                                {status.name}
+                            </div>
                         </button>
                     ))}
                 </div>}

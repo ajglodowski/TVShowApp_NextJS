@@ -2,7 +2,7 @@ import { getAllTags } from "@/app/(main)/show/[showId]/ShowService";
 import { AirDate } from "@/app/models/airDate";
 import { Rating } from "@/app/models/rating";
 import { ShowLength } from "@/app/models/showLength";
-import { ShowSearchProps } from "./ShowSearch";
+import { ShowSearchProps } from "./types";
 import { CurrentUserFilters, defaultCurrentUserFilters } from "./ShowSearchHeader/ShowSearchCurrentUserFilters";
 import { defaultFilters, ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
 import { SortOption } from "./ShowSearchHeader/SortButton";

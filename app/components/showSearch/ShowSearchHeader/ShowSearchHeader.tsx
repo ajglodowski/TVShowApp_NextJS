@@ -74,96 +74,112 @@ export default async function ShowSearchHeader({
     
     return (
         <div className="">
-            <div className="text-white px-4 py-1 flex-wrap justify-between">
-                <div className="flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 items-center mt-4">
-                    <ShowSearchInput 
-                        searchResults={searchResults}
-                        pathname={pathname} 
-                    />
-                    
-                    <div className="flex-1 space-x-2 w-full flex flex-wrap gap-2 justify-end">
-                        {/* Sort Button - Positioned first for visibility */}
-                        <div className="min-w-32 block">
-                            <SortButton
-                                currentSort={filters.sortBy}
-                                pathname={pathname}
-                                currentFilters={filters}
+            <div className="">
+                {/* Main Header Section */}
+                <div className="space-y-4">
+                    {/* Top Row: Search and Primary Actions */}
+                    <div className="flex flex-col lg:flex-row lg:items-center gap-4 md:px-4">
+                        {/* Search Input - Takes priority on mobile */}
+                        <div className="flex-1 max-w-lg">
+                            <ShowSearchInput 
+                                searchResults={searchResults}
+                                pathname={pathname} 
                             />
                         </div>
                         
-                        {/* Current User Filters Button */}
-                        <ShowSearchCurrentUserFilters 
-                            filters={currentUserFilters} 
-                            pathname={pathname}
-                            currentFilters={filters}
-                            searchType={searchType}
-                            userId={userId}
-                            currentUserId={currentUserId}
-                            statuses={statuses}
-                        />
-                        
-                        {/* Show Watchlist Owner Filters Button when viewing other user's watchlist */}
-                        {isViewingOtherUserWatchlist && (
-                            <ShowSearchWatchlistOwnerFilters
-                                filters={watchlistOwnerFilters}
-                                pathname={pathname}
-                                currentFilters={filters}
-                                userId={userId}
-                                statuses={statuses}
-                            />
-                        )}
-                        
-                        {/* Show Tag Filter Button */}
-                        <Suspense fallback={<ShowSearchFilterButtonSkeleton />}>
-                            <TagFilterButton
-                                filters={filters}
-                                pathname={pathname}
-                                tags={tags}
-                            />
-                        </Suspense>
-                        
-                        {/* Show Filters Button */}
-                        <Suspense fallback={<ShowSearchFilterButtonSkeleton />}>
-                            <ShowSearchFilterButton 
-                                filters={filters} 
-                                pathname={pathname}
-                                services={services}
-                            />
-                        </Suspense>
+                        {/* Filter Actions - Organized in groups */}
+                        <div className="flex flex-wrap items-center gap-3">
+                            {/* Primary Action: Sort */}
+                            <div className="order-1">
+                                <SortButton
+                                    currentSort={filters.sortBy}
+                                    pathname={pathname}
+                                    currentFilters={filters}
+                                />
+                            </div>
+                            
+                            {/* User Filters Group */}
+                            <div className="flex items-center gap-2 order-2">
+                                <ShowSearchCurrentUserFilters 
+                                    filters={currentUserFilters} 
+                                    pathname={pathname}
+                                    currentFilters={filters}
+                                    searchType={searchType}
+                                    userId={userId}
+                                    currentUserId={currentUserId}
+                                    statuses={statuses}
+                                />
+                                
+                                {/* Show Watchlist Owner Filters Button when viewing other user's watchlist */}
+                                {isViewingOtherUserWatchlist && (
+                                    <ShowSearchWatchlistOwnerFilters
+                                        filters={watchlistOwnerFilters}
+                                        pathname={pathname}
+                                        currentFilters={filters}
+                                        userId={userId}
+                                        statuses={statuses}
+                                    />
+                                )}
+                            </div>
+                            
+                            {/* Content Filters Group */}
+                            <div className="flex items-center gap-2 order-3">
+                                <Suspense fallback={<ShowSearchFilterButtonSkeleton />}>
+                                    <TagFilterButton
+                                        filters={filters}
+                                        pathname={pathname}
+                                        tags={tags}
+                                    />
+                                </Suspense>
+                                
+                                <Suspense fallback={<ShowSearchFilterButtonSkeleton />}>
+                                    <ShowSearchFilterButton 
+                                        filters={filters} 
+                                        pathname={pathname}
+                                        services={services}
+                                    />
+                                </Suspense>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <ShowSearchFiltersRow 
-                    filters={filters} 
-                    pathname={pathname}
-                />
-                
-                {/* Show Tags Row (will only display if there are selected tags) */}
-                <ShowSearchTagsRow 
-                    filters={filters} 
-                    pathname={pathname}
-                />
-                
-                <ShowSearchCurrentUserFiltersRow 
-                    filters={currentUserFilters} 
-                    pathname={pathname}
-                    currentFilters={filters}
-                    searchType={searchType}
-                    userId={userId}
-                    currentUserId={currentUserId}
-                    statuses={statuses || []}
-                />
-                
-                {/* Show Watchlist Owner Filters Row when viewing other user's watchlist */}
-                {isViewingOtherUserWatchlist && (
-                    <ShowSearchWatchlistOwnerFiltersRow 
-                        filters={watchlistOwnerFilters}
+                {/* Active Filters Display Section */}
+                <div className="mt-6 space-y-3">
+                    {/* Main Show Filters */}
+                    <ShowSearchFiltersRow 
+                        filters={filters} 
+                        pathname={pathname}
+                    />
+                    
+                    {/* Tag Filters Row */}
+                    <ShowSearchTagsRow 
+                        filters={filters} 
+                        pathname={pathname}
+                    />
+                    
+                    {/* Current User Filters Row */}
+                    <ShowSearchCurrentUserFiltersRow 
+                        filters={currentUserFilters} 
                         pathname={pathname}
                         currentFilters={filters}
+                        searchType={searchType}
                         userId={userId}
+                        currentUserId={currentUserId}
                         statuses={statuses || []}
                     />
-                )}
+                    
+                    {/* Watchlist Owner Filters Row */}
+                    {isViewingOtherUserWatchlist && (
+                        <ShowSearchWatchlistOwnerFiltersRow 
+                            filters={watchlistOwnerFilters}
+                            pathname={pathname}
+                            currentFilters={filters}
+                            userId={userId}
+                            statuses={statuses || []}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );

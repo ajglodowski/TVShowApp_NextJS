@@ -13,6 +13,7 @@ import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton"
 import { getYourShows } from "../HomeClientService"
 import { Skeleton } from "@/components/ui/skeleton"
 import { LoadingShows, LoadingStatusFilters } from "./LoadingYourShowsRow"
+import { StatusIcon } from "@/app/utils/StatusIcon"
 
 type YourShowsRowClientProps = {
   userId: string
@@ -118,7 +119,10 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
                     }
                     data-state={selectedStatus.includes(status) ? "active" : "inactive"}
                   >
-                    {status.name}
+                    <div className="flex items-center gap-1">
+                      <StatusIcon {...status} />
+                      {status.name}
+                    </div> 
                   </TabsTrigger>
                 ))}
               </TabsList>
