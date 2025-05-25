@@ -29,6 +29,10 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: '1mvtjcpfzmphqyox.public.blob.vercel-storage.com',
+            },
+            {
+                protocol: 'https',
                 hostname: 'storage.googleapis.com',
             },
             {

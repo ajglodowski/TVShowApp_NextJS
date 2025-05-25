@@ -20,6 +20,10 @@ export const getPresignedUserImageURL = cache(async (picLocation: string): Promi
     return presignedUrl;
   });
 
+export function getUserImageUrlAction(imagePath: string): string {
+    return `https://1mvtjcpfzmphqyox.public.blob.vercel-storage.com/profilePics/${imagePath}`;
+}
+
 export const updateUserProfile = async (userId: string, profileData: ProfileFormValues): Promise<boolean> => {
   const supabase = await createClient();
   const { data, error } = await supabase

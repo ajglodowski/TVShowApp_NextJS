@@ -3,15 +3,17 @@ import { getPresignedShowImageURL, getShow } from "@/app/(main)/show/[showId]/Sh
 import { Suspense } from "react";
 import EditShowLoading from "./loading";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { getShowImageUrlAction } from "../../show/[showId]/ShowImageService";
 
 
 export default async function EditShow({ params }: { params: Promise<{ showId: string }> }) {
 
   const showId = (await params).showId;
   const show = await getShow(showId);
-  const presignedShowImageUrl = show?.pictureUrl
-    ? await getPresignedShowImageURL(show.pictureUrl, false)
-    : null;
+  // const presignedShowImageUrl = show?.pictureUrl
+  //   ? await getPresignedShowImageURL(show.pictureUrl, false)
+  //   : null;
+  const presignedShowImageUrl = show?.pictureUrl ? getShowImageUrlAction(show.pictureUrl) : null;
   if (!show) {
     return (
       <div className='text-center my-auto mx-auto'>

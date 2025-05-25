@@ -1,15 +1,12 @@
-import { Show, ShowWithAnalytics } from "@/app/models/show"
-import { Skeleton } from "@/components/ui/skeleton";
+import { Show, ShowWithAnalytics } from "@/app/models/show";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/dist/client/link";
-import Image from "next/image";
-import { UserDetailsDropdown } from "./UserDetailsDropdown";
 import { Suspense } from "react";
-import ShowRowSkeleton from "./ShowRowSkeleton";
-import { getCurrentUsersShowDetails, getFriendsUserDetails } from "./ShowRowService";
-import { getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { ShowRowInfo } from "./ShowRowInfo";
+import { getCurrentUsersShowDetails, getFriendsUserDetails } from "./ShowRowService";
+import ShowRowSkeleton from "./ShowRowSkeleton";
+import { UserDetailsDropdown } from "./UserDetailsDropdown";
 
 type ShowRowProps = {
     show: Show | ShowWithAnalytics | undefined;

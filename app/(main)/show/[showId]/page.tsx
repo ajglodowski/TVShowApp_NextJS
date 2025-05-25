@@ -19,6 +19,7 @@ import { LoadingUserUpdatesSection, UserUpdatesSection } from './components/User
 import { LoadingYourInfoSection, YourInfoSection } from './components/YourInfoSection/YourInfoSection';
 import LoadingShowPage from './loading';
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
+import { getShowImageUrlAction } from './ShowImageService';
 
 function ShowNotFound() {
   return (
@@ -56,12 +57,13 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   let showImageUrl: string | null = null;
   let backgroundColor = 'rgb(0,0,0)';
   if (pictureUrl) {
-    const [x, y] = await Promise.all([
-      getPresignedShowImageURL(pictureUrl, false),
+    const [y] = await Promise.all([
+      //getPresignedShowImageURL(pictureUrl, false),
       fetchAverageShowColor(pictureUrl),
     ]);
     backgroundColor = y;
-    showImageUrl = x;
+    showImageUrl = pictureUrl ? getShowImageUrlAction(pictureUrl) : null;
+    console.log("showImageUrl", showImageUrl);
   }
   const endTime = performance.now();
   console.log(`Image fetching took ${endTime - startTime} milliseconds`);
@@ -101,7 +103,7 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
               width={600} 
               height={600} 
               className='rounded-lg m-2 hover:shadow-2xl'
-              unoptimized={true}
+              //unoptimized={true}
             />
           </div> }
           { !showImageUrl && <div className="">

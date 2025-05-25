@@ -3,7 +3,7 @@ import { getFollowerCount, getFollowingCount, getShowsLogged } from "@/app/utils
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronRight, Tv, Users } from "lucide-react";
 import Link from "next/link";
-import { getPresignedUserImageURL } from "../../UserService";
+import { getPresignedUserImageURL, getUserImageUrlAction } from "../../UserService";
 import EditButton from "./EditButton";
 import FollowButton from "./FollowButton/FollowButton";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,11 +12,12 @@ export default async function UserProfileHeader({userId, userData}: {userId: str
     const user = userData;
 
     let profilePicUrl: string | undefined = undefined;
-    if (user.profilePhotoURL) {
-        const fetchedProfilePicUrl = await getPresignedUserImageURL(user.profilePhotoURL);
-        if (fetchedProfilePicUrl) profilePicUrl = fetchedProfilePicUrl;
-        else profilePicUrl = undefined;
-    }
+    // if (user.profilePhotoURL) {
+    //     const fetchedProfilePicUrl = await getPresignedUserImageURL(user.profilePhotoURL);
+    //     if (fetchedProfilePicUrl) profilePicUrl = fetchedProfilePicUrl;
+    //     else profilePicUrl = undefined;
+    // }
+    profilePicUrl = user.profilePhotoURL ? getUserImageUrlAction(user.profilePhotoURL) : undefined;
 
     const [showsLogged, followersCount, followingCount] = await Promise.all([
         getShowsLogged(userId),

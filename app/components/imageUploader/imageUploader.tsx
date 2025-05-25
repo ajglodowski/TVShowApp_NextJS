@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Upload, Check, Loader2 } from "lucide-react"
 import ImageCropper from "./imageCropper"
 import { backdropBackground } from "@/app/utils/stylingConstants"
-import { updateCurrentShowImage, updateCurrentUserProfilePic } from "./imageUploaderService"
+import { updateCurrentShowImage, updateCurrentUserProfilePic, uploadImageToVercelBlob } from "./imageUploaderService"
 
 export enum ImageUploadType {
     PROFILE,
@@ -121,8 +121,16 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
         return
       }
       if (responseData.success) {
+        
         console.log("Image uploaded successfully:", responseData);
         if (uploadType === ImageUploadType.PROFILE) {
+
+          const uploadResponse = await uploadImageToVercelBlob(`profilePics/${responseData.fileName}`, croppedImage);
+          if (!uploadResponse) {
+            console.error("Error uploading image to Vercel Blob");
+            return;
+          }
+
           const saveResponse = await updateCurrentUserProfilePic(responseData.fileName);
             if (!saveResponse) {
                 console.error("Error saving image URL to user profile");
@@ -131,12 +139,20 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
             setIsSuccess(true);
         }
         else if (uploadType === ImageUploadType.SHOW) {
-            const saveResponse = await updateCurrentShowImage(showId!, responseData.fileName);
-            if (!saveResponse) {
-                console.error("Error saving image URL to show");
-                return;
-            } 
-            setIsSuccess(true);        }
+
+          const uploadResponse = await uploadImageToVercelBlob(`${responseData.fileName}`, croppedImage);
+          if (!uploadResponse) {
+            console.error("Error uploading image to Vercel Blob");
+            return;
+          }
+
+          const saveResponse = await updateCurrentShowImage(showId!, responseData.fileName);
+          if (!saveResponse) {
+              console.error("Error saving image URL to show");
+              return;
+          } 
+          setIsSuccess(true);        
+        }
       }
     } catch (error) {
       console.error("Error uploading image:", error)

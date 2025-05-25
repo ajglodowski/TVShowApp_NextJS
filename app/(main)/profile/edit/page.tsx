@@ -3,7 +3,7 @@ import { backdropBackground } from "@/app/utils/stylingConstants";
 import { createClient } from "@/app/utils/supabase/server";
 import { getUser, getUserByUsername } from "@/app/utils/userService";
 import { Card, CardContent } from "@/components/ui/card";
-import { getPresignedUserImageURL, updateUserProfile } from "../UserService";
+import { getPresignedUserImageURL, getUserImageUrlAction, updateUserProfile } from "../UserService";
 
 export default async function EditProfilePage() {
 
@@ -31,7 +31,8 @@ export default async function EditProfilePage() {
     if (!user) return <UserNotFound />;
 
     let presignedImageUrl: string | null = null;
-    if (user.profilePhotoURL) presignedImageUrl = await getPresignedUserImageURL(user.profilePhotoURL);
+    // if (user.profilePhotoURL) presignedImageUrl = await getPresignedUserImageURL(user.profilePhotoURL);
+    presignedImageUrl = user.profilePhotoURL ? getUserImageUrlAction(user.profilePhotoURL) : null;
 
     async function submitChanges(data: ProfileFormValues): Promise<boolean> {
         'use server';

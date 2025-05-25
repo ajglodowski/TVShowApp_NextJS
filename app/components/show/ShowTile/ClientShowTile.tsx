@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getPresignedShowImageURL, getShow } from "../ClientShowService";
 import ShowTileContent, { ShowTileBadgeProps } from "./ShowTileContent";
 import ShowTileSkeleton from "./ShowTileSkeleton";
+import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
 
 type ClientShowTileProps = 
     | { showId: string; badges?: ShowTileBadgeProps[] }
@@ -13,7 +14,8 @@ type ClientShowTileProps =
 export default function ClientShowTile(props: ClientShowTileProps) {
 
     const [showData, setShowData] = useState<Show | null>(('showDto' in props) ? props.showDto : null);
-    const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
+    // const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
+    const presignedUrl = showData?.pictureUrl ? getShowImageUrlAction(showData.pictureUrl) : null;
 
     const showId = ('showDto' in props) ? props.showDto.id.toString() : props.showId;
     const badges = props.badges;
@@ -38,18 +40,19 @@ export default function ClientShowTile(props: ClientShowTileProps) {
                         console.error("Show not found for ID:", currentShowId);
                     }
                 }
-
+                /*
                 if (fetchedShowData?.pictureUrl) {
                     fetchedUrl = await getPresignedShowImageURL(fetchedShowData.pictureUrl, true);
                     if (isCancelled) return;
                     setPresignedUrl(fetchedUrl);
                 }
+                    */
 
             } catch (err: any) {
                 if (isCancelled) return;
                 console.error("Error loading show tile data:", err);
                 setShowData(null);
-                setPresignedUrl(null);
+                //setPresignedUrl(null);
             } 
         };
 

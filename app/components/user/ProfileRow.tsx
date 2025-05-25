@@ -1,6 +1,6 @@
 import { UserBasicInfo } from "@/app/models/user";
 import { getUser } from "@/app/utils/userService";
-import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
+import { getPresignedUserImageURL, getUserImageUrlAction } from "@/app/(main)/profile/UserService";
 import { LoadingImageSkeleton } from "../image/LoadingImageSkeleton";
 import Image from 'next/image';
 import Link from "next/link";
@@ -26,9 +26,10 @@ export async function ProfileRow({ userId, profileData }: ProfileRowProps) {
     }
 
     let imageUrl: string | null = null;
-    if (userData?.profilePhotoURL) {
-        imageUrl = await getPresignedUserImageURL(userData?.profilePhotoURL || "");
-    }
+    // if (userData?.profilePhotoURL) {
+    //     imageUrl = await getPresignedUserImageURL(userData?.profilePhotoURL || "");
+    // }
+    imageUrl = userData?.profilePhotoURL ? getUserImageUrlAction(userData?.profilePhotoURL || "") : null;
     
     return (
         <Link

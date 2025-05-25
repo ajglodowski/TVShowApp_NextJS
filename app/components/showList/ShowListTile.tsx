@@ -7,6 +7,7 @@ import ProfileBubble from "@/app/components/user/ProfileBubble";
 import ShowsListTileSkeleton from "./ShowListTileSkeleton";
 import { Suspense } from "react";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
 
 export default async function ShowsListTile({listId}: {listId: number}) {
 
@@ -29,15 +30,16 @@ async function ShowListTileContent({listId}: {listId: number}) {
         return <ShowsListTileSkeleton listId={listId}/>
     };
 
-    const imageUrlPromises = listEntries.map(async (entry) => {
-      if (entry.show.pictureUrl) {
-        const imageUrl = await getPresignedShowImageURL(entry.show.pictureUrl, true);
-        return imageUrl;
-      } else {
-        return null;
-      }
-    });
-    const imageUrls = await Promise.all(imageUrlPromises);
+    // const imageUrlPromises = listEntries.map(async (entry) => {
+    //   if (entry.show.pictureUrl) {
+    //     const imageUrl = await getPresignedShowImageURL(entry.show.pictureUrl, true);
+    //     return imageUrl;
+    //   } else {
+    //     return null;
+    //   }
+    // });
+    // const imageUrls = await Promise.all(imageUrlPromises);
+    const imageUrls = listEntries.map(entry => entry.show.pictureUrl ? getShowImageUrlAction(entry.show.pictureUrl) : null);
 
     const translateMap: {[key: number]: string} = {
       0: '',
@@ -61,8 +63,9 @@ async function ShowListTileContent({listId}: {listId: number}) {
                 src={imageUrl || "/placeholder.svg"}
                 alt={listEntries[index].show.name}
                 fill
+                sizes="128px"
                 className="w-full h-full object-cover"
-                unoptimized={true}
+                //unoptimized={true}
               />
             </div>
           ))}

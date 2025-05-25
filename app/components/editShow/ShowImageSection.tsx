@@ -67,6 +67,7 @@ export default function ShowImageSection({ showData, presignedImageUrl }: { show
                     src={presignedImageUrl}
                     alt={showData.name}
                     fill
+                    sizes="128px"
                     className="object-cover"
                 />
             </div>

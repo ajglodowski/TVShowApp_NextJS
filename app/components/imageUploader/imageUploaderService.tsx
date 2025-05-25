@@ -1,4 +1,5 @@
 import { createClient } from "@/app/utils/supabase/client";
+import { upload, UploadOptions } from "@vercel/blob/client";
 
 export async function updateCurrentUserProfilePic(imageUrl: string): Promise<boolean> {
     const supabase = await createClient();
@@ -32,4 +33,17 @@ export async function updateCurrentShowImage(showId: number, imageUrl: string): 
         return false;
     }
     return true;
+}
+
+export async function uploadImageToVercelBlob(imagePath: string, imageData: Blob): Promise<boolean> {
+    try {
+        const newBlob = await upload(imagePath, imageData, {
+            access: 'public',
+            handleUploadUrl: '/api/vercelBlobUpload',
+          });
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }

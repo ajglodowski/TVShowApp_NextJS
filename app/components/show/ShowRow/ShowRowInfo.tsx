@@ -1,4 +1,4 @@
-import { getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
+import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
 import { ShowWithAnalytics } from "@/app/models/show";
 
 import { Show } from "@/app/models/show";
@@ -12,14 +12,15 @@ export async function ShowRowInfo({ showData }: { showData: Show | ShowWithAnaly
     cacheLife('hours');
 
     let showImageUrl: string | null = null;
-    if (showData.pictureUrl) {
-        try {
-            showImageUrl = await getPresignedShowImageURL(showData.pictureUrl as string, true);
-        } catch (error) {
-            console.error(`Error fetching presigned URL for show ${showData.id} (${showData.name}):`, error);
-            showImageUrl = null; // Handle error case, e.g., set to null
-        }
-    }
+    // if (showData.pictureUrl) {
+    //     try {
+    //         showImageUrl = await getPresignedShowImageURL(showData.pictureUrl as string, true);
+    //     } catch (error) {
+    //         console.error(`Error fetching presigned URL for show ${showData.id} (${showData.name}):`, error);
+    //         showImageUrl = null; // Handle error case, e.g., set to null
+    //     }
+    // }
+    showImageUrl= showData.pictureUrl ? getShowImageUrlAction(showData.pictureUrl) : null;
 
     return (
         <div className="relative flex space-x-2 md:w-3/4 w-full my-auto justify-start overflow-hidden">
@@ -31,7 +32,7 @@ export async function ShowRowInfo({ showData }: { showData: Show | ShowWithAnaly
                         fill 
                         sizes="64px"
                         className="rounded-md object-cover"
-                        unoptimized={true}
+                        //unoptimized={true}
                         />  
                     }
                     {!showImageUrl && <Skeleton className="w-full h-full rounded-md" />}

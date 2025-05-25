@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 import { UserUpdateTileDTO } from "../UserUpdateService";
 import UserUpdateTileBody from "./UserUpdateTileBody";
+import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
 
 type UserUpdateTileProps = { updateDto: UserUpdateTileDTO; };
 
@@ -11,9 +12,10 @@ export default async function UserUpdateTileWithImage(props: UserUpdateTileProps
 
     const updateData = props.updateDto;
     let showImageUrl: string | null = null;
-    if (updateData.showPictureUrl) {
-        showImageUrl = await getPresignedShowImageURL(updateData.showPictureUrl, true);
-    }
+    // if (updateData.showPictureUrl) {
+    //     showImageUrl = await getPresignedShowImageURL(updateData.showPictureUrl, true);
+    // }
+    showImageUrl = updateData.showPictureUrl ? getShowImageUrlAction(updateData.showPictureUrl) : null;
 
     const ShowImage = () => {
         if (!showImageUrl) return <LoadingImageSkeleton />;
@@ -23,9 +25,9 @@ export default async function UserUpdateTileWithImage(props: UserUpdateTileProps
                     src={showImageUrl || "/placeholder.svg"} 
                     alt={updateData.showName}
                     fill
-                    //sizes="128px"
+                    sizes="128px"
                     className="w-full aspect-square rounded-xl object-cover"
-                    unoptimized={true}
+                    //unoptimized={true}
                 />
             </div>
         );

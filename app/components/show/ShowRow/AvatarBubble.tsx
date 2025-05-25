@@ -6,7 +6,7 @@ import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import Image from "next/image";
 import { backdropBackground } from "@/app/utils/stylingConstants";
-import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
+import { getPresignedUserImageURL, getUserImageUrlAction } from "@/app/(main)/profile/UserService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
@@ -15,9 +15,10 @@ export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDat
     cacheLife('hours');
 
     let profilePicUrl: string | null = null;
-    if (userInfo.user.profilePhotoURL) {
-        profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
-    }
+    // if (userInfo.user.profilePhotoURL) {
+    //     profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
+    // }
+    profilePicUrl = getUserImageUrlAction(userInfo.user.profilePhotoURL);
 
     const RatingIcon = ({rating}: {rating: Rating}) => {
         switch (rating) {

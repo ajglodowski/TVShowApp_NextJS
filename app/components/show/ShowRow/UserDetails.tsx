@@ -5,7 +5,7 @@ import { MehIcon } from "@/public/icons/MehIcon";
 import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import { Rating } from "@/app/models/rating";
 import Image from "next/image";
-import { getPresignedUserImageURL } from "@/app/(main)/profile/UserService";
+import { getPresignedUserImageURL, getUserImageUrlAction } from "@/app/(main)/profile/UserService";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
@@ -15,9 +15,10 @@ export async function UserDetails({ userInfo }: { userInfo: UserShowDataWithUser
     cacheLife('minutes');
 
     let profilePicUrl: string | null = null
-    if (userInfo.user.profilePhotoURL) {
-        profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
-    }
+    // if (userInfo.user.profilePhotoURL) {
+    //     profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
+    // }
+    profilePicUrl = userInfo.user.profilePhotoURL ? getUserImageUrlAction(userInfo.user.profilePhotoURL) : null;
 
     const RatingIcon = ({rating}: {rating: Rating}) => {
         switch (rating) {

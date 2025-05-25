@@ -28,8 +28,10 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
                     alt={show.name}
                     fill
                     sizes="128px"
+                    //height={128}
+                    //width={128}
                     className="object-cover rounded-lg shadow-md"
-                    unoptimized={true}
+                    //unoptimized={true}
                 />
             </div>
         );

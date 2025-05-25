@@ -1,4 +1,4 @@
-import { getPresignedUserImageURL } from '@/app/(main)/profile/UserService'
+import { getPresignedUserImageURL, getUserImageUrlAction } from '@/app/(main)/profile/UserService'
 import { backdropBackground } from '@/app/utils/stylingConstants'
 import { createClient, publicClient } from '@/app/utils/supabase/server'
 import { getUser } from '@/app/utils/userService'
@@ -48,7 +48,7 @@ async function AuthButtonContent() {
         />
       )
     } else if (userInfo && userInfo.profilePhotoURL) {
-      const profilePhotoURL = await getPresignedUserImageURL(userInfo.profilePhotoURL);
+      const profilePhotoURL = getUserImageUrlAction(userInfo.profilePhotoURL);
       return (
         <Image
           src={profilePhotoURL!}
