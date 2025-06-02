@@ -303,31 +303,29 @@ export default async function ShowSearchShows({
     }
 
     return (
-        <div className='flex flex-col h-[calc(100vh-14rem)]'>
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto">
-                <div className='py-2'>
-                    {paginatedData.length > 0 ? (
-                        paginatedData.map((show: ShowWithAnalytics) => (
-                            <div className='px-4' key={show.id}>
-                                <Suspense fallback={<ShowRowSkeleton />}>
-                                    <ShowRow 
-                                        show={show} 
-                                        currentUserInfo={displayUserInfoMap.get(show.id)}
-                                        otherUsersInfo={otherUsersInfoMap.get(show.id)}
-                                        fetchCurrentUsersInfo={(searchType !== ShowSearchType.OTHER_USER_WATCHLIST)}
-                                        fetchFriendsInfo={true} 
-                                    />
-                                </Suspense>
-                                <Divider />
-                            </div>
-                        ))
-                    ) : (
-                        <div className="flex items-center justify-center h-32">
-                            <p className="text-muted-foreground">No shows found matching your criteria.</p>
+        <div className='w-full'>
+            {/* Content Container */}
+            <div className='py-4 space-y-1'>
+                {paginatedData.length > 0 ? (
+                    paginatedData.map((show: ShowWithAnalytics) => (
+                        <div className='px-4' key={show.id}>
+                            <Suspense fallback={<ShowRowSkeleton />}>
+                                <ShowRow 
+                                    show={show} 
+                                    currentUserInfo={displayUserInfoMap.get(show.id)}
+                                    otherUsersInfo={otherUsersInfoMap.get(show.id)}
+                                    fetchCurrentUsersInfo={(searchType !== ShowSearchType.OTHER_USER_WATCHLIST)}
+                                    fetchFriendsInfo={true} 
+                                />
+                            </Suspense>
+                            <Divider />
                         </div>
-                    )}
-                </div>
+                    ))
+                ) : (
+                    <div className="flex items-center justify-center py-16">
+                        <p className="text-muted-foreground text-center">No shows found matching your criteria.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

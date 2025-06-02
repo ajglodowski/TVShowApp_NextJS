@@ -100,7 +100,7 @@ export default function ShowSearchCurrentUserFiltersRow({
 
     const renderFilterBubbles = (): ReactNode[] => {
         const bubbles: ReactNode[] = [];
-        const bubbleStyle = `${backdropBackground} rounded-full text-white px-3 py-1 inline-flex items-center`;
+        const bubbleStyle = "bg-primary/10 hover:bg-primary/20 text-foreground border-border";
 
         // Handle ratings
         if (optimisticFilters.ratings && optimisticFilters.ratings.length > 0) {
@@ -116,7 +116,7 @@ export default function ShowSearchCurrentUserFiltersRow({
                             });
                         }}
                     >
-                        <Button variant="outline" className={bubbleStyle}>
+                        <Button variant="outline" size="sm" className={`${bubbleStyle} whitespace-nowrap`}>
                             Rating: {rating.toString()}
                             <X className="ml-1 h-4 w-4" />
                         </Button>
@@ -139,7 +139,7 @@ export default function ShowSearchCurrentUserFiltersRow({
                             });
                         }}
                     >
-                        <Button variant="outline" className={bubbleStyle}>
+                        <Button variant="outline" size="sm" className={`${bubbleStyle} whitespace-nowrap`}>
                             <div className="flex items-center gap-1">
                                 <StatusIcon {...mockStatus(getStatusName(status.id))} />
                                 {getStatusName(status.id)}
@@ -168,7 +168,7 @@ export default function ShowSearchCurrentUserFiltersRow({
                         });
                     }}
                 >
-                    <Button variant="outline" className={bubbleStyle}>
+                    <Button variant="outline" size="sm" className={`${bubbleStyle} whitespace-nowrap`}>
                         {watchlistText}
                         <X className="ml-1 h-4 w-4" />
                     </Button>
@@ -206,22 +206,28 @@ export default function ShowSearchCurrentUserFiltersRow({
     };
 
     return (
-        <div className="flex flex-wrap gap-2 items-center">
-            {renderFilterBubbles()}
-            {hasActiveFilters() && (
-                <div
-                    onClick={() => {
-                        startTransition(() => {
-                            router.push(clearUserFiltersURL());
-                        });
-                    }}
-                >
-                    <Button variant="outline" className="m-1 bg-white/90 text-black hover:bg-white/10 hover:text-white px-3 py-1 rounded-md inline-flex items-center">
-                        {getClearFiltersText()}
-                        <X className="ml-1 h-4 w-4" />
-                    </Button>
-                </div>
-            )}
+        <div className="">
+            <div className="flex items-center gap-2 px-2 py-1 min-w-max">
+                {renderFilterBubbles()}
+                {hasActiveFilters() && (
+                    <div
+                        onClick={() => {
+                            startTransition(() => {
+                                router.push(clearUserFiltersURL());
+                            });
+                        }}
+                    >
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="bg-white/90 text-black hover:bg-white/10 hover:text-white whitespace-nowrap"
+                        >
+                            {getClearFiltersText()}
+                            <X className="ml-1 h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

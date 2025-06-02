@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
-const buttonStyles = `${backdropBackground} rounded-full text-white`;
+const buttonStyles = "bg-primary/10 hover:bg-primary/20 text-foreground border-border";
 
 export default function ShowSearchTagsRow({ 
     filters, 
@@ -104,37 +104,43 @@ export default function ShowSearchTagsRow({
     }
 
     return (
-        <div className="flex flex-wrap items-center p-2 space-x-2">
-            {optimisticFilters.tags.map(tag => (
+        <div className="overflow-x-auto">
+            <div className="flex items-center gap-2 px-2 py-1 min-w-max">
+                {optimisticFilters.tags.map(tag => (
+                    <div
+                        key={`tag-${tag.id}`}
+                        onClick={() => {
+                            startTransition(() => {
+                                const newTags = optimisticFilters.tags.filter(t => t.id !== tag.id);
+                                updateOptimisticFilters({ tags: newTags });
+                                router.push(createRemoveTagURL(tag.id));
+                            });
+                        }}
+                    >
+                        <Button variant="outline" size="sm" className={`${buttonStyles} whitespace-nowrap`}>
+                            {tag.name}
+                            <X className="ml-1 h-4 w-4" />
+                        </Button>
+                    </div>
+                ))}
+                
                 <div
-                    key={`tag-${tag.id}`}
                     onClick={() => {
                         startTransition(() => {
-                            const newTags = optimisticFilters.tags.filter(t => t.id !== tag.id);
-                            updateOptimisticFilters({ tags: newTags });
-                            router.push(createRemoveTagURL(tag.id));
+                            updateOptimisticFilters({ tags: [] });
+                            router.push(clearAllTags());
                         });
                     }}
                 >
-                    <Button variant="outline" className={buttonStyles}>
-                        {tag.name}
+                    <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="bg-white/90 text-black hover:bg-white/10 hover:text-white whitespace-nowrap"
+                    >
+                        Clear Tag Filters
                         <X className="ml-1 h-4 w-4" />
                     </Button>
                 </div>
-            ))}
-            
-            <div
-                onClick={() => {
-                    startTransition(() => {
-                        updateOptimisticFilters({ tags: [] });
-                        router.push(clearAllTags());
-                    });
-                }}
-            >
-                <Button variant="outline" className="m-1 bg-white/90 text-black hover:bg-white/10 hover:text-white px-3 py-1 rounded-md inline-flex items-center">
-                    Clear Tag Filters
-                    <X className="ml-1 h-4 w-4" />
-                </Button>
             </div>
         </div>
     );

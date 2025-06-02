@@ -8,17 +8,15 @@ const ITEMS_PER_PAGE = 20;
 export default function ShowSearchShowsLoading() {
 
     return (
-        <div className='flex flex-col h-[calc(100vh-14rem)]'>
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto">
-                <div className='py-2'>
-                    {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
-                        <div className='px-4' key={index}>
-                            <ShowRowSkeleton />
-                            <Divider />
-                        </div>
-                    ))}
-                </div>
+        <div className='w-full'>
+            {/* Content Container */}
+            <div className='py-4 space-y-1'>
+                {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+                    <div className='px-4' key={index}>
+                        <ShowRowSkeleton />
+                        <Divider />
+                    </div>
+                ))}
             </div>
         </div>
     );

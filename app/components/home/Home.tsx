@@ -45,7 +45,7 @@ const getHeaderIcon = (header: string): React.ReactNode => {
 };
 
 export default async function Home () {
-
+    
     const supabase = await createClient();
     const { data: { user }, } = await supabase.auth.getUser();
     const currentUserId = user?.id;
@@ -119,16 +119,20 @@ export async function LoadingHome() {
     ]
 
     return (
-        <div className="px-2">
+        <div className="px-2 space-y-2">
             <WelcomeBanner />
             {rows.map((row) => (
-                <div key={row.header} className="w-full overflow-x-auto">
-                    <h3 className='text-xl font-bold mt-1 flex items-center gap-2'>
-                        {getHeaderIcon(row.header)}
-                        {row.header}
-                    </h3>
-                    {row.component}
-                </div>
+                <Card key={row.header} className="bg-black bg-opacity-50 rounded-md text-white border-none">
+                    <CardHeader className="px-2 mx-2 py-0 pt-4">
+                        <CardTitle className="flex items-center gap-2">
+                            {getHeaderIcon(row.header)}
+                            {row.header}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="m-0 p-0">
+                        {row.component}
+                    </CardContent>
+                </Card>
             ))}
         </div>
     )

@@ -52,7 +52,11 @@ export type ShowSearchHeaderProps = {
     userId?: string;
     currentUserId?: string;
     pageTitle?: string;
-    resultsCount?: number;
+    // Pagination props
+    currentPage?: number;
+    totalPages?: number;
+    previousPageUrl?: string;
+    nextPageUrl?: string;
 }
 
 export default async function ShowSearchHeader({ 
@@ -65,7 +69,10 @@ export default async function ShowSearchHeader({
     userId,
     currentUserId,
     pageTitle,
-    resultsCount
+    currentPage,
+    totalPages,
+    previousPageUrl,
+    nextPageUrl
 }: ShowSearchHeaderProps) {
     // Determine if viewing other user's watchlist where current user != watchlist owner
     const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
@@ -80,18 +87,18 @@ export default async function ShowSearchHeader({
         <div className="">
             {/* Page Title Section */}
             {pageTitle && (
-                <div className="px-4 py-4 border-b border-border/20">
-                    <h1 className="text-3xl font-bold">{pageTitle}</h1>
+                <div className="px-4 py-2">
+                    <h1 className="text-2xl md:text-3xl font-bold truncate">{pageTitle}</h1>
                 </div>
             )}
 
-            <div className="px-4 py-4">
+            <div className="px-4 space-y-2">
                 {/* Main Header Section */}
-                <div className="space-y-4">
+                <div className="space-y-2">
                     {/* Top Row: Search and Primary Actions */}
-                    <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                         {/* Search Input - Takes priority on mobile */}
-                        <div className="flex-1 max-w-lg">
+                        <div className="flex-1 min-w-0">
                             <ShowSearchInput 
                                 searchResults={searchResults}
                                 pathname={pathname} 
@@ -99,18 +106,16 @@ export default async function ShowSearchHeader({
                         </div>
                         
                         {/* Filter Actions - Organized in groups */}
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-2">
                             {/* Primary Action: Sort */}
-                            <div className="order-1">
-                                <SortButton
-                                    currentSort={filters.sortBy}
-                                    pathname={pathname}
-                                    currentFilters={filters}
-                                />
-                            </div>
+                            <SortButton
+                                currentSort={filters.sortBy}
+                                pathname={pathname}
+                                currentFilters={filters}
+                            />
                             
                             {/* User Filters Group */}
-                            <div className="flex items-center gap-2 order-2">
+                            <div className="flex items-center gap-2">
                                 <ShowSearchCurrentUserFilters 
                                     filters={currentUserFilters} 
                                     pathname={pathname}
@@ -134,7 +139,7 @@ export default async function ShowSearchHeader({
                             </div>
                             
                             {/* Content Filters Group */}
-                            <div className="flex items-center gap-2 order-3">
+                            <div className="flex items-center gap-2">
                                 <Suspense fallback={<ShowSearchFilterButtonSkeleton />}>
                                     <TagFilterButton
                                         filters={filters}
@@ -156,7 +161,7 @@ export default async function ShowSearchHeader({
                 </div>
 
                 {/* Active Filters Display Section */}
-                <div className="space-y-1">
+                <div className="">
                     {/* Main Show Filters */}
                     <ShowSearchFiltersRow 
                         filters={filters} 
@@ -191,16 +196,6 @@ export default async function ShowSearchHeader({
                         />
                     )}
                 </div>
-
-                {/* Results Count Section */}
-                {resultsCount !== undefined && (
-                    <div className="mt-4 pt-3 border-t border-border/20">
-                        <span className='flex items-center space-x-2 text-lg'>
-                            <span className='font-semibold'>Results:</span>
-                            <span className='text-muted-foreground'>{resultsCount} shows</span>
-                        </span>
-                    </div>
-                )}
             </div>
         </div>
     );

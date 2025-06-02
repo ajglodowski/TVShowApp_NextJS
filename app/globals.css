@@ -52,6 +52,20 @@
   * {
     @apply border-foreground/20;
   }
+  
+  /* Mobile viewport optimizations */
+  html {
+    /* Support for dynamic viewport height on mobile */
+    height: 100%;
+    height: 100dvh;
+  }
+  
+  body {
+    /* Prevent overscroll bounce on iOS */
+    overscroll-behavior: none;
+    /* Improve touch scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @layer utilities {
@@ -63,6 +77,25 @@
     .no-scrollbar {
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
+  }
+  
+  /* Mobile-optimized scroll containers */
+  .mobile-scroll {
+    /* Smooth scrolling with momentum on iOS */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent scroll chaining */
+    overscroll-behavior: contain;
+  }
+  
+  /* Dynamic viewport height utilities */
+  .h-screen-dynamic {
+    height: 100vh;
+    height: 100dvh;
+  }
+  
+  .min-h-screen-dynamic {
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 

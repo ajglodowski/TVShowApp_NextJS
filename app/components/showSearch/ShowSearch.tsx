@@ -12,6 +12,7 @@ import { ShowSearchType } from '@/app/models/showSearchType';
 import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } from './ShowSearchService';
 import { ShowWithAnalytics } from '@/app/models/show';
 import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
+import { backdropBackground } from '@/app/utils/stylingConstants';
 
 // Number of items per page - should match ShowSearchShows
 const ITEMS_PER_PAGE = 20;
@@ -45,9 +46,9 @@ export default async function ShowSearch(props: ShowSearchProps) {
     const nextPageUrl = createPageUrl(currentPage + 1);
 
     return (
-        <div className='w-full min-h-screen flex flex-col'>
-            {/* Sticky Header */}
-            <div className="sticky top-14 z-40 bg-background/50 backdrop-blur-sm border-b border-border/40">
+        <div className='fixed top-14 left-0 right-0 bottom-0 flex flex-col overflow-hidden'>
+            {/* Header with Pagination - Fixed height, no scroll */}
+            <div className={`flex-shrink-0 ${backdropBackground}`}>
                 <Suspense fallback={
                     <ShowSearchHeaderLoading 
                         filters={filters}
@@ -73,30 +74,35 @@ export default async function ShowSearch(props: ShowSearchProps) {
                         pageTitle={pageTitle}
                     />
                 </Suspense>
+                
+                {/* Pagination Controls with Results Count in Header */}
+                <div className="px-4 pb-2">
+                    <div className="pt-1 border-t border-border/20">
+                        <Suspense fallback={<div className="flex justify-between items-center py-2">
+                            <div className="animate-pulse bg-muted rounded h-4 w-24"></div>
+                            <div className="animate-pulse bg-muted rounded h-6 w-20"></div>
+                        </div>}>
+                            <ShowSearchPaginationWrapper 
+                                filters={filters}
+                                searchType={searchType}
+                                userId={userId}
+                                currentUserId={currentUserId}
+                                searchResults={searchResults}
+                                currentUserFilters={currentUserFilters}
+                                watchlistOwnerFilters={watchlistOwnerFilters}
+                                currentPage={currentPage}
+                                previousPageUrl={previousPageUrl}
+                                nextPageUrl={nextPageUrl}
+                            />
+                        </Suspense>
+                    </div>
+                </div>
             </div>
 
-            {/* Main Content Area */}
-            <div className='flex-1'>
+            {/* Main Content - Flexible height, scrollable */}
+            <div className='flex-1 overflow-y-auto overflow-x-hidden min-h-0'>
                 <Suspense fallback={<ShowSearchShowsLoading />}>
                     <ShowSearchShows 
-                        filters={filters}
-                        searchType={searchType}
-                        userId={userId}
-                        currentUserId={currentUserId}
-                        searchResults={searchResults}
-                        currentUserFilters={currentUserFilters}
-                        watchlistOwnerFilters={watchlistOwnerFilters}
-                        currentPage={currentPage}
-                        previousPageUrl={previousPageUrl}
-                        nextPageUrl={nextPageUrl}
-                    />
-                </Suspense>
-            </div>
-
-            {/* Sticky Pagination Footer */}
-            <div className="sticky bottom-0 z-30 bg-background/50 backdrop-blur-sm border-t border-border/40">
-                <Suspense fallback={<div className="h-16" />}>
-                    <ShowSearchPaginationWrapper 
                         filters={filters}
                         searchType={searchType}
                         userId={userId}
@@ -158,7 +164,6 @@ async function ShowSearchHeaderWithResults({
             userId={userId}
             currentUserId={currentUserId}
             pageTitle={pageTitle}
-            resultsCount={resultsCount}
         />
     );
 }
@@ -264,8 +269,8 @@ async function ShowSearchPaginationWrapper({
     previousPageUrl?: string;
     nextPageUrl?: string;
 }) {
-    // Calculate total pages using the same logic as ShowSearchShows
-    const totalPages = await calculatePaginationTotalPages({
+    // Calculate results count and total pages
+    const resultsCount = await calculateResultsCount({
         filters,
         searchType,
         userId,
@@ -275,50 +280,17 @@ async function ShowSearchPaginationWrapper({
         watchlistOwnerFilters,
     });
     
+    const totalPages = Math.ceil(resultsCount / ITEMS_PER_PAGE);
+    
     return (
         <PaginationControls 
             currentPage={currentPage} 
             previousPageUrl={previousPageUrl}
             nextPageUrl={nextPageUrl}
             totalPages={totalPages}
+            resultsCount={resultsCount}
         />
     );
-}
-
-// Helper function to calculate total pages (duplicates filtering logic from ShowSearchShows)
-async function calculatePaginationTotalPages({
-    filters,
-    searchType,
-    userId,
-    currentUserId,
-    searchResults,
-    currentUserFilters,
-    watchlistOwnerFilters = defaultCurrentUserFilters,
-}: {
-    filters: any;
-    searchType: ShowSearchType;
-    userId?: string;
-    currentUserId?: string;
-    searchResults: string;
-    currentUserFilters: any;
-    watchlistOwnerFilters?: any;
-}): Promise<number> {
-    try {
-        const resultsCount = await calculateResultsCount({
-            filters,
-            searchType,
-            userId,
-            currentUserId,
-            searchResults,
-            currentUserFilters,
-            watchlistOwnerFilters,
-        });
-        
-        return Math.ceil(resultsCount / ITEMS_PER_PAGE);
-    } catch (error) {
-        console.error('Error calculating pagination total pages:', error);
-        return 1; // Return 1 as fallback
-    }
 }
 
 export async function LoadingShowSearch({ pageTitle }: { pageTitle?: string } = {}) {
@@ -329,8 +301,8 @@ export async function LoadingShowSearch({ pageTitle }: { pageTitle?: string } = 
     
     const filters = await parseFiltersFromSearchParams(searchParams);
     return (
-        <div className='w-full min-h-screen flex flex-col'>
-            <div className="sticky top-14 z-40 bg-background/50 backdrop-blur-sm border-b border-border/40">
+        <div className='fixed top-14 left-0 right-0 bottom-0 flex flex-col overflow-hidden'>
+            <div className={`flex-shrink-0 ${backdropBackground}`}>
                 <ShowSearchHeaderLoading 
                     filters={filters}
                     searchResults={''}
@@ -339,8 +311,18 @@ export async function LoadingShowSearch({ pageTitle }: { pageTitle?: string } = 
                     pathname={pathname}
                     pageTitle={pageTitle}
                 />
+                
+                {/* Pagination Loading Skeleton */}
+                <div className="px-4 pb-2">
+                    <div className="pt-1 border-t border-border/20">
+                        <div className="flex justify-between items-center py-2">
+                            <div className="animate-pulse bg-muted rounded h-4 w-24"></div>
+                            <div className="animate-pulse bg-muted rounded h-6 w-20"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className='flex-1'>
+            <div className='flex-1 overflow-y-auto overflow-x-hidden min-h-0'>
                 <ShowSearchShowsLoading />
             </div>
         </div>      

@@ -55,16 +55,16 @@ export default function ShowSearchInput({ searchResults, pathname }: ShowSearchI
     return (
         <form 
             onSubmit={handleSubmit} 
-            className="relative flex-1 w-full"
+            className="relative w-full"
         >
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
            
             <Input
-                className={`pl-10 pr-10 bg-white/5 text-white ${isPending ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`pl-10 pr-10 h-10 bg-white/5 text-white border-border/40 focus:border-border/60 transition-colors ${isPending ? 'opacity-70 cursor-not-allowed' : ''}`}
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Search through results" 
+                placeholder="Search shows..." 
                 disabled={isPending}
             />
             
@@ -77,7 +77,7 @@ export default function ShowSearchInput({ searchResults, pathname }: ShowSearchI
                     <button 
                         type="button"
                         onClick={handleClear}
-                        className="p-1 text-gray-400 hover:text-white"
+                        className="p-1 text-gray-400 hover:text-white transition-colors touch-manipulation"
                         aria-label="Clear search"
                     >
                         <X className="h-4 w-4" />

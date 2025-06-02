@@ -10,7 +10,7 @@ import { ReactNode, useOptimistic, useTransition } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
 // Define button styles as a constant
-const buttonStyles = ` ${backdropBackground} rounded-full text-white`;
+const buttonStyles = "bg-primary/10 hover:bg-primary/20 text-foreground border-border";
 
 export default function ShowSearchFiltersRow({ 
     filters, 
@@ -133,7 +133,7 @@ export default function ShowSearchFiltersRow({
                                 });
                             }}
                         >
-                            <Button variant="outline" className={buttonStyles}>
+                            <Button variant="outline" size="sm" className={`${buttonStyles} whitespace-nowrap`}>
                                 {displayValue}
                                 <X className="ml-1 h-4 w-4" />
                             </Button>
@@ -153,7 +153,7 @@ export default function ShowSearchFiltersRow({
                             });
                         }}
                     >
-                        <Button variant="outline" className={buttonStyles}>
+                        <Button variant="outline" size="sm" className={`${buttonStyles} whitespace-nowrap`}>
                             {key.replace(/([A-Z])/g, ' $1').trim()}
                             <X className="ml-1 h-4 w-4" />
                         </Button>
@@ -174,22 +174,28 @@ export default function ShowSearchFiltersRow({
     };
 
     return (
-        <div className="flex flex-wrap items-center p-2 space-x-2">
-            {renderFilterBubbles()}
-            {hasActiveFilters() && (
-                <div
-                    onClick={() => {
-                        startTransition(() => {
-                            router.push(pathname);
-                        });
-                    }}
-                >
-                    <Button variant="outline" className="m-1 bg-white/90 text-black hover:bg-white/10 hover:text-white px-3 py-1 rounded-md inline-flex items-center">
-                        Clear Show Filters
-                        <X className="ml-1 h-4 w-4" />
-                    </Button>
-                </div>
-            )}
+        <div className="">
+            <div className="flex items-center gap-2 px-2 py-1 min-w-max">
+                {renderFilterBubbles()}
+                {hasActiveFilters() && (
+                    <div
+                        onClick={() => {
+                            startTransition(() => {
+                                router.push(pathname);
+                            });
+                        }}
+                    >
+                        <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="bg-white/90 text-black hover:bg-white/10 hover:text-white whitespace-nowrap"
+                        >
+                            Clear Show Filters
+                            <X className="ml-1 h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

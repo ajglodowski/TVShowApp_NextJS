@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { backdropBackground } from '@/app/utils/stylingConstants';
 import { PaginationControlsProps } from './types';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function PaginationControls({ currentPage, previousPageUrl, nextPageUrl, totalPages }: PaginationControlsProps) {
+export default function PaginationControls({ currentPage, previousPageUrl, nextPageUrl, totalPages, resultsCount }: PaginationControlsProps & { resultsCount?: number }) {
     const router = useRouter();
     
-    if (totalPages <= 1) {
-        return null; // Don't render pagination if there's only one page
+    if (totalPages <= 1 && !resultsCount) {
+        return null; // Don't render if there's only one page and no results to show
     }
 
     function handlePreviousPage() {
@@ -24,31 +25,43 @@ export default function PaginationControls({ currentPage, previousPageUrl, nextP
         }
     }
 
+    const buttonClassName = 'p-2 bg-transparent hover:bg-white/10';
+
     return (
-        <div className="flex justify-center items-center py-4 px-4">
-            <Button 
-                variant="outline"
-                onClick={() => handlePreviousPage()}
-                className={`px-4 py-2 mr-2 rounded-md ${backdropBackground} ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`}
-                disabled={currentPage === 1 || !previousPageUrl}
-                size="sm"
-            >
-                Previous
-            </Button>
-            
-            <div className="mx-4 text-sm text-muted-foreground">
-                Page {currentPage} of {totalPages}
+        <div className="flex justify-between items-center py-2">
+            {/* Results Count */}
+            <div className='flex items-center gap-2 text-sm'>
+                <span className='font-semibold'>Results:</span>
+                <span className='text-muted-foreground'>{resultsCount || 0} shows</span>
             </div>
             
-            <Button 
-                variant="outline"
-                onClick={() => handleNextPage()}
-                className={`px-4 py-2 ml-2 rounded-md ${backdropBackground} ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`}
-                disabled={currentPage === totalPages || !nextPageUrl}
-                size="sm"
-            >
-                Next
-            </Button>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                    <Button 
+                        onClick={() => handlePreviousPage()}
+                        className={`${buttonClassName} ${currentPage === 1 ? 'opacity-50 pointer-events-none' : ''}`}
+                        disabled={currentPage === 1 || !previousPageUrl}
+                        size="sm"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    
+                    <div className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                        <span className="hidden sm:inline">Page {currentPage} of {totalPages}</span>
+                        <span className="sm:hidden">{currentPage}/{totalPages}</span>
+                    </div>
+                    
+                    <Button 
+                        onClick={() => handleNextPage()}
+                        className={`${buttonClassName} ${currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''}`}
+                        disabled={currentPage === totalPages || !nextPageUrl}
+                        size="sm"
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }

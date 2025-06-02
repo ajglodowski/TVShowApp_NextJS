@@ -21,9 +21,8 @@ export default function ShowSearchHeaderLoading({
     searchType = ShowSearchType.UNRESTRICTED,
     userId,
     currentUserId,
-    pageTitle,
-    resultsCount
-}: ShowSearchHeaderProps) {
+    pageTitle
+}: Omit<ShowSearchHeaderProps, 'resultsCount'>) {
 
     const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
                                       currentUserId && userId && currentUserId !== userId;
@@ -32,70 +31,81 @@ export default function ShowSearchHeaderLoading({
         <div className="">
             {/* Page Title Section */}
             {pageTitle && (
-                <div className="px-4 py-4 border-b border-border/20">
-                    <h1 className="text-3xl font-bold">{pageTitle}</h1>
+                <div className="px-4 py-2">
+                    <h1 className="text-2xl md:text-3xl font-bold truncate">{pageTitle}</h1>
                 </div>
             )}
 
-            <div className="px-4 py-4">
-                <div className="flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 items-center">
-                    <ShowSearchInput 
-                        searchResults={searchResults}
-                        pathname={pathname} 
-                    />
-                    
-                    <div className="flex-1 space-x-2 w-full flex flex-wrap gap-2 justify-end">
-                        {/* Sort Button - Positioned first for visibility */}
-                        <div className="min-w-32 block">
+            <div className="px-4 space-y-2">
+                {/* Main Header Section */}
+                <div className="space-y-2">
+                    {/* Top Row: Search and Primary Actions */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                        {/* Search Input - Takes priority on mobile */}
+                        <div className="flex-1 min-w-0">
+                            <ShowSearchInput 
+                                searchResults={searchResults}
+                                pathname={pathname} 
+                            />
+                        </div>
+                        
+                        {/* Filter Actions - Organized in groups */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            {/* Primary Action: Sort */}
                             <SortButton
                                 currentSort={filters.sortBy}
                                 pathname={pathname}
                                 currentFilters={filters}
                             />
+                            
+                            {/* User Filters Group */}
+                            <div className="flex items-center gap-2">
+                                <ShowSearchCurrentUserFilters 
+                                    filters={currentUserFilters} 
+                                    pathname={pathname}
+                                    currentFilters={filters}
+                                    searchType={searchType}
+                                    userId={userId}
+                                    currentUserId={currentUserId}
+                                    statuses={[]}
+                                />
+                                
+                                {/* Show Watchlist Owner Filters Button when viewing other user's watchlist */}
+                                {isViewingOtherUserWatchlist && (
+                                    <ShowSearchWatchlistOwnerFilters
+                                        filters={watchlistOwnerFilters}
+                                        pathname={pathname}
+                                        currentFilters={filters}
+                                        userId={userId}
+                                        statuses={[]}
+                                    />
+                                )}
+                            </div>
+                            
+                            {/* Content Filters Group */}
+                            <div className="flex items-center gap-2">
+                                <ShowSearchTagsButtonSkeleton />
+                                <ShowSearchFilterButtonSkeleton />
+                            </div>
                         </div>
-                        
-                        {/* Current User Filters Button */}
-                        <ShowSearchCurrentUserFilters 
-                            filters={currentUserFilters} 
-                            pathname={pathname}
-                            currentFilters={filters}
-                            searchType={searchType}
-                            userId={userId}
-                            currentUserId={currentUserId}
-                            statuses={[]}
-                        />
-                        
-                        {/* Show Watchlist Owner Filters Button when viewing other user's watchlist */}
-                        {isViewingOtherUserWatchlist && (
-                            <ShowSearchWatchlistOwnerFilters
-                                filters={watchlistOwnerFilters}
-                                pathname={pathname}
-                                currentFilters={filters}
-                                userId={userId}
-                                statuses={[]}
-                            />
-                        )}
-                        
-                        {/* Show Tag Filter Button */}
-                        <ShowSearchTagsButtonSkeleton />
-                        
-                        {/* Show Filters Button */}
-                        <ShowSearchFilterButtonSkeleton />
                     </div>
                 </div>
 
-                <div className="space-y-1">
+                {/* Active Filters Display Section */}
+                <div className="">
+                    {/* Main Show Filters */}
                     <ShowSearchFiltersRow 
                         filters={filters} 
                         pathname={pathname}
                     />
                     
-                    {/* Show Tags Row (will only display if there are selected tags) */}
+                    {/* Tag Filters Row */}
                     <ShowSearchTagsRow 
                         filters={filters} 
                         pathname={pathname}
                     />
                     
+                    {/* Current User Filters Row */}
                     <ShowSearchCurrentUserFiltersRow 
                         filters={currentUserFilters} 
                         pathname={pathname}
@@ -106,7 +116,7 @@ export default function ShowSearchHeaderLoading({
                         statuses={[]}
                     />
                     
-                    {/* Show Watchlist Owner Filters Row when viewing other user's watchlist */}
+                    {/* Watchlist Owner Filters Row */}
                     {isViewingOtherUserWatchlist && (
                         <ShowSearchWatchlistOwnerFiltersRow 
                             filters={watchlistOwnerFilters}
@@ -116,14 +126,6 @@ export default function ShowSearchHeaderLoading({
                             statuses={[]}
                         />
                     )}
-                </div>
-
-                {/* Results Count Section */}
-                <div className="mt-4 pt-3 border-t border-border/20">
-                    <span className='flex items-center space-x-2 text-lg'>
-                        <span className='font-semibold'>Results:</span>
-                        <Skeleton className='w-20 h-6' />
-                    </span>
                 </div>
             </div>
         </div>
