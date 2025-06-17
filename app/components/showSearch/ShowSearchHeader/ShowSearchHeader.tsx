@@ -15,9 +15,10 @@ import ShowSearchWatchlistOwnerFilters from "./ShowSearchWatchlistOwnerFilters";
 import ShowSearchWatchlistOwnerFiltersRow from "./ShowSearchWatchlistOwnerFiltersRow";
 import SortButton, { SortOption } from "./SortButton";
 import { ShowTag } from "@/app/models/showTag";
+import { TagCategory } from "@/app/models/tagCategory";
 import TagFilterButton from "./TagFilterButton";
 import ShowSearchTagsRow from "./ShowSearchTagsRow";
-import { getAllTags } from "@/app/(main)/show/[showId]/ShowService";
+import { getAllTags, getAllTagCategories } from "@/app/(main)/show/[showId]/ShowService";
 import { getAllStatuses } from "@/app/(main)/show/[showId]/UserShowDataService";
 
 export type ShowSearchFiltersType = {
@@ -82,6 +83,7 @@ export default async function ShowSearchHeader({
     const services: Service[] | null = await getServices(); 
     const statuses: Status[] | null = await getAllStatuses();
     const tags: ShowTag[] | null = await getAllTags(); // Fetch all tags
+    const tagCategories: TagCategory[] | null = await getAllTagCategories(); // Fetch all tag categories
     
     return (
         <div className="">
@@ -145,6 +147,7 @@ export default async function ShowSearchHeader({
                                         filters={filters}
                                         pathname={pathname}
                                         tags={tags}
+                                        tagCategories={tagCategories}
                                     />
                                 </Suspense>
                                 

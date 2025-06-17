@@ -7,9 +7,10 @@ import { backdropBackground } from "@/app/utils/stylingConstants";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Loader2, User } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Loader2, User, X, ChevronDown, ChevronRight, Star, CheckCircle, Bookmark } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useOptimistic, useTransition } from "react";
+import { useOptimistic, useTransition, useState } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 import { StatusIcon } from "@/app/utils/StatusIcon";
 
@@ -50,6 +51,7 @@ export default function ShowSearchCurrentUserFilters({
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
+    const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
     
     // Ensure incoming filters is properly initialized
     const safeFilters: CurrentUserFilters = {
@@ -129,136 +131,185 @@ export default function ShowSearchCurrentUserFilters({
         });
     };
 
-    const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto text-center outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black cursor-pointer'
-    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto text-center outline outline-1 outline-white hover:bg-white hover:text-black text-white cursor-pointer'
+    const toggleSection = (sectionId: string) => {
+        setExpandedSections(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(sectionId)) {
+                newSet.delete(sectionId);
+            } else {
+                newSet.add(sectionId);
+            }
+            return newSet;
+        });
+    };
 
-    const RatingButtons = () => {
-        const allRatings = Object.values(Rating);
-        // Use optimisticFilters for display
-        const unselectedRatings = allRatings.filter((rating) => !optimisticFilters.ratings.includes(rating));
-
-        return (
-            <div className="grid grid-cols-2 gap-2">
-                {optimisticFilters.ratings.map((rating) => (
-                    <div
-                        key={rating}
-                        onClick={() => handleRemoveRating(rating)}
-                        className={selectedBubbleStyle}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        {rating}
-                    </div>
-                ))}
-
-                {unselectedRatings.map((rating) => (
-                    <div
-                        key={rating}
-                        onClick={() => handleAddRating(rating)}
-                        className={unselectedBubbleStyle}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        {rating}
-                    </div>
-                ))}
-            </div>
-        )
-    }
-
-    const RatingsRow = () => {
-        return (
-            <div className="p-2 pb-0">
-                <div className="text-lg font-medium">Filter by Rating</div>
-                <RatingButtons />
-            </div>
-        )
-    }
-
-    const StatusButtons = () => {
-        const allStatuses: Status[] = statuses || [];
-        
-        // Filter out already selected statuses from the list of all statuses
-        // Use optimisticFilters for display
-        const unselectedStatuses = allStatuses.filter(status => 
-            !optimisticFilters.statuses.some(s => s.id === status.id)
-        );
+    const UserFiltersContent = () => {
+        const watchlistLabel = isViewingOtherUserWatchlist ? "My Watch List" : "Watch List";
         
         return (
-            <div className="grid grid-cols-2 gap-2">
-                {optimisticFilters.statuses.map((selectedStatus) => {
-                    const matchingStatus = allStatuses.find(s => s.id === selectedStatus.id);
-                    return (
-                        <div
-                            key={`selected-${selectedStatus.id}`}
-                            onClick={() => handleRemoveStatus(selectedStatus)}
-                            className={selectedBubbleStyle}
-                            style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                        >
-                            <div className="flex items-center gap-1">
-                                <StatusIcon {...selectedStatus} />
-                                {matchingStatus?.name || `Status ${selectedStatus.id}`}
+            <div className="space-y-6">
+                {/* Header with User icon */}
+                <div className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    <h3 className="text-lg font-semibold">{getFilterButtonTitle()}</h3>
+                </div>
+
+                {/* User Filters Section */}
+                <div className="space-y-4">
+                    {/* Watchlist Filter */}
+                    <Collapsible open={expandedSections.has('watchlist')} onOpenChange={() => toggleSection('watchlist')}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Bookmark className="h-4 w-4" />
+                                <span className="font-medium text-sm">{watchlistLabel}</span>
                             </div>
-                        </div>
-                    );
-                })}
+                            {expandedSections.has('watchlist') ? (
+                                <ChevronDown className="h-4 w-4" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4" />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-2">
+                            <div className="flex flex-wrap gap-2 px-4">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.addedToWatchlist === undefined ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleWatchlistChange(undefined)}
+                                    disabled={isPending}
+                                >
+                                    All
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.addedToWatchlist === true ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleWatchlistChange(true)}
+                                    disabled={isPending}
+                                >
+                                    {isViewingOtherUserWatchlist ? "In My Watch List" : "In Watch List"}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.addedToWatchlist === false ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleWatchlistChange(false)}
+                                    disabled={isPending}
+                                >
+                                    {isViewingOtherUserWatchlist ? "Not In My Watch List" : "Not In Watch List"}
+                                </Button>
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
 
-                {unselectedStatuses.map((status) => (
-                    <div
-                        key={`unselected-${status.id}`}
-                        onClick={() => handleAddStatus(status)}
-                        className={unselectedBubbleStyle}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >   
-                        <div className="flex items-center gap-1">
-                            <StatusIcon {...status} />
-                            {status.name || `Status ${status.id}`}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        )
-    }
+                    {/* Ratings Filter */}
+                    <Collapsible open={expandedSections.has('ratings')} onOpenChange={() => toggleSection('ratings')}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Star className="h-4 w-4" />
+                                <span className="font-medium text-sm">Ratings</span>
+                            </div>
+                            {expandedSections.has('ratings') ? (
+                                <ChevronDown className="h-4 w-4" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4" />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-2">
+                            <div className="flex flex-wrap gap-2 px-4">
+                                {/* Selected ratings */}
+                                {optimisticFilters.ratings.map((rating) => (
+                                    <Button
+                                        key={rating}
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-white text-black hover:bg-primary/10 hover:text-white whitespace-nowrap"
+                                        onClick={() => handleRemoveRating(rating)}
+                                        disabled={isPending}
+                                    >
+                                        {rating}
+                                        <X className="ml-1 h-3 w-3" />
+                                    </Button>
+                                ))}
+                                {/* Unselected ratings */}
+                                {Object.values(Rating).filter(rating => !optimisticFilters.ratings.includes(rating)).map((rating) => (
+                                    <Button
+                                        key={rating}
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-primary/10 hover:bg-white hover:text-black text-foreground border-border whitespace-nowrap"
+                                        onClick={() => handleAddRating(rating)}
+                                        disabled={isPending}
+                                    >
+                                        {rating}
+                                    </Button>
+                                ))}
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
 
-    const StatusesRow = () => {
-        return (
-            <div className="p-2 pb-0">
-                <div className="text-lg font-medium">Filter by Status</div>
-                <StatusButtons />
-            </div>
-        )
-    }
-
-    const WatchListRow = () => {
-        const watchlistLabel = isViewingOtherUserWatchlist ? "Filter by My Watch List" : "Filter by Watch List";
-        
-        return (
-            <div className="p-2 pb-0">
-                <div className="text-lg font-medium">{watchlistLabel}</div>
-                <div className="flex flex-col gap-2 mt-2">
-                    <div 
-                        onClick={() => handleWatchlistChange(undefined)}
-                        className={optimisticFilters.addedToWatchlist === undefined ? selectedBubbleStyle : unselectedBubbleStyle}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        All
-                    </div>
-                    <div 
-                        onClick={() => handleWatchlistChange(true)}
-                        className={optimisticFilters.addedToWatchlist === true ? selectedBubbleStyle : unselectedBubbleStyle}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        {isViewingOtherUserWatchlist ? "In My Watch List" : "In Watch List"}
-                    </div>
-                    <div 
-                        onClick={() => handleWatchlistChange(false)}
-                        className={optimisticFilters.addedToWatchlist === false ? selectedBubbleStyle : unselectedBubbleStyle}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        {isViewingOtherUserWatchlist ? "Not In My Watch List" : "Not In Watch List"}
-                    </div>
+                    {/* Statuses Filter */}
+                    {statuses && statuses.length > 0 && (
+                        <Collapsible open={expandedSections.has('statuses')} onOpenChange={() => toggleSection('statuses')}>
+                            <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span className="font-medium text-sm">Statuses</span>
+                                </div>
+                                {expandedSections.has('statuses') ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                )}
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="pt-2">
+                                <ScrollArea className="w-full">
+                                    <div className="flex flex-wrap gap-2 px-4">
+                                        {/* Selected statuses */}
+                                        {optimisticFilters.statuses.map((selectedStatus) => {
+                                            const matchingStatus = statuses.find(s => s.id === selectedStatus.id);
+                                            return (
+                                                <Button
+                                                    key={`selected-${selectedStatus.id}`}
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="bg-white text-black hover:bg-primary/10 hover:text-white whitespace-nowrap"
+                                                    onClick={() => handleRemoveStatus(selectedStatus)}
+                                                    disabled={isPending}
+                                                >
+                                                    <div className="flex items-center gap-1">
+                                                        <StatusIcon {...selectedStatus} />
+                                                        {matchingStatus?.name || `Status ${selectedStatus.id}`}
+                                                    </div>
+                                                    <X className="ml-1 h-3 w-3" />
+                                                </Button>
+                                            );
+                                        })}
+                                        {/* Unselected statuses */}
+                                        {statuses.filter(status => !optimisticFilters.statuses.some(s => s.id === status.id)).map((status) => (
+                                            <Button
+                                                key={`unselected-${status.id}`}
+                                                variant="outline"
+                                                size="sm"
+                                                className="bg-primary/10 hover:bg-white hover:text-black text-foreground border-border whitespace-nowrap"
+                                                onClick={() => handleAddStatus(status)}
+                                                disabled={isPending}
+                                            >
+                                                <div className="flex items-center gap-1">
+                                                    <StatusIcon {...status} />
+                                                    {status.name || `Status ${status.id}`}
+                                                </div>
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </CollapsibleContent>
+                        </Collapsible>
+                    )}
                 </div>
             </div>
-        )
-    }
+        );
+    };
 
     const getFilterButtonTitle = () => {
         if (isViewingOtherUserWatchlist) {
@@ -277,7 +328,11 @@ export default function ShowSearchCurrentUserFilters({
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button variant="outline" className={`${backdropBackground} text-white relative`} disabled={isPending}>
+                <Button 
+                    variant="outline" 
+                    className={`${backdropBackground} text-white relative ${badgeCount > 0 ? 'border-zinc-600' : ''}`} 
+                    disabled={isPending}
+                >
                     <User className="h-4 w-4 mr-2" />
                     <span>{getFilterButtonTitle()}</span>
                     {isPending && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
@@ -288,18 +343,20 @@ export default function ShowSearchCurrentUserFilters({
                     )}
                 </Button>
             </SheetTrigger>
-            <SheetContent className={`p-0 overflow-y-auto bg-black/80 border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
+            <SheetContent
+                className={`${backdropBackground} text-white border-zinc-800 ${isPending ? 'opacity-75' : ''}`}
+                side="right"
+            >
                 <SheetHeader>
                     <SheetTitle className="text-white">{getFilterButtonTitle()}</SheetTitle>
-                    <SheetDescription>
+                    <SheetDescription className="text-zinc-400">
                         Filter shows based on your interactions.
                     </SheetDescription>
                 </SheetHeader>
-                
-                <ScrollArea className="h-[calc(100vh-150px)] pr-4">
-                    <WatchListRow />
-                    <RatingsRow />
-                    <StatusesRow />
+                <ScrollArea className="h-full py-4">
+                    <div className="pb-4">
+                        <UserFiltersContent />
+                    </div>
                 </ScrollArea>
             </SheetContent>
         </Sheet>

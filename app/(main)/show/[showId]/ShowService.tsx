@@ -6,11 +6,13 @@ import { RatingCounts } from "@/app/models/ratingCounts";
 import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
+import { TagCategory } from "@/app/models/tagCategory";
 import { Status } from "@/app/models/status";
 import { StatusCount } from "@/app/models/statusCount";
 import { createClient, publicClient } from '@/app/utils/supabase/server';
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { cache } from 'react';
+import { getTagCategoryIcon } from "@/app/models/tagCategory";
 
 export const getShow = cache(async (showId: string): Promise<Show | null> => {
   'use cache'
@@ -27,11 +29,19 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
 
 export async function getTags(showId: string): Promise<ShowTag[] | null> {
   const supabase = await createClient();
-  const { data: tagData } = await supabase.from("ShowTagRelationship").select('tag:tagId (id, name, created_at)').match({showId: showId});
+  const { data: tagData } = await supabase
+  .from("ShowTagRelationship")
+  .select('tag:tagId (id, name, created_at, category:categoryId (id, name, created_at))')
+  .match({showId: showId});
   
   if (!tagData) return null;
   
-  const tags = tagData.map((obj) => obj.tag) as unknown as ShowTag[];
+  const tags = tagData.map((obj: any) => ({
+    id: obj.tag.id,
+    name: obj.tag.name,
+    created_at: obj.tag.created_at,
+    category: obj.tag.category
+  })) as ShowTag[];
   
   return tags;
 }
@@ -42,7 +52,7 @@ export const getAllTags = async function (): Promise<ShowTag[] | null> {
   const supabase = await publicClient();
   const { data: tagData, error } = await supabase
     .from('showTag')
-    .select('id, name, created_at');
+    .select('id, name, created_at, category:ShowTagCategory (id, name, created_at)');
 
   if (error) {
     console.error("Error fetching tags:", error);
@@ -54,8 +64,36 @@ export const getAllTags = async function (): Promise<ShowTag[] | null> {
     return null;
   }
 
-  const tags = tagData as ShowTag[];
+  const tags = tagData.map((tag: any) => ({
+    id: tag.id,
+    name: tag.name,
+    created_at: tag.created_at,
+    category: tag.category
+  })) as ShowTag[];
+  
   return tags;
+};
+
+export const getAllTagCategories = async function (): Promise<TagCategory[] | null> {
+  'use cache'
+  cacheLife('days');
+  const supabase = await publicClient();
+  const { data: categoryData, error } = await supabase
+    .from('ShowTagCategory')
+    .select('id, name, created_at');
+
+  if (error) {
+    console.error("Error fetching tag categories:", error);
+    return null;
+  }
+
+  if (!categoryData || categoryData.length === 0) {
+    console.log("No tag categories found in the database");
+    return null;
+  }
+
+  const categories = categoryData as TagCategory[];
+  return categories;
 };
 
 export const getShowImageURL = cache((showName: string, tile: boolean): string => {

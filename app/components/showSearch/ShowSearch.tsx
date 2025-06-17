@@ -13,6 +13,7 @@ import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } fro
 import { ShowWithAnalytics } from '@/app/models/show';
 import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
 import { backdropBackground } from '@/app/utils/stylingConstants';
+import { Status } from '@/app/models/status';
 
 // Number of items per page - should match ShowSearchShows
 const ITEMS_PER_PAGE = 20;
@@ -227,14 +228,123 @@ async function calculateResultsCount({
             if (shows) {
                 filteredShows = [...shows];
                 
+                // Apply current user's watchlist filter
+                if (currentUserFilters.addedToWatchlist !== undefined) {
+                    if (isViewingOtherUserWatchlist) {
+                        // For other user's watchlist, filter based on current user's watchlist status
+                        filteredShows = filteredShows.filter((show) => {
+                            const inCurrentUserInfo = currentUserInfo?.some((info) => Number(info.showId) === show.id);
+                            return currentUserFilters.addedToWatchlist === inCurrentUserInfo;
+                        });
+                    } else {
+                        // For own watchlist or other search types, filter based on display user info
+                        filteredShows = filteredShows.filter((show) => {
+                            const inUserInfo = displayUserInfo?.some((info) => Number(info.showId) === show.id);
+                            return currentUserFilters.addedToWatchlist === inUserInfo;
+                        });
+                    }
+                }
+                
+                // Apply current user's ratings filter
+                if (currentUserFilters.ratings && currentUserFilters.ratings.length > 0) {
+                    if (isViewingOtherUserWatchlist) {
+                        // For other user's watchlist, filter based on current user's ratings
+                        filteredShows = filteredShows.filter((show) => {
+                            const userInfo = currentUserInfo?.find((info) => Number(info.showId) === show.id);
+                            return userInfo && currentUserFilters.ratings.includes(userInfo.rating);
+                        });
+                    } else {
+                        // For own watchlist or other search types, filter based on display user info
+                        filteredShows = filteredShows.filter((show) => {
+                            const userInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
+                            return userInfo && currentUserFilters.ratings.includes(userInfo.rating);
+                        });
+                    }
+                }
+                
+                // Apply current user's statuses filter
+                if (currentUserFilters.statuses && currentUserFilters.statuses.length > 0) {
+                    if (isViewingOtherUserWatchlist) {
+                        // For other user's watchlist, filter based on current user's statuses
+                        filteredShows = filteredShows.filter((show) => {
+                            const userInfo = currentUserInfo?.find((info) => Number(info.showId) === show.id);
+                            
+                            if (!userInfo || !userInfo.status) return false;
+                            
+                            // Handle status that might be just an ID (number) or a full Status object
+                            const statusId = typeof userInfo.status === 'number' 
+                                ? userInfo.status 
+                                : userInfo.status.id;
+                                
+                            // Compare by ID directly
+                            return currentUserFilters.statuses.some((filterStatus: Status) => 
+                                filterStatus.id === statusId
+                            );
+                        });
+                    } else {
+                        // For own watchlist or other search types, filter based on display user info
+                        filteredShows = filteredShows.filter((show) => {
+                            const userInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
+                            
+                            if (!userInfo || !userInfo.status) return false;
+                            
+                            // Handle status that might be just an ID (number) or a full Status object
+                            const statusId = typeof userInfo.status === 'number' 
+                                ? userInfo.status 
+                                : userInfo.status.id;
+                                
+                            // Compare by ID directly
+                            return currentUserFilters.statuses.some((filterStatus: Status) => 
+                                filterStatus.id === statusId
+                            );
+                        });
+                    }
+                }
+                
+                // Apply watchlist owner filters when viewing another user's watchlist
+                if (isViewingOtherUserWatchlist) {
+                    // Filter by watchlist owner's ratings if specified
+                    if (watchlistOwnerFilters.ratings && watchlistOwnerFilters.ratings.length > 0) {
+                        filteredShows = filteredShows.filter((show) => {
+                            const ownerInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
+                            return ownerInfo && watchlistOwnerFilters.ratings.includes(ownerInfo.rating);
+                        });
+                    }
+                    
+                    // Filter by watchlist owner's statuses if specified
+                    if (watchlistOwnerFilters.statuses && watchlistOwnerFilters.statuses.length > 0) {
+                        filteredShows = filteredShows.filter((show) => {
+                            const ownerInfo = displayUserInfo?.find((info) => Number(info.showId) === show.id);
+                            
+                            if (!ownerInfo || !ownerInfo.status) return false;
+                            
+                            // Handle status that might be just an ID (number) or a full Status object
+                            const statusId = typeof ownerInfo.status === 'number' 
+                                ? ownerInfo.status 
+                                : ownerInfo.status.id;
+                                
+                            // Compare by ID directly
+                            return watchlistOwnerFilters.statuses.some((filterStatus: Status) => 
+                                filterStatus.id === statusId
+                            );
+                        });
+                    }
+                    
+                    // Filter by watchlist status if specified - this is unnecessary since these are all on their watchlist
+                    // but including for completeness
+                    if (watchlistOwnerFilters.addedToWatchlist !== undefined) {
+                        filteredShows = filteredShows.filter((show) => {
+                            const inOwnerWatchlist = displayUserInfo?.some((info) => Number(info.showId) === show.id);
+                            return watchlistOwnerFilters.addedToWatchlist === inOwnerWatchlist;
+                        });
+                    }
+                }
+                
                 // Apply search filter
                 if (searchResults.length > 0) {
                     filteredShows = filteredShows.filter((show) => 
                         show.name.toLowerCase().includes(searchResults.toLowerCase()));
                 }
-                
-                // Apply user filters (simplified version - would need full implementation)
-                // For now, just applying search filter for basic functionality
             }
         }
 

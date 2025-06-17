@@ -104,7 +104,7 @@ export default function ShowSearchTagsRow({
     }
 
     return (
-        <div className="overflow-x-auto">
+        <div className="">
             <div className="flex items-center gap-2 px-2 py-1 min-w-max">
                 {optimisticFilters.tags.map(tag => (
                     <div

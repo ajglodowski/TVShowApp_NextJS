@@ -4,12 +4,12 @@ import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Filter, Loader2 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Filter, Loader2, X, ChevronDown, ChevronRight, Tv, Clock, Calendar, Play, Pause, Zap } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useOptimistic, useTransition } from "react";
+import { useOptimistic, useTransition, useState } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
 type ShowSearchFilterButtonProps = {
@@ -27,6 +27,7 @@ export default function ShowSearchFilterButton({
     const searchParams = useSearchParams();
     const currentPathname = usePathname();
     const [isPending, startTransition] = useTransition();
+    const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
     
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
         filters,
@@ -119,221 +120,313 @@ export default function ShowSearchFilterButton({
             router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
-    
-    const selectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto outline outline-1 outline-white hover:bg-white hover:text-black bg-white text-black text-center cursor-pointer'
-    const unselectedBubbleStyle = 'rounded-full py-1 px-2 mx-2 my-auto outline outline-1 outline-white hover:bg-white hover:text-black text-white text-center cursor-pointer'
 
-    const ServiceButtons = () => {
-        if (!services) return (<></>);
-        const unselectedServices = services?.filter((service) => !optimisticFilters.service.map(s => s.id).includes(service.id));
-        return (
-            <div className="grid grid-cols-2 gap-2">
-                {optimisticFilters.service.map((service) => (
-                    <div key={service.id}>
-                        <div 
-                            className={selectedBubbleStyle}
-                            onClick={() => handleRemoveService(service)}
-                            style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                        >
-                            {service.name}
-                        </div>
-                    </div>
-                ))}
-                {unselectedServices?.map((service) => (
-                    <div key={service.id}>
-                        <div 
-                            className={unselectedBubbleStyle}
-                            onClick={() => handleAddService(service)}
-                            style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                        >
-                            {service.name}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        )
-    }
+    const toggleSection = (sectionId: string) => {
+        setExpandedSections(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(sectionId)) {
+                newSet.delete(sectionId);
+            } else {
+                newSet.add(sectionId);
+            }
+            return newSet;
+        });
+    };
 
-    const ServicesRow = () => {
+    const FiltersContent = () => {
         return (
-            <div className="">
-                <Label className="font-medium text-sm">Services</Label>
-                <ServiceButtons />
+            <div className="space-y-6">
+                {/* Header with Filter icon */}
+                <div className="flex items-center gap-2">
+                    <Filter className="h-5 w-5" />
+                    <h3 className="text-lg font-semibold">Show Filters</h3>
+                </div>
+
+                {/* Boolean Filters Section */}
+                <div className="space-y-4">
+                    {/* Running Filter */}
+                    <Collapsible open={expandedSections.has('running')} onOpenChange={() => toggleSection('running')}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Play className="h-4 w-4" />
+                                <span className="font-medium text-sm">Running Status</span>
+                            </div>
+                            {expandedSections.has('running') ? (
+                                <ChevronDown className="h-4 w-4" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4" />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-2">
+                            <div className="flex flex-wrap gap-2 px-4">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.running === null ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('running', null)}
+                                    disabled={isPending}
+                                >
+                                    Not Applied
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.running === true ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('running', true)}
+                                    disabled={isPending}
+                                >
+                                    Yes
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.running === false ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('running', false)}
+                                    disabled={isPending}
+                                >
+                                    No
+                                </Button>
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+
+                    {/* Limited Series Filter */}
+                    <Collapsible open={expandedSections.has('limitedSeries')} onOpenChange={() => toggleSection('limitedSeries')}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Pause className="h-4 w-4" />
+                                <span className="font-medium text-sm">Limited Series</span>
+                            </div>
+                            {expandedSections.has('limitedSeries') ? (
+                                <ChevronDown className="h-4 w-4" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4" />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-2">
+                            <div className="flex flex-wrap gap-2 px-4">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.limitedSeries === null ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('limitedSeries', null)}
+                                    disabled={isPending}
+                                >
+                                    Not Applied
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.limitedSeries === true ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('limitedSeries', true)}
+                                    disabled={isPending}
+                                >
+                                    Yes
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.limitedSeries === false ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('limitedSeries', false)}
+                                    disabled={isPending}
+                                >
+                                    No
+                                </Button>
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+
+                    {/* Currently Airing Filter */}
+                    <Collapsible open={expandedSections.has('currentlyAiring')} onOpenChange={() => toggleSection('currentlyAiring')}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Zap className="h-4 w-4" />
+                                <span className="font-medium text-sm">Currently Airing</span>
+                            </div>
+                            {expandedSections.has('currentlyAiring') ? (
+                                <ChevronDown className="h-4 w-4" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4" />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-2">
+                            <div className="flex flex-wrap gap-2 px-4">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.currentlyAiring === null ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('currentlyAiring', null)}
+                                    disabled={isPending}
+                                >
+                                    Not Applied
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.currentlyAiring === true ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('currentlyAiring', true)}
+                                    disabled={isPending}
+                                >
+                                    Yes
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className={`${optimisticFilters.currentlyAiring === false ? 'bg-white text-black' : 'bg-primary/10 hover:bg-white hover:text-black text-foreground border-border'} whitespace-nowrap`}
+                                    onClick={() => handleSetFilter('currentlyAiring', false)}
+                                    disabled={isPending}
+                                >
+                                    No
+                                </Button>
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+
+                    {/* Services Filter */}
+                    {services && services.length > 0 && (
+                        <Collapsible open={expandedSections.has('services')} onOpenChange={() => toggleSection('services')}>
+                            <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                                <div className="flex items-center gap-2">
+                                    <Tv className="h-4 w-4" />
+                                    <span className="font-medium text-sm">Services</span>
+                                </div>
+                                {expandedSections.has('services') ? (
+                                    <ChevronDown className="h-4 w-4" />
+                                ) : (
+                                    <ChevronRight className="h-4 w-4" />
+                                )}
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="pt-2">
+                                <ScrollArea className="w-full">
+                                    <div className="flex flex-wrap gap-2 px-4">
+                                        {/* Selected services */}
+                                        {optimisticFilters.service.map((service) => (
+                                            <Button
+                                                key={service.id}
+                                                variant="outline"
+                                                size="sm"
+                                                className="bg-white text-black hover:bg-primary/10 hover:text-white whitespace-nowrap"
+                                                onClick={() => handleRemoveService(service)}
+                                                disabled={isPending}
+                                            >
+                                                {service.name}
+                                                <X className="ml-1 h-3 w-3" />
+                                            </Button>
+                                        ))}
+                                        {/* Unselected services */}
+                                        {services.filter(service => !optimisticFilters.service.some(s => s.id === service.id)).map((service) => (
+                                            <Button
+                                                key={service.id}
+                                                variant="outline"
+                                                size="sm"
+                                                className="bg-primary/10 hover:bg-white hover:text-black text-foreground border-border whitespace-nowrap"
+                                                onClick={() => handleAddService(service)}
+                                                disabled={isPending}
+                                            >
+                                                {service.name}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </CollapsibleContent>
+                        </Collapsible>
+                    )}
+
+                    {/* Length Filter */}
+                    <Collapsible open={expandedSections.has('length')} onOpenChange={() => toggleSection('length')}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4" />
+                                <span className="font-medium text-sm">Length</span>
+                            </div>
+                            {expandedSections.has('length') ? (
+                                <ChevronDown className="h-4 w-4" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4" />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-2">
+                            <div className="flex flex-wrap gap-2 px-4">
+                                {/* Selected lengths */}
+                                {optimisticFilters.length.map((length) => (
+                                    <Button
+                                        key={length}
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-white text-black hover:bg-primary/10 hover:text-white whitespace-nowrap"
+                                        onClick={() => handleRemoveLength(length)}
+                                        disabled={isPending}
+                                    >
+                                        {length}{length === ShowLength.NONE ? '' : 'm'}
+                                        <X className="ml-1 h-3 w-3" />
+                                    </Button>
+                                ))}
+                                {/* Unselected lengths */}
+                                {Object.values(ShowLength).filter(length => !optimisticFilters.length.includes(length)).map((length) => (
+                                    <Button
+                                        key={length}
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-primary/10 hover:bg-white hover:text-black text-foreground border-border whitespace-nowrap"
+                                        onClick={() => handleAddLength(length)}
+                                        disabled={isPending}
+                                    >
+                                        {length}{length === ShowLength.NONE ? '' : 'm'}
+                                    </Button>
+                                ))}
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+
+                    {/* Air Date Filter */}
+                    <Collapsible open={expandedSections.has('airDate')} onOpenChange={() => toggleSection('airDate')}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4" />
+                                <span className="font-medium text-sm">Air Date</span>
+                            </div>
+                            {expandedSections.has('airDate') ? (
+                                <ChevronDown className="h-4 w-4" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4" />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-2">
+                            <div className="flex flex-wrap gap-2 px-4">
+                                {/* Selected air dates */}
+                                {optimisticFilters.airDate.map((airDate) => (
+                                    <Button
+                                        key={airDate}
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-white text-black hover:bg-primary/10 hover:text-white whitespace-nowrap"
+                                        onClick={() => handleRemoveAirDate(airDate)}
+                                        disabled={isPending}
+                                    >
+                                        {airDate}
+                                        <X className="ml-1 h-3 w-3" />
+                                    </Button>
+                                ))}
+                                {/* Unselected air dates */}
+                                {Object.values(AirDate).filter(airDate => !optimisticFilters.airDate.includes(airDate)).map((airDate) => (
+                                    <Button
+                                        key={airDate}
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-primary/10 hover:bg-white hover:text-black text-foreground border-border whitespace-nowrap"
+                                        onClick={() => handleAddAirDate(airDate)}
+                                        disabled={isPending}
+                                    >
+                                        {airDate}
+                                    </Button>
+                                ))}
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+                </div>
             </div>
         );
-    }
-
-    const AirdateButtons = () => {
-        const airdates = Object.values(AirDate);
-        const unselectedAirdates = airdates?.filter((airdate) => !optimisticFilters.airDate.includes(airdate));
-        return (
-            <div className="grid grid-cols-2 gap-2">
-                {optimisticFilters.airDate.map((airdate) => (
-                    <div
-                        key={airdate}
-                        className={selectedBubbleStyle}
-                        onClick={() => handleRemoveAirDate(airdate)}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        {airdate}
-                    </div>
-                ))}
-                {unselectedAirdates?.map((airdate) => (
-                    <div
-                        key={airdate}
-                        className={unselectedBubbleStyle}
-                        onClick={() => handleAddAirDate(airdate)}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        {airdate}
-                    </div>
-                ))}
-            </div>
-        )
-    }
-
-    const AirdatesRow = () => {
-        return (
-            <div className="">
-                <Label>Air Dates</Label>
-                <AirdateButtons />
-            </div>
-        );
-    }
-
-    const LengthButtons = () => {
-        const lengths = Object.values(ShowLength);
-        const unselectLengths = lengths?.filter((length) => !optimisticFilters.length.includes(length));
-        return (
-            <div className="grid grid-cols-2 gap-2">
-                {optimisticFilters.length.map((length) => (
-                    <div
-                        key={length}
-                        className={selectedBubbleStyle}
-                        onClick={() => handleRemoveLength(length)}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        {length}{length === ShowLength.NONE ? '' : 'm'}
-                    </div>
-                ))}
-                {unselectLengths?.map((length) => (
-                    <div
-                        key={length}
-                        className={unselectedBubbleStyle}
-                        onClick={() => handleAddLength(length)}
-                        style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                    >
-                        {length}{length === ShowLength.NONE ? '' : 'm'}
-                    </div>
-                ))}
-            </div>
-        )
-    }
-
-    const LengthRow = () => {
-        return (
-            <div className="">
-                <Label>Length</Label>
-                <LengthButtons />
-            </div>
-        );
-    }
-
-    const FilterRows = () => {
-        return (
-            <div className="pb-4 space-y-4">
-                <div className="flex flex-col">
-                    <div className="py-2">
-                        <Label className="font-medium text-sm">Running?</Label>
-                        <div className="flex flex-col gap-2 mt-2">
-                            <div 
-                                onClick={() => handleSetFilter('running', null)}
-                                className={optimisticFilters.running === null ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                Not Applied
-                            </div>
-                            <div 
-                                onClick={() => handleSetFilter('running', true)}
-                                className={optimisticFilters.running === true ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                Yes
-                            </div>
-                            <div 
-                                onClick={() => handleSetFilter('running', false)}
-                                className={optimisticFilters.running === false ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                No
-                            </div>
-                        </div>
-                    </div>
-                    <div className="py-2">
-                        <Label className="font-medium text-sm">Limited Series?</Label>
-                        <div className="flex flex-col gap-2 mt-2">
-                            <div 
-                                onClick={() => handleSetFilter('limitedSeries', null)}
-                                className={optimisticFilters.limitedSeries === null ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                Not Applied
-                            </div>
-                            <div 
-                                onClick={() => handleSetFilter('limitedSeries', true)}
-                                className={optimisticFilters.limitedSeries === true ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                Yes
-                            </div>
-                            <div 
-                                onClick={() => handleSetFilter('limitedSeries', false)}
-                                className={optimisticFilters.limitedSeries === false ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                No
-                            </div>
-                        </div>
-                    </div>
-                    <div className="py-2">
-                        <Label className="font-medium text-sm">Currently Airing?</Label>
-                        <div className="flex flex-col gap-2 mt-2">
-                            <div 
-                                onClick={() => handleSetFilter('currentlyAiring', null)}
-                                className={optimisticFilters.currentlyAiring === null ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                Not Applied
-                            </div>
-                            <div 
-                                onClick={() => handleSetFilter('currentlyAiring', true)}
-                                className={optimisticFilters.currentlyAiring === true ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                Yes
-                            </div>
-                            <div 
-                                onClick={() => handleSetFilter('currentlyAiring', false)}
-                                className={optimisticFilters.currentlyAiring === false ? selectedBubbleStyle : unselectedBubbleStyle}
-                                style={{ pointerEvents: isPending ? 'none' : 'auto' }}
-                            >
-                                No
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    {services && <ServicesRow />}
-                </div>
-                <div>
-                    <LengthRow />
-                </div>
-                <div>
-                    <AirdatesRow />
-                </div>
-            </div>
-        );
-    }
+    };
 
     const badgeCount = [
         filters.service.length,
@@ -342,14 +435,16 @@ export default function ShowSearchFilterButton({
         filters.limitedSeries !== null ? 1 : 0,
         filters.running !== null ? 1 : 0,
         filters.currentlyAiring !== null ? 1 : 0,
-        // Exclude tags from the count - they're handled by the TagFilterButton
     ].reduce((acc, count) => acc + count, 0);
-
 
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button variant="outline" className={`${backdropBackground} text-white relative`} disabled={isPending}>
+                <Button 
+                    variant="outline" 
+                    className={`${backdropBackground} text-white relative ${badgeCount > 0 ? 'border-zinc-600' : ''}`} 
+                    disabled={isPending}
+                >
                     <Filter className="h-4 w-4 mr-2" />
                     <span>Filters</span>
                     {isPending && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
@@ -360,16 +455,20 @@ export default function ShowSearchFilterButton({
                     )}
                 </Button>
             </SheetTrigger>
-            <SheetContent className={`overflow-y-auto bg-black border-l border-l-white/20 ${isPending ? 'opacity-75' : ''}`}>
+            <SheetContent
+                className={`${backdropBackground} text-white border-zinc-800 ${isPending ? 'opacity-75' : ''}`}
+                side="right"
+            >
                 <SheetHeader>
                     <SheetTitle className="text-white">Show Filters</SheetTitle>
-                    <SheetDescription>
+                    <SheetDescription className="text-zinc-400">
                         Refine the results based on show characteristics.
                     </SheetDescription>
                 </SheetHeader>
-                
-                <ScrollArea className="h-[calc(100vh-150px)] pr-4">
-                    <FilterRows />
+                <ScrollArea className="h-full py-4">
+                    <div className="pb-4">
+                        <FiltersContent />
+                    </div>
                 </ScrollArea>
             </SheetContent>
         </Sheet>
