@@ -24,7 +24,7 @@ export default async function Login({
     if (error) {
       return redirect('/login?message=Could not authenticate user')
     }
-    revalidateTag('currentUser');
+    revalidateTag('currentUser', 'max');
     return redirect('/')
   }
 

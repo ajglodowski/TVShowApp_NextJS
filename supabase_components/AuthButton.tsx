@@ -32,7 +32,7 @@ async function AuthButtonContent() {
 
     const supabase = await createClient();
     await supabase.auth.signOut()
-    revalidateTag('currentUser');
+    revalidateTag('currentUser', 'max');
     return redirect('/login')
   }
 

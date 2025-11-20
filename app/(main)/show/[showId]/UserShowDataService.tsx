@@ -46,7 +46,7 @@ export async function updateStatus({userId, showId, newStatus}: {showId: string,
         console.error(error);
         return false;
     }
-    revalidateTag('currentUserShowData');
+    revalidateTag('currentUserShowData', 'max');
     return true;
 }
 
