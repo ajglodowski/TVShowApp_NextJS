@@ -62,14 +62,39 @@ export default function ImageCropper({ image, onCropComplete }: ImageCropperProp
       // Calculate pixel ratio for high DPI displays
       const pixelRatio = window.devicePixelRatio || 1
       
-      // Calculate the source dimensions (taking into account the scale)
-      const scaleX = image.naturalWidth / image.width
-      const scaleY = image.naturalHeight / image.height
+      // react-image-crop coordinates are relative to the displayed image size (image.width/image.height)
+      // We need to map these to the natural image size (image.naturalWidth/image.naturalHeight)
+      // The CSS transform scale() is applied visually but react-image-crop measures the element's
+      // intrinsic size (image.width/image.height), not the transformed size
+      
+      // Get the displayed size (may be constrained by CSS like maxHeight: 400px)
+      const displayedWidth = image.width
+      const displayedHeight = image.height
+      
+      // Get the natural (actual) size of the image
+      const naturalWidth = image.naturalWidth
+      const naturalHeight = image.naturalHeight
+      
+      // Calculate scale factors from displayed size to natural size
+      const scaleX = naturalWidth / displayedWidth
+      const scaleY = naturalHeight / displayedHeight
+
+      // Convert crop coordinates from displayed size to natural image coordinates
+      // React-image-crop's onComplete callback returns pixel coordinates relative to
+      // the displayed image size (image.width/image.height), even if the crop was
+      // initialized with percentage units. The CSS transform scale() doesn't affect
+      // the coordinate system - react-image-crop measures the element's intrinsic size.
+      
+      // Convert from displayed coordinates to natural image coordinates
+      const cropX = crop.x * scaleX
+      const cropY = crop.y * scaleY
+      const cropWidth = crop.width * scaleX
+      const cropHeight = crop.height * scaleY
 
       // Limit max dimensions for better performance with large images
       const maxDimension = 1200
-      let outputWidth = crop.width * scaleX
-      let outputHeight = crop.height * scaleY
+      let outputWidth = cropWidth
+      let outputHeight = cropHeight
       
       // Scale down if image is too large
       if (outputWidth > maxDimension || outputHeight > maxDimension) {
@@ -85,12 +110,6 @@ export default function ImageCropper({ image, onCropComplete }: ImageCropperProp
       // Scale the canvas according to the device pixel ratio
       ctx.scale(pixelRatio, pixelRatio)
       
-      // Draw the cropped image
-      const cropX = crop.x * scaleX
-      const cropY = crop.y * scaleY
-      const cropWidth = crop.width * scaleX
-      const cropHeight = crop.height * scaleY
-      
       // Clear the canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       
@@ -98,18 +117,15 @@ export default function ImageCropper({ image, onCropComplete }: ImageCropperProp
       if (rotate > 0) {
         ctx.save()
         // Translate to center, rotate, and translate back
-        const cropCenterX = cropWidth / 2
-        const cropCenterY = cropHeight / 2
-        
-        ctx.translate(cropWidth / 2, cropHeight / 2)
+        ctx.translate(outputWidth / 2, outputHeight / 2)
         ctx.rotate((rotate * Math.PI) / 180)
-        ctx.translate(-cropWidth / 2, -cropHeight / 2)
+        ctx.translate(-outputWidth / 2, -outputHeight / 2)
         
-        // Draw the image
+        // Draw the image - source coordinates are in natural image pixels
         ctx.drawImage(
           image,
           cropX, cropY, cropWidth, cropHeight,
-          0, 0, cropWidth, cropHeight
+          0, 0, outputWidth, outputHeight
         )
         
         ctx.restore()
@@ -118,7 +134,7 @@ export default function ImageCropper({ image, onCropComplete }: ImageCropperProp
         ctx.drawImage(
           image,
           cropX, cropY, cropWidth, cropHeight,
-          0, 0, cropWidth, cropHeight
+          0, 0, outputWidth, outputHeight
         )
       }
       
@@ -129,7 +145,7 @@ export default function ImageCropper({ image, onCropComplete }: ImageCropperProp
         }
       }, 'image/jpeg', 0.95)
     }
-  }, [completedCrop, onCropComplete, rotate])
+  }, [completedCrop, onCropComplete, rotate, scale])
 
   return (
     <Card className={`w-full ${backdropBackground} border-none shadow-lg rounded-lg text-white`}>

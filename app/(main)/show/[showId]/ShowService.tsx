@@ -28,22 +28,29 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
 });
 
 export async function getTags(showId: string): Promise<ShowTag[] | null> {
-  const supabase = await createClient();
-  const { data: tagData } = await supabase
-  .from("ShowTagRelationship")
-  .select('tag:tagId (id, name, created_at, category:categoryId (id, name, created_at))')
-  .match({showId: showId});
-  
-  if (!tagData) return null;
-  
-  const tags = tagData.map((obj: any) => ({
-    id: obj.tag.id,
-    name: obj.tag.name,
-    created_at: obj.tag.created_at,
-    category: obj.tag.category
-  })) as ShowTag[];
-  
-  return tags;
+	'use cache'
+	cacheLife('days');
+	const supabase = await publicClient();
+	const { data: tagData, error } = await supabase
+		.from("ShowTagRelationship")
+		.select('tag:tagId (id, name, created_at, category:ShowTagCategory (id, name, created_at))')
+		.match({showId: showId});
+
+	if (error) {
+		console.error("Error fetching tags:", error);
+		return null;
+	}
+
+	if (!tagData) return null;
+	
+	const tags = tagData.map((obj: any) => ({
+		id: obj.tag.id,
+		name: obj.tag.name,
+		created_at: obj.tag.created_at,
+		category: obj.tag.category
+	})) as ShowTag[];
+	
+	return tags;
 }
 
 export const getAllTags = async function (): Promise<ShowTag[] | null> {
@@ -125,49 +132,40 @@ export const fetchAverageShowColor = cache(async function (showName: string): Pr
 });
 
 export async function getRatingCounts(showId: string): Promise<RatingCounts | null> {
-  
-  const supabase = await createClient();
-  const { data: ratingData } = await supabase.from("showratingcounts").select('rating, count').match({showId: showId});
-  
-  if (!ratingData) return null;
-  const output: Record<Rating, number> = {
-    [Rating.DISLIKED]: 0,
-    [Rating.MEH]: 0,
-    [Rating.LIKED]: 0,
-    [Rating.LOVED]: 0
-  };
-
-  const ratings = Object.values(Rating) as Rating[];
-  for (const ratingOption of ratings) {
-    const ratingCount = ratingData.find((rating) => rating.rating === ratingOption)?.count;
-    output[ratingOption] = ratingCount ?? 0;
-  }
-
-  /*
-  const mockData: RatingCounts = {
-    [Rating.DISLIKED]: 50,
-    [Rating.MEH]: 2,
-    [Rating.LIKED]: 5,
-    [Rating.LOVED]: 200
-  };
-  */
-
-  return output;
+	'use cache'
+	cacheLife('hours');
+	const supabase = await publicClient();
+	const { data: ratingData } = await supabase.from("showratingcounts").select('rating, count').match({showId: showId});
+	
+	if (!ratingData) return null;
+	const output: Record<Rating, number> = {
+		[Rating.DISLIKED]: 0,
+		[Rating.MEH]: 0,
+		[Rating.LIKED]: 0,
+		[Rating.LOVED]: 0
+	};
+	const ratings = Object.values(Rating) as Rating[];
+	for (const ratingOption of ratings) {
+		const ratingCount = ratingData.find((rating) => rating.rating === ratingOption)?.count;
+		output[ratingOption] = ratingCount ?? 0;
+	}
+  	return output;
 }
 
 export async function getStatusCounts(showId: string): Promise<StatusCount[] | null> {
-  
-  const supabase = await createClient();
-  const { data: ratingData } = await supabase.from("showstatuscounts").select('status:status(id, name), count').match({showId: showId});
-  if (!ratingData) return null;
-  const output = [];
-  for (const status of ratingData) {
-    output.push({
-      status: status.status as unknown as Status,
-      count: status.count
-    } as unknown as StatusCount);
-  }
-  return output;
+	'use cache'
+	cacheLife('hours');
+	const supabase = await publicClient();
+	const { data: ratingData } = await supabase.from("showstatuscounts").select('status:status(id, name), count').match({showId: showId});
+	if (!ratingData) return null;
+	const output = [];
+	for (const status of ratingData) {
+		output.push({
+		status: status.status as unknown as Status,
+		count: status.count
+		} as unknown as StatusCount);
+	}
+	return output;
 }
 
 export async function getActorsForShow(showId: number): Promise<Actor[] | null> {

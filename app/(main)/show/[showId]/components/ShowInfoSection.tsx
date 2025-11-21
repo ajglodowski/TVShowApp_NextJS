@@ -9,19 +9,21 @@ interface ShowInfoTabContentProps {
   show: Show;
   flatStyle: () => React.CSSProperties;
   showId: string;
+  isAdmin: boolean;
 }
 
-export default function ShowInfoSection({ show, flatStyle, showId }: ShowInfoTabContentProps) {
+export default function ShowInfoSection({ show, flatStyle, showId, isAdmin }: ShowInfoTabContentProps) {
   return (
     <div className='flex flex-wrap gap-4 mt-4'>
       <div style={flatStyle()} className='text-left w-full md:flex-grow m-0 p-4 h-auto shadow-2xl rounded-lg'>
         <div className='flex flex-wrap justify-between items-start mb-4'>
           <h2 className='text-5xl md:text-6xl font-bold tracking-tighter mb-2 md:mb-0'>Show Info</h2>
           <div className='text-right space-y-1'>
-            
-            <Link href={`/editShow/${showId}`}>
-              <button className='p-1 px-2 text-sm rounded-lg outline outline-white hover:bg-white hover:text-black'>Edit Show</button>
-            </Link>
+            {isAdmin && (
+              <Link href={`/editShow/${showId}`}>
+                <button className='p-1 px-2 text-sm rounded-lg outline outline-white hover:bg-white hover:text-black'>Edit Show</button>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -46,7 +48,7 @@ export default function ShowInfoSection({ show, flatStyle, showId }: ShowInfoTab
       <div style={flatStyle()} className='text-left w-full md:w-1/3 m-0 p-4 shadow-xl rounded-lg'>
             <h1 className='text-4xl md:text-5xl font-bold tracking-tighter text-left mb-3'>Tags</h1>
             <Suspense fallback={<LoadingShowTagsSection />}>
-                <ShowTagsSection showId={showId} />
+                <ShowTagsSection showId={showId} isAdmin={isAdmin} />
             </Suspense>
       </div>
     </div>

@@ -1,12 +1,12 @@
 "use server";
 
-import { createClient } from '@/app/utils/supabase/server';
+import { createClient, publicClient } from '@/app/utils/supabase/server';
 import { Status } from "@/app/models/status";
 import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
 import { Rating } from "@/app/models/rating";
 import { UserUpdate } from "@/app/models/userUpdate";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
-import { revalidateTag } from 'next/cache';
+import { cacheLife, revalidateTag } from 'next/cache';
 
 export async function getUserShowData({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserShowData | null> {
 
@@ -51,8 +51,9 @@ export async function updateStatus({userId, showId, newStatus}: {showId: string,
 }
 
 export async function getAllStatuses(): Promise<Status[]|null> {
-    
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('hours');
+    const supabase = await publicClient();
     const { data } = await supabase.from("status").select();
     const statuses = data as unknown as Status[];
     return statuses;

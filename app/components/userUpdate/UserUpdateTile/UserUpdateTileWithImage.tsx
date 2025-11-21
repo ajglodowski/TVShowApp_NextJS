@@ -35,9 +35,7 @@ export default async function UserUpdateTileWithImage(props: UserUpdateTileProps
 
     return (
         <div className="relative flex-shrink-0 w-48 h-48 overflow-hidden rounded-xl">
-            <Suspense fallback={<LoadingImageSkeleton />}>
-                <ShowImage/>
-            </Suspense>
+            <ShowImage/>
             <div className="absolute bottom-0 left-0 right-0 rounded-xl backdrop-blur supports-[backdrop-filter]:bg-neutral-900/60 px-2 py-1">
                 <UserUpdateTileBody updateDto={updateData}/>
             </div>

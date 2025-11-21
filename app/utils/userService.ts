@@ -5,16 +5,30 @@ import { UserFollowRelationship } from "@/app/models/userFollowRelationship";
 import { ShowTag } from "@/app/models/showTag";
 import { cache } from 'react';
 import { Service } from "../models/service";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 export const getUser = cache(async (userId: string): Promise<User | null> => {
-  const supabase = await publicClient();
-  const { data: userData } = await supabase.from("user").select().match({id: userId}).single();
-  if (!userData) return null;
-  return userData as User;
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
+    const { data: userData } = await supabase.from("user").select().match({id: userId}).single();
+    if (!userData) return null;
+    return userData as User;
+});
+
+export const isAdmin = cache(async (userId: string | undefined): Promise<boolean> => {
+    'use cache'
+    cacheLife('days');
+    if (!userId) return false;
+    const supabase = await publicClient();
+    const { data: userData } = await supabase.from("user").select("role").eq("id", userId).single();
+    return userData?.role === 'admin';
 });
 
 export const getUserByUsername = cache(async (username: string): Promise<User | null> => {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('hours');
+    const supabase = await publicClient();
     const { data: userData } = await supabase.from("user").select().match({username: username}).single();
     if (!userData) return null;
     return userData as User;
@@ -51,7 +65,9 @@ export type ShowTagCountDTO = {
 }
 
 export async function getUserTopTags(userId: string): Promise<ShowTagCountDTO[] | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_top_tags', { user_id: userId })
     
@@ -81,7 +97,9 @@ export type ShowServiceCountDTO = {
     count: number;
 }
 export async function getUserTopServices(userId: string): Promise<ShowServiceCountDTO[] | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_top_services', { user_id: userId })
     
@@ -122,7 +140,9 @@ export async function getFollowingCount(userId: string): Promise<number | null> 
 }
 
 export async function getListsForUser(userId: string): Promise<number[] | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
     const { data: listData } = await supabase.from("showList").select('id').match({creator: userId});
     if (listData == null) return null;   
     const lists: number[] = listData.map((list) => list.id);

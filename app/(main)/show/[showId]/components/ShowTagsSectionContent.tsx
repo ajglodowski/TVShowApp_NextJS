@@ -5,7 +5,7 @@ import { ShowTag } from "@/app/models/showTag";
 import Link from "next/link";
 import { useState } from "react";
 
-export default function ShowTagsSectionContent({showId, currentTags, allTags}: {showId: string, currentTags: ShowTag[] | null, allTags: ShowTag[] | null} ) {
+export default function ShowTagsSectionContent({showId, currentTags, allTags, isAdmin}: {showId: string, currentTags: ShowTag[] | null, allTags: ShowTag[] | null, isAdmin: boolean} ) {
     
     const [editingTags, setEditingTags] = useState(false);
     const [appliedTags, setAppliedTags] = useState<ShowTag[]>(currentTags ? currentTags : []);
@@ -92,11 +92,13 @@ export default function ShowTagsSectionContent({showId, currentTags, allTags}: {
       <div className=''>
         <span className="flex justify-between">
             <h1 className='text-2xl font-bold my-auto'>Tags</h1>
-            <button 
-                className='p-1 mx-2 my-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
-                onClick={() => setEditingTags(!editingTags)}>
-                {editingTags ? 'Done' : 'Edit'}
-            </button>
+            {isAdmin && (
+              <button 
+                  className='p-1 mx-2 my-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
+                  onClick={() => setEditingTags(!editingTags)}>
+                  {editingTags ? 'Done' : 'Edit'}
+              </button>
+            )}
         </span>
         <CurrentTagsSection />
         {editingTags && <AllTagsSection /> }

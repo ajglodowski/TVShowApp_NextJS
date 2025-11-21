@@ -1,3 +1,5 @@
+export type UserRole = 'user' | 'admin';
+
 export type User = {
     id: string;
     username: string;
@@ -6,6 +8,7 @@ export type User = {
     bio: string;
     name: string;
     private: boolean;
+    role: UserRole;
 }
 
 export type UserBasicInfo = {

@@ -1,10 +1,7 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { getUserUpdates } from "./HomeService";
-import UserUpdateTile, { LoadingUserUpdateTile } from "../userUpdate/UserUpdateTile/UserUpdateTile";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { backdropBackground } from "@/app/utils/stylingConstants";
+import UserUpdateTile, { LoadingUserUpdateTile } from "../userUpdate/UserUpdateTile/UserUpdateTile";
+import { getUserUpdates } from "./HomeService";
 export default async function YourUpdatesRow ({userId}: {userId: string}) {
 
     'use cache'
