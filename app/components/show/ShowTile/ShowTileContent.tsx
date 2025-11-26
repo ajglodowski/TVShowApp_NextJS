@@ -1,5 +1,5 @@
 import { Show } from "@/app/models/show";
-import { Clock, Calendar, Info, LucideIcon } from 'lucide-react';
+import { Clock, Calendar, Info, AlertCircle, LucideIcon } from 'lucide-react';
 import Image from "next/image";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 
@@ -12,9 +12,9 @@ export type ShowTileContentProps = {
 export type ShowTileBadgeProps = {
     text: string
     icon?: LucideIcon
-    iconName?: 'Clock' | 'Calendar' | 'Info'
+    iconName?: 'Clock' | 'Calendar' | 'Info' | 'AlertCircle'
+    color?: string
 }
-  
 
 export default function ShowTileContent({showData, presignedUrl, badges}: ShowTileContentProps) {
     const show = showData;
@@ -25,6 +25,7 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
             case 'Clock': return Clock;
             case 'Calendar': return Calendar;
             case 'Info': return Info;
+            case 'AlertCircle': return AlertCircle;
             default: return null;
         }
     }
@@ -69,13 +70,12 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
                 )}
 
 
-                {/* Add the badge component */}
                 {badges && (
                     <div className="flex flex-wrap gap-1">
                         {badges.map((badge, index) => {
                             const IconComponent = badge.icon || getIcon(badge.iconName);
                             return (
-                                <div key={index} className="flex items-center gap-1 bg-primary/20 backdrop-blur-sm rounded-full text-sm text-primary-foreground">
+                                <div key={index} className={`flex items-center gap-1 backdrop-blur-sm rounded-full text-sm px-2 py-0.5 ${badge.color || "bg-primary/20 text-primary-foreground"}`}>
                                     {IconComponent && <IconComponent className="w-3 h-3" />}
                                     <span>{badge.text}</span>
                                 </div>

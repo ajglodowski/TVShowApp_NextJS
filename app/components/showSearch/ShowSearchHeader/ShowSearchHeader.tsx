@@ -25,6 +25,7 @@ export type ShowSearchFiltersType = {
     service: Service[];
     length: ShowLength[];
     airDate: AirDate[];
+    totalSeasons: string[];
     limitedSeries: boolean | null;
     running: boolean | null;
     currentlyAiring: boolean | null;
@@ -36,6 +37,7 @@ export const defaultFilters: ShowSearchFiltersType = {
     service: [],
     length: [],
     airDate: [],
+    totalSeasons: [],
     limitedSeries: null,
     running: null,
     currentlyAiring: null,

@@ -1,7 +1,7 @@
 import { ComingSoonStatusId, CurrentlyAiringStatusId, WatchlistStatusId, Status } from '@/app/models/status';
 import { createClient } from '@/app/utils/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronRight, History, Tv, TrendingUp, Play, ChartNoAxesColumnIncreasing, ChartNoAxesCombined, Hourglass } from 'lucide-react';
+import { ChevronRight, History, Tv, TrendingUp, Play, ChartNoAxesColumnIncreasing, ChartNoAxesCombined, Hourglass, Repeat } from 'lucide-react';
 import Link from 'next/link';
 import ComingSoonRow, { LoadingComingSoonRow } from './ComingSoonRow';
 import CurrentlyAiringLoading from './CurrentlyAiringRow/CurrentlyAiringLoading';
@@ -13,6 +13,7 @@ import { LoadingYourShowsRow } from './YourShowsRow/LoadingYourShowsRow';
 import YourShowsRow from './YourShowsRow/YourShowsRow';
 import YourUpdatesRow, { LoadingYourUpdatesRow } from './YourUpdatesRow';
 import StaleShowsRow, { LoadingStaleShowsRow } from './StaleShowsRow';
+import CheckInRow, { LoadingCheckInRow } from './CheckInRow';
 import { StatusIcon } from '@/app/utils/StatusIcon';
 
 const getHeaderIcon = (header: string): React.ReactNode => {
@@ -39,6 +40,8 @@ const getHeaderIcon = (header: string): React.ReactNode => {
             return <Play className="w-5 h-5" />;
         case 'Stale Shows':
             return <Hourglass className="w-5 h-5" />;
+        case 'Check In On':
+            return <Repeat className="w-5 h-5" />;
         default:
             return null;
     }
@@ -69,6 +72,7 @@ export default async function Home () {
         {header: "Top 10 this week", component: <Top10Row/>},
         {header: "Coming Soon", component: <ComingSoonRow userId={currentUserId}/>, link: "/watchlist?statuses=" + ComingSoonStatusId}, 
         {header: "Stale Shows", component: <StaleShowsRow userId={currentUserId}/>},
+        {header: "Check In On", component: <CheckInRow userId={currentUserId}/>},
         {header: "Shows for you to start", component: <WatchListRow userId={currentUserId}/>, link: "/watchlist?statuses=" + WatchlistStatusId}, 
     ]
 
@@ -115,6 +119,7 @@ export async function LoadingHome() {
         {header: "Top 10 this week", component: <LoadingTop10Row />},
         {header: "Coming Soon", component: <LoadingComingSoonRow />}, 
         {header: "Stale Shows", component: <LoadingStaleShowsRow />},
+        {header: "Check In On", component: <LoadingCheckInRow />},
         {header: "Shows for you to start", component: <LoadingWatchlistRow />}, 
     ]
 

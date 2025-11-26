@@ -11,7 +11,7 @@ import { getServices } from "./ShowSearchService";
 export async function parseFiltersFromSearchParams(
     searchParams: ShowSearchProps['searchParams'] & { tags?: string } = {}
 ): Promise<ShowSearchFiltersType> {
-    const { service, length, airDate, limitedSeries, running, currentlyAiring, sortBy, tags: tagsParam } = searchParams || {};
+    const { service, length, airDate, totalSeasons, limitedSeries, running, currentlyAiring, sortBy, tags: tagsParam } = searchParams || {};
     const filters: ShowSearchFiltersType = {
         ...defaultFilters
     };
@@ -40,6 +40,14 @@ export async function parseFiltersFromSearchParams(
         const airDates = airDate.split(',').filter(Boolean);
         if (airDates.length > 0) {
             filters.airDate = airDates.filter(a => Object.values(AirDate).includes(a as AirDate)) as AirDate[];
+        }
+    }
+
+    // Parse totalSeasons
+    if (totalSeasons) {
+        const seasons = totalSeasons.split(',').filter(Boolean);
+        if (seasons.length > 0) {
+            filters.totalSeasons = seasons;
         }
     }
 

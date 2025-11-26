@@ -120,6 +120,41 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
         if (filters.service.length > 0) queryBase = queryBase.in('service_id', filters.service.map((service) => service.id));
         if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
         if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
+
+        if (filters.totalSeasons && filters.totalSeasons.length > 0) {
+            const exactSeasons: number[] = [];
+            const ranges: string[] = [];
+            
+            filters.totalSeasons.forEach(s => {
+                if (s.includes('-') || s.includes('+')) {
+                    ranges.push(s);
+                } else {
+                    const num = parseInt(s);
+                    if (!isNaN(num)) exactSeasons.push(num);
+                }
+            });
+            
+            const column = '"totalSeasons"';
+            const conditions = [];
+            
+            if (exactSeasons.length > 0) {
+                conditions.push(`${column}.in.(${exactSeasons.join(',')})`);
+            }
+            
+            ranges.forEach(range => {
+                if (range === '5-10') {
+                     conditions.push(`and(${column}.gte.5,${column}.lte.10)`);
+                } else if (range === '11-20') {
+                     conditions.push(`and(${column}.gte.11,${column}.lte.20)`);
+                } else if (range === '21+') {
+                     conditions.push(`${column}.gte.21`);
+                }
+            });
+            
+            if (conditions.length > 0) {
+                queryBase = queryBase.or(conditions.join(','));
+            }
+        }
         
         // Apply show ID filters from watchlist/tags
         if (tagFilteredShowIds) {
@@ -141,6 +176,41 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
         if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
         if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
         
+        if (filters.totalSeasons && filters.totalSeasons.length > 0) {
+            const exactSeasons: number[] = [];
+            const ranges: string[] = [];
+            
+            filters.totalSeasons.forEach(s => {
+                if (s.includes('-') || s.includes('+')) {
+                    ranges.push(s);
+                } else {
+                    const num = parseInt(s);
+                    if (!isNaN(num)) exactSeasons.push(num);
+                }
+            });
+            
+            const column = 'totalSeasons';
+            const conditions = [];
+            
+            if (exactSeasons.length > 0) {
+                conditions.push(`${column}.in.(${exactSeasons.join(',')})`);
+            }
+            
+            ranges.forEach(range => {
+                if (range === '5-10') {
+                     conditions.push(`and(${column}.gte.5,${column}.lte.10)`);
+                } else if (range === '11-20') {
+                     conditions.push(`and(${column}.gte.11,${column}.lte.20)`);
+                } else if (range === '21+') {
+                     conditions.push(`${column}.gte.21`);
+                }
+            });
+            
+            if (conditions.length > 0) {
+                queryBase = queryBase.or(conditions.join(','));
+            }
+        }
+
         // Apply show ID filters from watchlist/tags
         if (tagFilteredShowIds) {
             // If we have tag filters, use those IDs
@@ -325,6 +395,24 @@ export async function filterWatchlist(UserWatchListData: UserWatchListData[] | n
         filteredShows = filteredShows.filter((show) => filters.length.includes(show.show.length));
     }
     
+    if (filters.totalSeasons && filters.totalSeasons.length > 0) {
+        filteredShows = filteredShows.filter((show) => {
+            const seasons = show.show.totalSeasons;
+            
+            // Check if matches any exact number
+            if (filters.totalSeasons.includes(seasons.toString())) {
+                return true;
+            }
+            
+            // Check if matches any range
+            if (filters.totalSeasons.includes('5-10') && seasons >= 5 && seasons <= 10) return true;
+            if (filters.totalSeasons.includes('11-20') && seasons >= 11 && seasons <= 20) return true;
+            if (filters.totalSeasons.includes('21+') && seasons >= 21) return true;
+            
+            return false;
+        });
+    }
+
     // Sort the filtered watchlist data if a sort option is provided
     if (filters.sortBy) {
         const sortField = filters.sortBy.split('-')[0];

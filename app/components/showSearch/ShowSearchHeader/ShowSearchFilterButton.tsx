@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Filter, Loader2, X, ChevronDown, ChevronRight, Tv, Clock, Calendar, Play, Pause, Zap } from "lucide-react";
+import { Filter, Loader2, X, ChevronDown, ChevronRight, Tv, Clock, Calendar, Play, Pause, Zap, Layers } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useOptimistic, useTransition, useState } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader";
@@ -42,6 +42,7 @@ export default function ShowSearchFilterButton({
         params.delete('service');
         params.delete('length');
         params.delete('airDate');
+        params.delete('totalSeasons');
         params.delete('running');
         params.delete('limitedSeries');
         params.delete('currentlyAiring');
@@ -50,6 +51,7 @@ export default function ShowSearchFilterButton({
         if (updatedFilters.service.length > 0) params.set('service', updatedFilters.service.map(s => s.id).join(','));
         if (updatedFilters.length.length > 0) params.set('length', updatedFilters.length.join(','));
         if (updatedFilters.airDate.length > 0) params.set('airDate', updatedFilters.airDate.join(','));
+        if (updatedFilters.totalSeasons && updatedFilters.totalSeasons.length > 0) params.set('totalSeasons', updatedFilters.totalSeasons.join(','));
         if (updatedFilters.limitedSeries !== null) params.set('limitedSeries', updatedFilters.limitedSeries.toString());
         if (updatedFilters.running !== null) params.set('running', updatedFilters.running.toString());
         if (updatedFilters.currentlyAiring !== null) params.set('currentlyAiring', updatedFilters.currentlyAiring.toString());
@@ -109,6 +111,24 @@ export default function ShowSearchFilterButton({
         const updatedFilters = { ...optimisticFilters, airDate: newAirDates };
         startTransition(() => {
             updateOptimisticFilters({ airDate: newAirDates });
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
+        });
+    };
+
+    const handleAddTotalSeasons = (seasons: string) => {
+        const newSeasons = [...(optimisticFilters.totalSeasons || []), seasons];
+        const updatedFilters = { ...optimisticFilters, totalSeasons: newSeasons };
+        startTransition(() => {
+            updateOptimisticFilters({ totalSeasons: newSeasons });
+            router.push(createFilterUrl(updatedFilters), { scroll: false });
+        });
+    };
+
+    const handleRemoveTotalSeasons = (seasons: string) => {
+        const newSeasons = (optimisticFilters.totalSeasons || []).filter(s => s !== seasons);
+        const updatedFilters = { ...optimisticFilters, totalSeasons: newSeasons };
+        startTransition(() => {
+            updateOptimisticFilters({ totalSeasons: newSeasons });
             router.push(createFilterUrl(updatedFilters), { scroll: false });
         });
     };
@@ -423,6 +443,52 @@ export default function ShowSearchFilterButton({
                             </div>
                         </CollapsibleContent>
                     </Collapsible>
+
+                    {/* Total Seasons Filter */}
+                    <Collapsible open={expandedSections.has('totalSeasons')} onOpenChange={() => toggleSection('totalSeasons')}>
+                        <CollapsibleTrigger className="flex items-center justify-between w-full p-3 text-left hover:bg-white/5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <Layers className="h-4 w-4" />
+                                <span className="font-medium text-sm">Total Seasons</span>
+                            </div>
+                            {expandedSections.has('totalSeasons') ? (
+                                <ChevronDown className="h-4 w-4" />
+                            ) : (
+                                <ChevronRight className="h-4 w-4" />
+                            )}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pt-2">
+                            <div className="flex flex-wrap gap-2 px-4">
+                                {/* Selected total seasons */}
+                                {(optimisticFilters.totalSeasons || []).map((seasons) => (
+                                    <Button
+                                        key={seasons}
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-white text-black hover:bg-primary/10 hover:text-white whitespace-nowrap"
+                                        onClick={() => handleRemoveTotalSeasons(seasons)}
+                                        disabled={isPending}
+                                    >
+                                        {seasons} Season{(seasons !== '1') ? 's' : ''}
+                                        <X className="ml-1 h-3 w-3" />
+                                    </Button>
+                                ))}
+                                {/* Unselected total seasons */}
+                                {['1', '2', '3', '4', '5-10', '11-20', '21+'].filter(seasons => !(optimisticFilters.totalSeasons || []).includes(seasons)).map((seasons) => (
+                                    <Button
+                                        key={seasons}
+                                        variant="outline"
+                                        size="sm"
+                                        className="bg-primary/10 hover:bg-white hover:text-black text-foreground border-border whitespace-nowrap"
+                                        onClick={() => handleAddTotalSeasons(seasons)}
+                                        disabled={isPending}
+                                    >
+                                        {seasons} Season{(seasons !== '1') ? 's' : ''}
+                                    </Button>
+                                ))}
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
                 </div>
             </div>
         );
@@ -432,6 +498,7 @@ export default function ShowSearchFilterButton({
         filters.service.length,
         filters.length.length,
         filters.airDate.length,
+        filters.totalSeasons?.length || 0,
         filters.limitedSeries !== null ? 1 : 0,
         filters.running !== null ? 1 : 0,
         filters.currentlyAiring !== null ? 1 : 0,

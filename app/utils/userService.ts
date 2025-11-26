@@ -6,6 +6,7 @@ import { ShowTag } from "@/app/models/showTag";
 import { cache } from 'react';
 import { Service } from "../models/service";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { Actor } from "../models/actor";
 
 export const getUser = cache(async (userId: string): Promise<User | null> => {
     'use cache'
@@ -69,7 +70,7 @@ export async function getUserTopTags(userId: string): Promise<ShowTagCountDTO[] 
     cacheLife('minutes');
     const supabase = await publicClient();
     const { data, error } = await supabase
-        .rpc('get_user_top_tags', { user_id: userId })
+        .rpc('get_user_tag_counts', { user_id: userId })
     
     if (error) {
         console.error(error);
@@ -101,7 +102,7 @@ export async function getUserTopServices(userId: string): Promise<ShowServiceCou
     cacheLife('minutes');
     const supabase = await publicClient();
     const { data, error } = await supabase
-        .rpc('get_user_top_services', { user_id: userId })
+        .rpc('get_user_service_counts', { user_id: userId })
     
     if (error) {
         console.error(error);
@@ -123,6 +124,178 @@ export async function getUserTopServices(userId: string): Promise<ShowServiceCou
     });
     return mappedData;
 }
+
+export type TagRatingDTO = {
+    tag: ShowTag;
+    avgRating: number;
+    count: number;
+}
+
+export async function getUserTagRatings(userId: string): Promise<TagRatingDTO[] | null> {
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
+    const { data, error } = await supabase
+        .rpc('get_user_avg_rating_by_tag', { user_id: userId })
+    
+    if (error) {
+        console.error(error);
+        return null;
+    }
+    type RawTagRatingData = {
+        tag_id: number;
+        tag_name: string;
+        avg_rating: number;
+        show_count: number;
+    }
+    const mappedData = data.map((rawData: RawTagRatingData) => {
+        return {
+            tag: {
+                name: rawData.tag_name,
+                id: rawData.tag_id
+            },
+            avgRating: Number(rawData.avg_rating),
+            count: rawData.show_count
+        };
+    });
+    return mappedData;
+}
+
+export type ServiceRatingDTO = {
+    service: Service;
+    avgRating: number;
+    count: number;
+}
+
+export async function getUserServiceRatings(userId: string): Promise<ServiceRatingDTO[] | null> {
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
+    const { data, error } = await supabase
+        .rpc('get_user_avg_rating_by_service', { user_id: userId })
+    
+    if (error) {
+        console.error(error);
+        return null;
+    }
+    type RawServiceRatingData = {
+        service_id: number;
+        service_name: string;
+        avg_rating: number;
+        show_count: number;
+    }
+    const mappedData = data.map((rawData: RawServiceRatingData) => {
+        return {
+            service: {
+                name: rawData.service_name,
+                id: rawData.service_id
+            },
+            avgRating: Number(rawData.avg_rating),
+            count: rawData.show_count
+        };
+    });
+    return mappedData;
+}
+
+export type ActorCountDTO = {
+    actor: Actor;
+    count: number;
+}
+
+export async function getUserTopActors(userId: string): Promise<ActorCountDTO[] | null> {
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
+    const { data, error } = await supabase
+        .rpc('get_user_top_actors', { user_id: userId })
+    
+    if (error) {
+        console.error(error);
+        return null;
+    }
+    type RawActorData = {
+        actor_id: number;
+        actor_name: string;
+        show_count: number;
+    }
+    const mappedData = data.map((rawData: RawActorData) => {
+        return {
+            actor: {
+                name: rawData.actor_name,
+                id: rawData.actor_id
+            },
+            count: rawData.show_count
+        };
+    });
+    return mappedData;
+}
+
+export type ActorRatingDTO = {
+    actor: Actor;
+    avgRating: number;
+    count: number;
+}
+
+export async function getUserHighestRatedActors(userId: string): Promise<ActorRatingDTO[] | null> {
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
+    const { data, error } = await supabase
+        .rpc('get_user_highest_rated_actors', { user_id: userId })
+    
+    if (error) {
+        console.error(error);
+        return null;
+    }
+    type RawActorRatingData = {
+        actor_id: number;
+        actor_name: string;
+        avg_rating: number;
+        show_count: number;
+    }
+    const mappedData = data.map((rawData: RawActorRatingData) => {
+        return {
+            actor: {
+                name: rawData.actor_name,
+                id: rawData.actor_id
+            },
+            avgRating: Number(rawData.avg_rating),
+            count: rawData.show_count
+        };
+    });
+    return mappedData;
+}
+
+export async function getUserLowestRatedActors(userId: string): Promise<ActorRatingDTO[] | null> {
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
+    const { data, error } = await supabase
+        .rpc('get_user_lowest_rated_actors', { user_id: userId })
+    
+    if (error) {
+        console.error(error);
+        return null;
+    }
+    type RawActorRatingData = {
+        actor_id: number;
+        actor_name: string;
+        avg_rating: number;
+        show_count: number;
+    }
+    const mappedData = data.map((rawData: RawActorRatingData) => {
+        return {
+            actor: {
+                name: rawData.actor_name,
+                id: rawData.actor_id
+            },
+            avgRating: Number(rawData.avg_rating),
+            count: rawData.show_count
+        };
+    });
+    return mappedData;
+}
+
 
 export async function getFollowerCount(userId: string): Promise<number | null> {
     const supabase = await createClient();

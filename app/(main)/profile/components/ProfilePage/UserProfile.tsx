@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ListChecks } from "lucide-react"
+import Link from "next/link"
 import { Suspense } from "react"
 import UserUpdatesRow from "../UserUpdatesRow"
 export default async function UserProfile({username}: {username: string}) {
@@ -74,7 +75,9 @@ export default async function UserProfile({username}: {username: string}) {
 
         <div className="space-y-6">
           <Suspense fallback={<ProfilePageCardSkeleton cardTitle="User Stats" />}>
-            <UserStatsCard userId={userId} />
+            <Link href={`/profile/${username}/stats`} className="block transition-transform hover:scale-105">
+                <UserStatsCard userId={userId} />
+            </Link>
           </Suspense>
           <Suspense fallback={<ProfilePageCardSkeleton cardTitle="Top Tags" />}>
             <TagCountCard userId={userId}/>

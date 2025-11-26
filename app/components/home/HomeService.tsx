@@ -153,9 +153,10 @@ export async function getStaleShows({userId}: {userId: string}): Promise<StaleSh
 
     const excludedIds = allStatuses.filter(s => {
         const name = s.name.toLowerCase();
-        return name.includes('show ended') || 
-               name.includes('seen enough') || 
-               name.includes('needs watched');
+        return name === 'show ended' || 
+               name === 'seen enough' || 
+               name === 'needs watched' ||
+               name === 'coming soon';
     }).map(s => s.id);
 
     const excludedString = `(${excludedIds.join(',')})`;
@@ -174,4 +175,82 @@ export async function getStaleShows({userId}: {userId: string}): Promise<StaleSh
         updated: new Date(obj.updated)
     }));
     return output;
+}
+
+export type CheckInShowDTO = {
+    show: Show;
+    updated: Date;
+    currentSeason: number;
+    reason: string;
+}
+
+export async function getCheckInShows({userId}: {userId: string}): Promise<CheckInShowDTO[] | null> {
+    if (!userId) return null;
+    
+    const supabase = await createClient();
+    const allStatuses = await getAllStatuses();
+    
+    if (!allStatuses) return null;
+
+    const excludedIds = allStatuses.filter(s => {
+        const name = s.name.toLowerCase();
+        return name === 'show ended' || 
+               name === 'seen enough' || 
+               name === 'needs watched' ||
+               name === 'coming soon';
+    }).map(s => s.id);
+
+    const excludedString = `(${excludedIds.join(',')})`;
+
+    const { data: showData } = await supabase
+        .from("UserShowDetails")
+        .select(`updated, currentSeason, status (id, name), show (${ShowPropertiesWithService})`)
+        .match({userId: userId})
+        .filter('status', 'not.in', excludedString)
+        .order('updated', {ascending: true})
+        .limit(50);
+
+    if (!showData) return null;
+    
+    const output: CheckInShowDTO[] = [];
+    const now = new Date();
+    
+    for (const obj of showData) {
+        const show = obj.show as unknown as Show;
+        const currentSeason = obj.currentSeason;
+        const updatedDate = new Date(obj.updated);
+        const status = obj.status as unknown as Status;
+        
+        // If user is behind on seasons, add to list
+        if (currentSeason < show.totalSeasons) {
+            let reason = "New episodes";
+            const seasonsBehind = show.totalSeasons - currentSeason;
+            const daysSinceUpdate = (now.getTime() - updatedDate.getTime()) / (1000 * 3600 * 24);
+
+            if (status.name === 'Catching Up') {
+                reason = "Continue catching up";
+            } else if (status.name === 'Rewatching') {
+                reason = "Rewatch in progress";
+            } else if (status.name === 'New Season' || status.name === 'New Release') {
+                reason = "New content available";
+            } else if (seasonsBehind > 1) {
+                reason = `${seasonsBehind} seasons behind`;
+            } else if (daysSinceUpdate > 90) {
+                reason = "Stalled for 3+ months";
+            } else if (daysSinceUpdate > 30) {
+                reason = "Stopped watching";
+            } else if (seasonsBehind === 1) {
+                reason = "1 season behind";
+            }
+
+            output.push({
+                show: show,
+                updated: updatedDate,
+                currentSeason: currentSeason,
+                reason: reason
+            });
+        }
+    }
+    
+    return output.slice(0, 15);
 }

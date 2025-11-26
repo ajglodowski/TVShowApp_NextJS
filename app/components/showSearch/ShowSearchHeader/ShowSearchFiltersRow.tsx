@@ -30,7 +30,7 @@ export default function ShowSearchFiltersRow({
     );
 
     // Function to create a URL with the filter removed
-    const createRemoveFilterURL = (key: keyof ShowSearchFiltersType, value: Service | ShowLength | AirDate | boolean) => {
+    const createRemoveFilterURL = (key: keyof ShowSearchFiltersType, value: Service | ShowLength | AirDate | string | boolean) => {
         const url = new URL(pathname, typeof window !== 'undefined' ? window.location.origin : '');
         
         // Add current filter params except the one we're removing
@@ -64,6 +64,17 @@ export default function ShowSearchFiltersRow({
                 }
             } else {
                 url.searchParams.set('airDate', optimisticFilters.airDate.join(','));
+            }
+        }
+
+        if (optimisticFilters.totalSeasons && optimisticFilters.totalSeasons.length > 0) {
+            if (key === 'totalSeasons') {
+                const newSeasons = optimisticFilters.totalSeasons.filter(s => s !== value);
+                if (newSeasons.length > 0) {
+                    url.searchParams.set('totalSeasons', newSeasons.join(','));
+                }
+            } else {
+                url.searchParams.set('totalSeasons', optimisticFilters.totalSeasons.join(','));
             }
         }
         
@@ -111,6 +122,13 @@ export default function ShowSearchFiltersRow({
                         displayValue = String(item); // Safely convert to string
                     } else if (key === 'airDate') {
                         displayValue = String(item); // Safely convert to string
+                    } else if (key === 'totalSeasons') {
+                        const val = String(item);
+                        if (val.includes('+') || val.includes('-')) {
+                            displayValue = val + " Seasons";
+                        } else {
+                            displayValue = `${val} Season${val !== '1' ? 's' : ''}`;
+                        }
                     }
                     bubbles.push(
                         <div
@@ -128,6 +146,10 @@ export default function ShowSearchFiltersRow({
                                     } else if (key === 'airDate') {
                                         const newAirDates = optimisticFilters.airDate.filter(a => a !== item);
                                         updateOptimisticFilters({ airDate: newAirDates });
+                                    } else if (key === 'totalSeasons') {
+                                        // @ts-ignore
+                                        const newSeasons = optimisticFilters.totalSeasons.filter(s => s !== item);
+                                        updateOptimisticFilters({ totalSeasons: newSeasons });
                                     }
                                     router.push(createRemoveFilterURL(key as keyof ShowSearchFiltersType, item));
                                 });
