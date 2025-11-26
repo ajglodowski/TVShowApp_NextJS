@@ -2,10 +2,12 @@
 
 import { addShowTag, removeShowTag } from "@/app/components/show/ClientShowService";
 import { ShowTag } from "@/app/models/showTag";
+import { TagCategory } from "@/app/models/tagCategory";
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
-export default function ShowTagsSectionContent({showId, currentTags, allTags, isAdmin}: {showId: string, currentTags: ShowTag[] | null, allTags: ShowTag[] | null, isAdmin: boolean} ) {
+export default function ShowTagsSectionContent({showId, currentTags, allTags, tagCategories, isAdmin}: {showId: string, currentTags: ShowTag[] | null, allTags: ShowTag[] | null, tagCategories: TagCategory[] | null, isAdmin: boolean} ) {
     
     const [editingTags, setEditingTags] = useState(false);
     const [appliedTags, setAppliedTags] = useState<ShowTag[]>(currentTags ? currentTags : []);
@@ -71,19 +73,36 @@ export default function ShowTagsSectionContent({showId, currentTags, allTags, is
                 <h1>Error fetching other tags</h1>
             </div>
         );
+        if (tagCategories === null) return (
+            <div>
+                <h1>Error fetching tag categories</h1>
+            </div>
+        );
         return (
             <div>
-                <h1>Other Tags:</h1>
-                <ul className='flex flex-row flex-wrap'>
-                    {unusedTags()!.map((tag: ShowTag) => (
-                        <button key={tag.id} 
-                            className={tagStyle}
-                            onClick={()=>{addTag(tag)}}
-                        >
-                            <h2 className=''>{tag.name}</h2>
-                        </button>
-                    ))}
-                </ul>
+                <h1>Add tags:</h1>
+                {tagCategories.map((category: TagCategory) => {
+                    const categoryTags = unusedTags()!.filter((tag: ShowTag) => tag.category.id === category.id);
+                    if (categoryTags.length === 0) return null;
+                    return (
+                        <div key={category.id} className="mb-4">
+                            <div className="overflow-x-auto">
+                                <div className="flex flex-row flex-nowrap">
+                                    {categoryTags.map((tag: ShowTag) => (
+                                        <button 
+                                            key={tag.id} 
+                                            className={tagStyle + ' flex-shrink-0 flex items-center gap-1'}
+                                            onClick={()=>{addTag(tag)}}
+                                        >
+                                            <h2 className=''>{tag.name}</h2>
+                                            <Plus className="h-4 w-4" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
         );
     }

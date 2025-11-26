@@ -137,3 +137,41 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
     
     return showData;
 }
+
+export type StaleShowDTO = {
+    show: Show;
+    updated: Date;
+}
+
+export async function getStaleShows({userId}: {userId: string}): Promise<StaleShowDTO[] | null> {
+    if (!userId) return null;
+    
+    const supabase = await createClient();
+    const allStatuses = await getAllStatuses();
+    
+    if (!allStatuses) return null;
+
+    const excludedIds = allStatuses.filter(s => {
+        const name = s.name.toLowerCase();
+        return name.includes('show ended') || 
+               name.includes('seen enough') || 
+               name.includes('needs watched');
+    }).map(s => s.id);
+
+    const excludedString = `(${excludedIds.join(',')})`;
+
+    const { data: showData } = await supabase
+        .from("UserShowDetails")
+        .select(`updated, show (${ShowPropertiesWithService})`)
+        .match({userId: userId})
+        .filter('status', 'not.in', excludedString)
+        .order('updated', {ascending: true})
+        .limit(15);
+
+    if (!showData) return null;
+    const output = showData.map((obj) => ({
+        show: obj.show as unknown as Show,
+        updated: new Date(obj.updated)
+    }));
+    return output;
+}

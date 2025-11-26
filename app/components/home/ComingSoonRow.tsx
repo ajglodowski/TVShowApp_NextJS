@@ -1,7 +1,6 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowTile from "../show/ShowTile/ShowTile";
 import { getComingSoon } from "./HomeService";
-import { Calendar, Clock } from "lucide-react";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
 import { releaseDateToString } from "@/app/utils/timeUtils";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
@@ -37,11 +36,11 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
 
 
     const tileBadge = (daysAwayString: string): ShowTileBadgeProps => {
-        return { text: `${daysAwayString}`, icon: Clock };
+        return { text: `${daysAwayString}`, iconName: 'Clock' };
     }
 
     const releaseDateBadge = (releaseDate: Date): ShowTileBadgeProps => {
-        return { text: `${releaseDateToString(releaseDate)}`, icon: Calendar };
+        return { text: `${releaseDateToString(releaseDate)}`, iconName: 'Calendar' };
     }
 
 

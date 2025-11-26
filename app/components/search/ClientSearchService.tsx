@@ -1,13 +1,163 @@
-import { createClient } from "@/app/utils/supabase/client";
+'use client'
 
-export async function searchShows({searchQuery}: {searchQuery: string}): Promise<string[] | null> {
-    'use client'
+import { createClient } from "@/app/utils/supabase/client";
+import { Actor } from "@/app/models/actor";
+import { Show } from "@/app/models/show";
+import { ShowList } from "@/app/models/showList";
+import { ShowTag } from "@/app/models/showTag";
+import { UserBasicInfo } from "@/app/models/user";
+
+export type SearchResultType = 'show' | 'user' | 'actor' | 'tag' | 'list';
+
+export type SearchResult = 
+    | { type: 'show'; data: Show }
+    | { type: 'user'; data: UserBasicInfo }
+    | { type: 'actor'; data: Actor }
+    | { type: 'tag'; data: ShowTag }
+    | { type: 'list'; data: ShowList };
+
+async function searchShows(supabase: ReturnType<typeof createClient>, query: string): Promise<SearchResult[]> {
+    try {
+        const { data: showData } = await supabase
+            .from('show')
+            .select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service (id, name), totalSeasons, airdate, releaseDate, pictureUrl')
+            .ilike('name', `%${query}%`)
+            .limit(5);
+        
+        if (!showData) return [];
+        
+        return showData.map((show: any) => ({
+            type: 'show' as const,
+            data: {
+                ...show,
+                service: show.service as Show['service']
+            } as Show
+        }));
+    } catch (error) {
+        console.error('Error searching shows:', error);
+        return [];
+    }
+}
+
+async function searchUsers(supabase: ReturnType<typeof createClient>, query: string): Promise<SearchResult[]> {
+    try {
+        const { data: userData } = await supabase
+            .from('user')
+            .select('id, username, profilePhotoURL')
+            .or(`username.ilike.%${query}%,name.ilike.%${query}%`)
+            .limit(5);
+        
+        if (!userData) return [];
+        
+        return userData.map(user => ({
+            type: 'user' as const,
+            data: {
+                id: user.id,
+                username: user.username,
+                profilePhotoURL: user.profilePhotoURL
+            } as UserBasicInfo
+        }));
+    } catch (error) {
+        console.error('Error searching users:', error);
+        return [];
+    }
+}
+
+async function searchActors(supabase: ReturnType<typeof createClient>, query: string): Promise<SearchResult[]> {
+    try {
+        const { data: actorData } = await supabase
+            .from('actor')
+            .select('id, name')
+            .ilike('name', `%${query}%`)
+            .limit(5);
+        
+        if (!actorData) return [];
+        
+        return actorData.map(actor => ({
+            type: 'actor' as const,
+            data: actor as Actor
+        }));
+    } catch (error) {
+        console.error('Error searching actors:', error);
+        return [];
+    }
+}
+
+async function searchTags(supabase: ReturnType<typeof createClient>, query: string): Promise<SearchResult[]> {
+    try {
+        const { data: tagData } = await supabase
+            .from('showTag')
+            .select('id, name, created_at, category:ShowTagCategory (id, name, created_at)')
+            .ilike('name', `%${query}%`)
+            .limit(5);
+        
+        if (!tagData) return [];
+        
+        return tagData.map(tag => ({
+            type: 'tag' as const,
+            data: {
+                id: tag.id,
+                name: tag.name,
+                created_at: tag.created_at,
+                category: tag.category as unknown as ShowTag['category']
+            } as ShowTag
+        }));
+    } catch (error) {
+        console.error('Error searching tags:', error);
+        return [];
+    }
+}
+
+async function searchLists(supabase: ReturnType<typeof createClient>, query: string): Promise<SearchResult[]> {
+    try {
+        const { data: listData } = await supabase
+            .from('showList')
+            .select('id, name, description, ordered, private, creator, created_at, updated_at')
+            .ilike('name', `%${query}%`)
+            .limit(5);
+        
+        if (!listData) return [];
+        
+        return listData.map(list => ({
+            type: 'list' as const,
+            data: list as ShowList
+        }));
+    } catch (error) {
+        console.error('Error searching lists:', error);
+        return [];
+    }
+}
+
+export async function searchAll({searchQuery}: {searchQuery: string}): Promise<SearchResult[]> {
+    const start = performance.now();
     const supabase = createClient();
 
-    const { data } = await supabase.from('show').select('id').ilike('name', `%${searchQuery}%`).limit(5);
-    
-    if (!data) return null;
-    const showIds = data.map((obj) => obj.id);
-    
-    return showIds;
+    if (!searchQuery || searchQuery.trim().length === 0) {
+        return [];
+    }
+
+    const query = searchQuery.trim();
+
+    // Run all searches in parallel
+    const [showResults, userResults, actorResults, tagResults, listResults] = await Promise.all([
+        searchShows(supabase, query),
+        searchUsers(supabase, query),
+        searchActors(supabase, query),
+        searchTags(supabase, query),
+        searchLists(supabase, query)
+    ]);
+
+    // Combine all results
+    const results = [
+        ...showResults,
+        ...userResults,
+        ...actorResults,
+        ...tagResults,
+        ...listResults
+    ];
+
+    const end = performance.now();
+    console.log(`Search took ${end - start} milliseconds`);
+
+    return results;
 }

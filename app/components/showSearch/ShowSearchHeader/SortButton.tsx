@@ -142,7 +142,7 @@ export default function SortButton({ currentSort, pathname, currentFilters }: So
                     <span>{getDisplayText()}</span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-black border border-white/20">
+            <DropdownMenuContent className={`${backdropBackground} border border-white/20`}>
                 <DropdownMenuItem 
                     className="focus:bg-white/10 focus:text-white text-white cursor-pointer"
                     onClick={() => handleSortChange("alphabetical-asc")}

@@ -1,9 +1,8 @@
 import { ComingSoonStatusId, CurrentlyAiringStatusId, WatchlistStatusId, Status } from '@/app/models/status';
 import { createClient } from '@/app/utils/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronRight, Search, History, Tv, TrendingUp, Play, ChartNoAxesColumnIncreasing, ChartNoAxesCombined } from 'lucide-react';
+import { ChevronRight, History, Tv, TrendingUp, Play, ChartNoAxesColumnIncreasing, ChartNoAxesCombined, Hourglass } from 'lucide-react';
 import Link from 'next/link';
-import { ClientSearch } from '../search/ClientSearch';
 import ComingSoonRow, { LoadingComingSoonRow } from './ComingSoonRow';
 import CurrentlyAiringLoading from './CurrentlyAiringRow/CurrentlyAiringLoading';
 import CurrentlyAiringRow from './CurrentlyAiringRow/CurrentlyAiringRow';
@@ -13,6 +12,7 @@ import WelcomeBanner from './WelcomeBanner';
 import { LoadingYourShowsRow } from './YourShowsRow/LoadingYourShowsRow';
 import YourShowsRow from './YourShowsRow/YourShowsRow';
 import YourUpdatesRow, { LoadingYourUpdatesRow } from './YourUpdatesRow';
+import StaleShowsRow, { LoadingStaleShowsRow } from './StaleShowsRow';
 import { StatusIcon } from '@/app/utils/StatusIcon';
 
 const getHeaderIcon = (header: string): React.ReactNode => {
@@ -25,8 +25,6 @@ const getHeaderIcon = (header: string): React.ReactNode => {
     });
 
     switch (header) {
-        case 'Search':
-            return <Search className="w-5 h-5" />;
         case 'Your Recent Updates':
             return <History className="w-5 h-5" />;
         case 'Your shows':
@@ -39,6 +37,8 @@ const getHeaderIcon = (header: string): React.ReactNode => {
             return StatusIcon(createMockStatus('Coming Soon'), 5);
         case 'Shows for you to start':
             return <Play className="w-5 h-5" />;
+        case 'Stale Shows':
+            return <Hourglass className="w-5 h-5" />;
         default:
             return null;
     }
@@ -63,12 +63,12 @@ export default async function Home () {
 
     
     const rows: HomeRow[] = [
-        {header: "Search", component: <ClientSearch/>}, 
         {header: "Your Recent Updates", component: <YourUpdatesRow userId={currentUserId}/>},
         {header: "Your shows", component: <YourShowsRow userId={currentUserId}/>, link: "/watchlist"}, 
         {header: "Currently Airing", component: <CurrentlyAiringRow userId={currentUserId}/>, link: "/watchlist?statuses=" + CurrentlyAiringStatusId}, 
         {header: "Top 10 this week", component: <Top10Row/>},
         {header: "Coming Soon", component: <ComingSoonRow userId={currentUserId}/>, link: "/watchlist?statuses=" + ComingSoonStatusId}, 
+        {header: "Stale Shows", component: <StaleShowsRow userId={currentUserId}/>},
         {header: "Shows for you to start", component: <WatchListRow userId={currentUserId}/>, link: "/watchlist?statuses=" + WatchlistStatusId}, 
     ]
 
@@ -109,12 +109,12 @@ export default async function Home () {
 export async function LoadingHome() {
 
     const rows = [
-        {header: "Search", component: <ClientSearch/>}, 
         {header: "Your Recent Updates", component: <LoadingYourUpdatesRow />},
         {header: "Your shows", component: <LoadingYourShowsRow />}, 
         {header: "Currently Airing", component: <CurrentlyAiringLoading />}, 
         {header: "Top 10 this week", component: <LoadingTop10Row />},
         {header: "Coming Soon", component: <LoadingComingSoonRow />}, 
+        {header: "Stale Shows", component: <LoadingStaleShowsRow />},
         {header: "Shows for you to start", component: <LoadingWatchlistRow />}, 
     ]
 

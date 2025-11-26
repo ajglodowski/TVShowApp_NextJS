@@ -1,7 +1,6 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowTile from "../show/ShowTile/ShowTile";
 import { getTop10 } from "./HomeService";
-import { Info } from "lucide-react";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
 import { Skeleton } from "@/components/ui/skeleton";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
@@ -18,11 +17,11 @@ export default async function Top10Row() {
     }
 
     const tileBadge = (updates: number): ShowTileBadgeProps => {
-        return { text: `${updates} ${getUpdateString(updates)}`, icon: Info };
+        return { text: `${updates} ${getUpdateString(updates)}`, iconName: 'Info' };
     }
 
     const positionBadge = (position: number): ShowTileBadgeProps => {
-        return { text: `#${position} most updated`, icon: Info };
+        return { text: `#${position} most updated`, iconName: 'Info' };
     }
 
     return (

@@ -1,5 +1,5 @@
 import { Show } from "@/app/models/show";
-import { Clock, LucideIcon } from 'lucide-react';
+import { Clock, Calendar, Info, LucideIcon } from 'lucide-react';
 import Image from "next/image";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 
@@ -12,12 +12,22 @@ export type ShowTileContentProps = {
 export type ShowTileBadgeProps = {
     text: string
     icon?: LucideIcon
-  }
+    iconName?: 'Clock' | 'Calendar' | 'Info'
+}
   
 
 export default function ShowTileContent({showData, presignedUrl, badges}: ShowTileContentProps) {
     const show = showData;
     const showImageUrl = presignedUrl;
+
+    const getIcon = (name?: string) => {
+        switch (name) {
+            case 'Clock': return Clock;
+            case 'Calendar': return Calendar;
+            case 'Info': return Info;
+            default: return null;
+        }
+    }
 
     const ShowImage = () => {
         if (!showImageUrl) return <LoadingImageSkeleton />;
@@ -62,12 +72,15 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
                 {/* Add the badge component */}
                 {badges && (
                     <div className="flex flex-wrap gap-1">
-                        {badges.map((badge, index) => (
-                            <div key={index} className="flex items-center gap-1 bg-primary/20 backdrop-blur-sm rounded-full text-sm text-primary-foreground">
-                                {badge.icon && <badge.icon className="w-3 h-3" />}
-                                <span>{badge.text}</span>
-                            </div>
-                        ))}
+                        {badges.map((badge, index) => {
+                            const IconComponent = badge.icon || getIcon(badge.iconName);
+                            return (
+                                <div key={index} className="flex items-center gap-1 bg-primary/20 backdrop-blur-sm rounded-full text-sm text-primary-foreground">
+                                    {IconComponent && <IconComponent className="w-3 h-3" />}
+                                    <span>{badge.text}</span>
+                                </div>
+                            )
+                        })}
                     </div>
                 )}
             </div>

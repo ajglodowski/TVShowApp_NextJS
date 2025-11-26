@@ -1,4 +1,4 @@
-import { Tag, SwatchBook, Lightbulb, Users, Folder } from "lucide-react";
+import { Tag, SwatchBook, Lightbulb, Users, Folder, MapPin } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
 export type TagCategory = {
@@ -21,6 +21,8 @@ export const getTagCategoryIcon = (categoryName: string): LucideIcon => {
             return Folder;
         case "Attribute":
             return Tag;
+        case "Location":
+            return MapPin;
         default:
             return Tag;
     }
