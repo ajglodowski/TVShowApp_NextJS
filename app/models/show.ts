@@ -11,7 +11,7 @@ export type Show = {
     limitedSeries: boolean;
     currentlyAiring: boolean;
     running: boolean;
-    service: Service;
+    services: Service[];
     totalSeasons: number;
     airdate: AirDate | undefined;
     releaseDate: Date | undefined;
@@ -22,8 +22,8 @@ export type Show = {
 export type ShowAnalytics = {
     show_id: number;
     show_name: string;
-    service_id: number;
-    service_name: string;
+    service_ids: number[];
+    service_names: string[];
     pictureUrl: string | null;
     running: boolean;
     limitedSeries: boolean;
@@ -54,10 +54,11 @@ export const convertRawShowAnalyticsToShowWithAnalytics = (analyticsData: any): 
         limitedSeries: analyticsData.limitedSeries || false,
         currentlyAiring: analyticsData.currentlyAiring || false,
         running: analyticsData.running || false,
-        service: {
-            id: analyticsData.service_id,
-            name: analyticsData.service_name
-        },
+        services: analyticsData.service_ids && analyticsData.service_names ? 
+            analyticsData.service_ids.map((id: number, index: number) => ({
+                id: id,
+                name: analyticsData.service_names[index]
+            })) : [],
         totalSeasons: analyticsData.totalSeasons || 1,
         airdate: analyticsData.airdate,
         releaseDate: analyticsData.releaseDate,
@@ -70,7 +71,7 @@ export const convertRawShowAnalyticsToShowWithAnalytics = (analyticsData: any): 
     return result;
 }
 
-export const ShowProperties = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service, totalSeasons, airdate, releaseDate';
-export const ShowPropertiesWithService = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service (id, name), totalSeasons, airdate, releaseDate, pictureUrl';
-export const ShowAnalyticsProperties = 'show_id, show_name, service_id, service_name, "pictureUrl", running, "limitedSeries", "totalSeasons", "releaseDate", weekly_updates, monthly_updates, yearly_updates, avg_rating_points';
+export const ShowProperties = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, totalSeasons, airdate, releaseDate';
+export const ShowPropertiesWithService = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, ShowServiceRelationship(service(id, name)), totalSeasons, airdate, releaseDate, pictureUrl';
+export const ShowAnalyticsProperties = 'show_id, show_name, service_ids, service_names, "pictureUrl", running, "limitedSeries", "totalSeasons", "releaseDate", weekly_updates, monthly_updates, yearly_updates, avg_rating_points';
 

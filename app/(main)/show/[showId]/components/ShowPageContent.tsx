@@ -84,7 +84,7 @@ export default async function ShowPageContent({
         </div>
         <h1 className='text-7xl sm:text-9xl font-extrabold tracking-tighter text-center -mt-16 break-words'>{show.name}</h1>
       </div>
-      <h2 className='text-2xl tracking-tight text-center'>{show.length} minutes - {show.service.name}</h2>
+      <h2 className='text-2xl tracking-tight text-center'>{show.length} minutes - {show.services.map(s => s.name).join(", ")}</h2>
       
       <div className='flex flex-wrap md:flex-nowrap w-full px-4'>
         <Suspense fallback={<LoadingYourInfoSection />}>

@@ -22,7 +22,8 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
   if (!showData) return null;
   const show: Show = {
     ...showData,
-    service: showData.service as unknown as Service,
+    services: showData.ShowServiceRelationship ? 
+        showData.ShowServiceRelationship.map((item: any) => item.service) : [],
   };
   return show;
 });

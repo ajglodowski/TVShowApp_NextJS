@@ -12,7 +12,7 @@ export const NewShow: Show = {
     limitedSeries: false,
     currentlyAiring: false,
     running: false,
-    service: OtherService,
+    services: [OtherService],
     totalSeasons: 1,
     airdate: undefined,
     releaseDate: undefined,

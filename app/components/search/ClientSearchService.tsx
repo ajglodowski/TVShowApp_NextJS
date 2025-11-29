@@ -16,28 +16,29 @@ export type SearchResult =
     | { type: 'tag'; data: ShowTag }
     | { type: 'list'; data: ShowList };
 
-async function searchShows(supabase: ReturnType<typeof createClient>, query: string): Promise<SearchResult[]> {
-    try {
-        const { data: showData } = await supabase
-            .from('show')
-            .select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, service (id, name), totalSeasons, airdate, releaseDate, pictureUrl')
-            .ilike('name', `%${query}%`)
-            .limit(5);
-        
-        if (!showData) return [];
-        
-        return showData.map((show: any) => ({
-            type: 'show' as const,
-            data: {
-                ...show,
-                service: show.service as Show['service']
-            } as Show
-        }));
-    } catch (error) {
-        console.error('Error searching shows:', error);
-        return [];
+    async function searchShows(supabase: ReturnType<typeof createClient>, query: string): Promise<SearchResult[]> {
+        try {
+            const { data: showData } = await supabase
+                .from('show')
+                .select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, ShowServiceRelationship(service(id, name)), totalSeasons, airdate, releaseDate, pictureUrl')
+                .ilike('name', `%${query}%`)
+                .limit(5);
+            
+            if (!showData) return [];
+            
+            return showData.map((show: any) => ({
+                type: 'show' as const,
+                data: {
+                    ...show,
+                    services: show.ShowServiceRelationship ? 
+                        show.ShowServiceRelationship.map((item: any) => item.service) : [],
+                } as Show
+            }));
+        } catch (error) {
+            console.error('Error searching shows:', error);
+            return [];
+        }
     }
-}
 
 async function searchUsers(supabase: ReturnType<typeof createClient>, query: string): Promise<SearchResult[]> {
     try {

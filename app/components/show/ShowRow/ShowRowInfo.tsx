@@ -41,7 +41,7 @@ export async function ShowRowInfo({ showData }: { showData: Show | ShowWithAnaly
             <div className="flex flex-col justify-center w-full min-w-0 overflow-hidden">
                 <h2 className="font-bold text-md truncate">{showData.name}</h2>
                 <span className="flex md:flex-row flex-col w-full md:space-x-2 md:items-center items-start text-xs text-white/80 overflow-hidden">
-                    <p className="text-sm truncate">{showData.service.name}</p>
+                    <p className="text-sm truncate">{showData.services?.map(s => s.name).join(", ")}</p>
                     {showData.limitedSeries && <p className="md:truncate whitespace-nowrap">Limited</p>}
                     <p className="md:truncate whitespace-nowrap">{showData.totalSeasons} Seasons</p>
                 </span>

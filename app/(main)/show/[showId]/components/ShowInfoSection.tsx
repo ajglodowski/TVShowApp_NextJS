@@ -29,7 +29,7 @@ export default function ShowInfoSection({ show, flatStyle, showId, isAdmin }: Sh
 
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-lg md:text-xl'>
           <div className='flex justify-between'><span>Name:</span> <span>{show.name}</span></div>
-          <div className='flex justify-between'><span>Service:</span> <span>{show.service.name}</span></div>
+          <div className='flex justify-between'><span>Service:</span> <span>{show.services.map(s => s.name).join(", ")}</span></div>
           <div className='flex justify-between'><span>Running:</span> <span>{boolToEmoji(show.running)}</span></div>
           <div className='flex justify-between'><span>Currently Airing:</span> <span>{boolToEmoji(show.currentlyAiring)}</span></div>
           <div className='flex justify-between'><span>Total Seasons:</span> <span>{show.totalSeasons}</span></div>

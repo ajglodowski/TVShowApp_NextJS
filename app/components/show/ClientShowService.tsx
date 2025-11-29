@@ -6,7 +6,7 @@ import { createClient } from "@/app/utils/supabase/client";
 import { cache } from "react";
 
 export const getShowFromCache = (showId: string): Show | null => {
-    const cacheKey = `show_${showId}`;
+    const cacheKey = `show_v2_${showId}`;
     const sessionStorageValue = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
     if (sessionStorageValue && sessionStorageValue.timestamp > Date.now() - 60 * 10 * 1000) { // 10 minutes
         return sessionStorageValue.data;
@@ -17,7 +17,7 @@ export const getShowFromCache = (showId: string): Show | null => {
 }
 
 export const setShowInCache = (showId: string, show: Show): void => {
-    const cacheKey = `show_${showId}`;
+    const cacheKey = `show_v2_${showId}`;
     const sessionStorageItem = JSON.stringify({ data: show, timestamp: Date.now() });
     sessionStorage.setItem(cacheKey, sessionStorageItem);
 }
@@ -36,7 +36,8 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
 
     const show: Show = {
         ...showData,
-        service: showData.service as unknown as Service
+        services: showData.ShowServiceRelationship ? 
+            showData.ShowServiceRelationship.map((item: any) => item.service) : []
     };
     
     // Store in cache
@@ -48,15 +49,58 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
 export async function updateShow(show: Show): Promise<boolean> {
     const supabase = createClient();
     const showData: any = { ...show };
-    showData.service = showData.service.id;
-    let query = supabase.from("show").upsert(showData)
-    if (show.id === 0) showData.id = undefined;
-    else query = query.match({id: show.id});
-    const { error } = await query;
+    delete showData.services; // Remove relationship field before upsert
+    
+    // Handle new show creation vs update
+    let showId = show.id;
+    if (showId === 0) {
+        showData.id = undefined;
+    }
+
+    let query = supabase.from("show").upsert(showData).select('id').single();
+    
+    const { data: insertedShow, error } = await query;
     if (error) {
         console.error(error);
         return false;
     }
+    
+    // Get the valid show ID (either from insert or existing)
+    if (insertedShow) {
+        showId = insertedShow.id;
+    }
+
+    // Update Services Relationship
+    if (show.services) {
+        // 1. Delete existing relationships
+        const { error: deleteError } = await supabase
+            .from("ShowServiceRelationship")
+            .delete()
+            .eq("showId", showId);
+            
+        if (deleteError) {
+            console.error("Error deleting old services:", deleteError);
+            return false;
+        }
+
+        // 2. Insert new relationships
+        if (show.services.length > 0) {
+            const serviceRelations = show.services.map(service => ({
+                showId: showId,
+                serviceId: service.id
+            }));
+            
+            const { error: insertError } = await supabase
+                .from("ShowServiceRelationship")
+                .insert(serviceRelations);
+                
+            if (insertError) {
+                console.error("Error inserting new services:", insertError);
+                return false;
+            }
+        }
+    }
+
     return true;
 }
 

@@ -162,8 +162,8 @@ export const ClientSearch = ({ onResultClick, usePortal = true }: { onResultClic
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-white font-medium truncate">{show.name}</p>
-                                {show.service && (
-                                    <p className="text-xs text-white/60">{show.service.name}</p>
+                                {show.services && show.services.length > 0 && (
+                                    <p className="text-xs text-white/60">{show.services.map(s => s.name).join(", ")}</p>
                                 )}
                             </div>
                             <ChevronRight className="w-4 h-4 text-white/40 flex-shrink-0" />

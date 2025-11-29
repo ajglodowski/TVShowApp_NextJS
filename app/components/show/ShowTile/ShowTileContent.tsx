@@ -57,7 +57,7 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
             </div>
             <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent p-3">
                 <h3 className="font-medium text-sm line-clamp-1">{show.name}</h3>
-                {(show.length || show.service.name) && (
+                {(show.length || (show.services && show.services.length > 0)) && (
                 <div className="flex items-center gap-2 mt-1">
                     {show.length && (
                     <div className="flex items-center text-xs text-white/60">
@@ -65,7 +65,7 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
                         {show.length}m
                     </div>
                     )}
-                    {show.service && <div className="text-xs text-white/60">{show.service.name}</div>}
+                    {show.services && show.services.length > 0 && <div className="text-xs text-white/60">{show.services.map(s => s.name).join(", ")}</div>}
                 </div>
                 )}
 

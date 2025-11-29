@@ -8,6 +8,7 @@ import { ShowLength } from "@/app/models/showLength";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -121,24 +122,36 @@ export default function EditShowPage({ show, presignedImageUrl }: { show: Show, 
   };
 
   const ServiceRow = () => {
-    const findService = (id: string): Service | undefined => {
-      return services?.find((service) => service.id.toString() === id);
+    const handleServiceChange = (service: Service, checked: boolean) => {
+        if (checked) {
+            setShowData({...showData!, services: [...showData!.services, service]});
+        } else {
+            setShowData({...showData!, services: showData!.services.filter(s => s.id !== service.id)});
+        }
     }
+
     return (
-      <div className="">
-        <Label>Service</Label>
-        { services &&
-          <Select value={showData.service.id.toString()} 
-            onValueChange={(value) => setShowData({...showData, service: findService(value) as Service})} >
-            <SelectTrigger className="bg-black w-[180px]">
-              <SelectValue defaultValue={showData.service.id.toString()} />
-            </SelectTrigger>
-            <SelectContent>
-              { services?.map((service) => (
-                <SelectItem key={service.id} value={service.id.toString()}>{service.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="py-2">
+        <Label>Services</Label>
+        { services && 
+          <div className="grid grid-cols-2 gap-2 mt-2 bg-black p-2 rounded border border-input">
+            {services.map((service) => (
+                <div key={service.id} className="flex items-center space-x-2">
+                    <Checkbox 
+                        id={`service-${service.id}`} 
+                        checked={showData?.services.some(s => s.id === service.id)}
+                        onCheckedChange={(checked) => handleServiceChange(service, checked as boolean)}
+                        className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                    />
+                    <label
+                        htmlFor={`service-${service.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        {service.name}
+                    </label>
+                </div>
+            ))}
+          </div>
         }
         { services === null && <span>Error Loading Services</span>}
         { services === undefined && <span>Loading Services...</span>}

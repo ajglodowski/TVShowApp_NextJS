@@ -8,7 +8,7 @@ export default async function ShowTileBody({showData}: ShowTileContentProps) {
     return (
         <div className="text-left text-ellipsis overflow-hidden px-2">
             <h2 className="text-lg font-semibold truncate">{show.name}</h2>
-            <p className="text-sm truncate">{show.length}m · {show.service.name}</p>
+            <p className="text-sm truncate">{show.length}m · {show.services.map(s => s.name).join(", ")}</p>
         </div>
     );
 };

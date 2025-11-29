@@ -117,7 +117,15 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
         if (filters.currentlyAiring !== undefined && filters.currentlyAiring !== null) queryBase = queryBase.eq('currentlyAiring', filters.currentlyAiring);
         if (filters.running !== undefined && filters.running !== null) queryBase = queryBase.eq('running', filters.running);
         if (filters.limitedSeries !== undefined && filters.limitedSeries !== null) queryBase = queryBase.eq('"limitedSeries"', filters.limitedSeries);
-        if (filters.service.length > 0) queryBase = queryBase.in('service_id', filters.service.map((service) => service.id));
+        if (filters.service.length > 0) {
+            // Filter shows that have AT LEAST ONE of the selected services
+            // We can't use a simple .in() on array column easily in PostgREST for "contains any" logic 
+            // without using the overlap operator (cs or cd) which expects array input.
+            // But we're querying a view where service_ids is an integer array.
+            // The syntax for array overlap in Supabase js client is .overlaps('column', [values])
+            const serviceIds = filters.service.map((service) => service.id);
+            queryBase = queryBase.overlaps('service_ids', serviceIds);
+        }
         if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
         if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
 
@@ -172,7 +180,27 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
         if (filters.currentlyAiring !== undefined && filters.currentlyAiring !== null) queryBase = queryBase.eq('currentlyAiring', filters.currentlyAiring);
         if (filters.running !== undefined && filters.running !== null) queryBase = queryBase.eq('running', filters.running);
         if (filters.limitedSeries !== undefined && filters.limitedSeries !== null) queryBase = queryBase.eq('limitedSeries', filters.limitedSeries);
-        if (filters.service.length > 0) queryBase = queryBase.in('service', filters.service.map((service) => service.id));
+        if (filters.service.length > 0) {
+             // Since we're querying the base table, we need to filter by the relation
+             // We need shows where ShowServiceRelationship.serviceId is in our list
+             const serviceIds = filters.service.map(s => s.id);
+             // Inner join filtering pattern
+             queryBase = queryBase.not('ShowServiceRelationship', 'is', null);
+             // This is tricky with Supabase client on nested relations for filtering parent rows
+             // A common workaround is !inner join which Supabase supports via:
+             // .select('*, ShowServiceRelationship!inner(serviceId)')
+             // .in('ShowServiceRelationship.serviceId', serviceIds)
+             
+             // But we already defined our select string. Let's modify query construction
+             // Ideally, we'd use a different approach or simple client side filtering if volume is low
+             // But for now, let's use the 'contains' strategy if possible or !inner.
+             
+             // Re-initializing queryBase to include !inner for filtering
+             // Note: This replaces the previous assignment
+             queryBase = supabase.from("show")
+                .select(`${ShowPropertiesWithService}, ShowServiceRelationship!inner(serviceId)`)
+                .in('ShowServiceRelationship.serviceId', serviceIds);
+        }
         if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
         if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
         
@@ -274,7 +302,8 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
             // Regular show table mapping (no analytics data)
             return {
                 ...show,
-                service: show.service as unknown as Service
+                services: show.ShowServiceRelationship ? 
+                    show.ShowServiceRelationship.map((item: any) => item.service) : [],
             } as ShowWithAnalytics;
         }
     });
@@ -298,10 +327,11 @@ export async function fetchUsersWatchlist(userId: string): Promise<UserWatchList
             created_at: row.created_at,
             lastUpdated: row.lastupdated,
             name: row.name,
-            service: {
-                id: row.service,
-                name: row.service_name
-            },
+            services: row.services && row.service_names ? 
+                row.services.map((id: number, index: number) => ({
+                    id: id,
+                    name: row.service_names[index]
+                })) : [],
             running: row.running,
             limitedSeries: row.limitedseries,
             totalSeasons: row.totalseasons,
@@ -384,7 +414,11 @@ export async function filterWatchlist(UserWatchListData: UserWatchListData[] | n
     }
     
     if (filters.service.length > 0) {
-        filteredShows = filteredShows.filter((show) => filters.service.map((service) => service.id).includes(show.show.service.id));
+        const filterServiceIds = filters.service.map((service) => service.id);
+        filteredShows = filteredShows.filter((show) => {
+            // Check if ANY of the show's services match ANY of the filter services
+            return show.show.services.some(showService => filterServiceIds.includes(showService.id));
+        });
     }
     
     if (filters.airDate.length > 0) {
