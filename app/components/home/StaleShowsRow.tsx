@@ -4,6 +4,7 @@ import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
 import { getStaleShows } from "./HomeService";
 import { releaseDateToString } from "@/app/utils/timeUtils";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
+import { LocalizedDaysAgo, LocalizedReleaseDate } from "../LocalizedDate";
 
 export async function LoadingStaleShowsRow() {
     return (
@@ -33,23 +34,12 @@ export default async function StaleShowsRow({ userId }: { userId: string }) {
         );
     }
 
-    const getDaysAgoString = (date: Date) => {
-        const now = new Date();
-        const updated = new Date(date);
-        const diff = now.getTime() - updated.getTime();
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        
-        if (days === 0) return "Today";
-        if (days === 1) return "Yesterday";
-        return `${days} days ago`;
-    }
-
     const daysAgoBadge = (date: Date): ShowTileBadgeProps => {
-        return { text: getDaysAgoString(date), iconName: 'Clock' };
+        return { text: <LocalizedDaysAgo date={date} />, iconName: 'Clock' };
     }
 
     const dateBadge = (date: Date): ShowTileBadgeProps => {
-        return { text: releaseDateToString(date), iconName: 'Calendar' };
+        return { text: <LocalizedReleaseDate date={date} />, iconName: 'Calendar' };
     }
 
     return (

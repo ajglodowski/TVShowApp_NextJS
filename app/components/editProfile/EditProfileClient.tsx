@@ -14,11 +14,10 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/use-toast"
 import { AtSign } from "lucide-react"
 import ProfilePictureSection from "./ProfilePictureSection"
 import { Label } from "@/components/ui/label"
-import { useToast } from "@/components/hooks/use-toast"
+import { toast } from "sonner"
 
 export type ProfileFormValues = {
     username: string
@@ -37,8 +36,6 @@ type ProfileFormProps = {
 export function EditProfileForm({ userData, email, presignedImageUrl, saveFunction }: ProfileFormProps) {
     const router = useRouter()
 
-    const { toast } = useToast();
-
     const form = useForm<ProfileFormValues>({
         defaultValues: {
             username: userData.username || "",
@@ -52,14 +49,15 @@ export function EditProfileForm({ userData, email, presignedImageUrl, saveFuncti
         // This would be replaced with actual API call to update the profile
         const success = await saveFunction(data);
         if (success) {
-            toast({
-                title: "Profile updated",
+            toast.success("Profile updated", {
                 description: "Your profile has been successfully updated.",
-                action: <Button variant="outline" className={`bg-black text-white hover:bg-white hover:text-black`} onClick={() => router.push("/profile")}>Go to Profile</Button>,
+                action: {
+                    label: "Go to Profile",
+                    onClick: () => router.push("/profile")
+                }
             })
         } else {
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: "There was an error updating your profile. Please try again.",
             })
         }

@@ -3,6 +3,8 @@ import { Clock, Calendar, Info, AlertCircle, LucideIcon } from 'lucide-react';
 import Image from "next/image";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 
+import React from "react";
+
 export type ShowTileContentProps = {
     showData: Show
     presignedUrl: string | null
@@ -10,7 +12,7 @@ export type ShowTileContentProps = {
 }
 
 export type ShowTileBadgeProps = {
-    text: string
+    text: string | React.ReactNode
     icon?: LucideIcon
     iconName?: 'Clock' | 'Calendar' | 'Info' | 'AlertCircle'
     color?: string

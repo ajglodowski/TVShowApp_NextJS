@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { UserUpdate } from "@/app/models/userUpdate";
-import { dateToString } from "@/app/utils/timeUtils";
+import { LocalizedDate } from "@/app/components/LocalizedDate";
 import { getUserUpdateMessage } from "@/app/utils/getUserUpdateMessage";
 import HideToggleButton from "./HideToggleButton";
 import { PencilIcon, CheckIcon } from "lucide-react";
@@ -81,7 +81,7 @@ export default function UpdatesWrapper({
                         <span className="flex justify-between items-center">
                             <p className="text-lg">{getUserUpdateMessage(update)}</p>
                             <span className="flex items-center">
-                                <p className="pr-2 pl-4 text-sm">{dateToString(update.updateDate)}</p>
+                                <p className="pr-2 pl-4 text-sm"><LocalizedDate date={update.updateDate} /></p>
                                 {isEditMode && (
                                     <HideToggleButton 
                                         updateId={update.id} 

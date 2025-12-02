@@ -1,9 +1,10 @@
 import type { Show } from '@/app/models/show';
 import { boolToEmoji } from '@/app/utils/boolToEmoji';
-import { dateToString, releaseDateToString } from '@/app/utils/timeUtils';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { LoadingShowTagsSection, ShowTagsSection } from './ShowTagsSection'; // Assuming ShowTagsSection is in the same dir or adjust path
+import { LocalizedDate, LocalizedReleaseDate } from '@/app/components/LocalizedDate';
+
 
 interface ShowInfoTabContentProps {
   show: Show;
@@ -34,13 +35,13 @@ export default function ShowInfoSection({ show, flatStyle, showId, isAdmin }: Sh
           <div className='flex justify-between'><span>Currently Airing:</span> <span>{boolToEmoji(show.currentlyAiring)}</span></div>
           <div className='flex justify-between'><span>Total Seasons:</span> <span>{show.totalSeasons}</span></div>
           <div className='flex justify-between'><span>Limited Series:</span> <span>{boolToEmoji(show.limitedSeries)}</span></div>
-          {!!show.releaseDate && <div className='flex justify-between'><span>Release Date:</span> <span>{releaseDateToString(show.releaseDate)}</span></div>}
+          {!!show.releaseDate && <div className='flex justify-between'><span>Release Date:</span> <LocalizedReleaseDate date={show.releaseDate} /></div>}
           {!!show.airdate && <div className='flex justify-between'><span>Airdate:</span> <span>{show.airdate}</span></div>}
         </div>
 
         <div className='flex flex-col sm:flex-row justify-between text-sm md:text-base mt-4'>
-          <span>Show created at: {dateToString(show.created_at)}</span>
-          <span>Last updated: {dateToString(show.lastUpdated)}</span>
+          <span>Show created at: <LocalizedDate date={show.created_at} /></span>
+          <span>Last updated: <LocalizedDate date={show.lastUpdated} /></span>
         </div>
         <p className='text-xs mt-2'>Show ID: {showId}</p>
       </div>

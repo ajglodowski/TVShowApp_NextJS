@@ -10,7 +10,7 @@ import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
-import { releaseDateToString } from "@/app/utils/timeUtils";
+import { LocalizedDaysAgo } from "../LocalizedDate";
 
 export default function CheckInShowTile({ checkInShow, userId }: { checkInShow: CheckInShowDTO, userId: string }) {
     const [isVisible, setIsVisible] = useState(true);
@@ -68,20 +68,9 @@ export default function CheckInShowTile({ checkInShow, userId }: { checkInShow: 
 
     if (!isVisible) return null;
 
-    const getDaysAgoString = (date: Date) => {
-        const now = new Date();
-        const updated = new Date(date);
-        const diff = now.getTime() - updated.getTime();
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        
-        if (days === 0) return "Today";
-        if (days === 1) return "Yesterday";
-        return `${days} days ago`;
-    }
-
     const badges: ShowTileBadgeProps[] = [
         { text: checkInShow.reason, iconName: 'AlertCircle', color: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50' },
-        { text: getDaysAgoString(checkInShow.updated), iconName: 'Clock' }
+        { text: <LocalizedDaysAgo date={checkInShow.updated} />, iconName: 'Clock' }
     ];
 
     return (

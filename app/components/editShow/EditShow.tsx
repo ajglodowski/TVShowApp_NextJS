@@ -14,12 +14,12 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
-import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import ShowImageSection from "./ShowImageSection";
+import { LocalizedDateString } from "../LocalizedDate";
+import { toast } from "sonner";
 
 function ShowNotFound() {
   return (
@@ -47,13 +47,13 @@ export default function EditShowPage({ show, presignedImageUrl }: { show: Show, 
   const [showData, setShowData] = useState<Show | null | undefined>(show);
   const [services, setServices] = useState<Service[] | null | undefined>(undefined);
 
-  const { toast } = useToast();
+  // const { toast } = useToast();
 
   async function submitChanges() {
     if (!showData) return;
     const response = await updateShow(showData!);
-    if (!response) toast({variant: 'destructive',description: 'Error Updating Show', title: 'Failure'});
-    else toast({description: 'Show Updated', title: 'Success'});
+    if (!response) toast.error('Error Updating Show'); // toast({variant: 'destructive',description: 'Error Updating Show', title: 'Failure'});
+    else toast.success('Show Updated'); // toast({description: 'Show Updated', title: 'Success'});
   }
 
   useEffect(() => {
@@ -106,7 +106,9 @@ export default function EditShowPage({ show, presignedImageUrl }: { show: Show, 
               className= "w-[280px] justify-start text-left font-normal text-black text"
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {showData.releaseDate ? format(showData.releaseDate, "PPP") : <span>Pick a date</span>}
+              <span suppressHydrationWarning>
+                {showData.releaseDate ? <LocalizedDateString date={showData.releaseDate} /> : "Pick a date"}
+              </span>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">

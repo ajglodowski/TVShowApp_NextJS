@@ -1,11 +1,11 @@
 import { createClient } from "@/app/utils/supabase/server";
 import { getList, getShowsForList } from "./ListService";
-import { dateToString } from "@/app/utils/timeUtils";
 import ListShowsSection from "./components/ListShowsSection";
 import ProfileBubble from "@/app/components/user/ProfileBubble";
 import { Suspense } from "react";
 import ListLoading from "./loading";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { LocalizedDate } from "@/app/components/LocalizedDate";
 
 function ListNotFound() {
   return (
@@ -45,8 +45,8 @@ export default async function ListPage({ params }: { params: Promise<{ listId: s
             </span>
             <ProfileBubble userId={listData.creator} />
             <p>{listData.description}</p>
-            <p>Created: {dateToString(listData.created_at)}</p>
-            {listData.updated_at && <p>Updated: {dateToString(listData.updated_at)}</p> }
+            <p>Created: <LocalizedDate date={listData.created_at} /></p>
+            {listData.updated_at && <p>Updated: <LocalizedDate date={listData.updated_at} /></p> }
             <ListShowsSection listId={listId} />
         </div>
     </div>

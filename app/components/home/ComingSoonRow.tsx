@@ -2,9 +2,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowTile from "../show/ShowTile/ShowTile";
 import { getComingSoon } from "./HomeService";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
-import { releaseDateToString } from "@/app/utils/timeUtils";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { LocalizedDaysAway, LocalizedReleaseDate } from "../LocalizedDate";
 export type ComingSoonDTO = {
     showId: string
     releaseDate: Date
@@ -20,27 +20,12 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
     if (shows === null) return (<div>Error Loading Coming Soon</div>);
     if (shows.length === 0) return (<div>No Shows in marked as coming soon.</div>);
 
-    const getDaysAwayString = (days: number) => {
-        if (days == 1) return "day";
-        else return "days";
-    }
-
-    const daysAway = (date: Date):string =>  {
-        const now = new Date();
-        const releaseDate = new Date(date);
-        const diff = releaseDate.getTime() - now.getTime();
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        if (days < 0) return "Out Now";
-        return `${days.toString()} ${getDaysAwayString(days)} away`;
-    };
-
-
-    const tileBadge = (daysAwayString: string): ShowTileBadgeProps => {
-        return { text: `${daysAwayString}`, iconName: 'Clock' };
+    const tileBadge = (date: Date): ShowTileBadgeProps => {
+        return { text: <LocalizedDaysAway date={date} />, iconName: 'Clock' };
     }
 
     const releaseDateBadge = (releaseDate: Date): ShowTileBadgeProps => {
-        return { text: `${releaseDateToString(releaseDate)}`, iconName: 'Calendar' };
+        return { text: <LocalizedReleaseDate date={releaseDate} />, iconName: 'Calendar' };
     }
 
 
@@ -52,7 +37,7 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
                         <div key={show.showId} className="m-2">
                             <ShowTile 
                                 showId={show.showId} 
-                                badges={[tileBadge(daysAway(show.releaseDate)), releaseDateBadge(show.releaseDate)]}
+                                badges={[tileBadge(show.releaseDate), releaseDateBadge(show.releaseDate)]}
                             />
                         </div>
                     ))}

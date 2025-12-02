@@ -6,6 +6,7 @@ import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { StatusIcon } from "@/app/utils/StatusIcon";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ShowStatusSection({ showId, userId, userShowData, allStatuses, updateFunction, loggedIn }: { showId: string, userId: string | undefined, userShowData: UserShowData | null, allStatuses: Status[] | null, updateFunction: Function, loggedIn: boolean }) {
 
@@ -28,11 +29,15 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
     async function changeCurrentStatus(status: Status) {
         console.log(`Changing status to ${status.name}`);
         const updateResponse = await updateFunction({ updateType: UserUpdateCategory.UpdatedStatus, userId: userId, showId: showId, newValue: status });
-        if (updateResponse) setCurrentStatus(status);
-        else console.log(`Error updating season to ${status}`);
+        if (updateResponse) {
+            setCurrentStatus(status);
+            toast.success(`Status updated to ${status.name}`);
+        }
+        else {
+            console.log(`Error updating season to ${status}`);
+            toast.error("Failed to update status");
+        }
     };
-    
-    //const { toast } = useToast(); // TODO FIXME
     
     async function addShowToWatchlist() {
         const response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId, showId: showId, newValue: null });

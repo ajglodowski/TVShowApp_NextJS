@@ -1,5 +1,5 @@
 import { UserUpdateTileDTO } from "../UserUpdateService";
-import { dateToString } from "@/app/utils/timeUtils";
+import { LocalizedDate } from "@/app/components/LocalizedDate";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import ProfileBubble from "../../user/ProfileBubble";
 
@@ -33,7 +33,7 @@ export default async function UserUpdateTileBody(props: UserUpdateTileBodyProps)
         <div className="">
             <h2 className="font-medium text-sm truncate">{showName}</h2>
             <h2 className="text-xs text-white/70 truncate">{updateMessage()}</h2>
-            <h2 className="text-xs text-white/60">{dateToString(update.updateDate)}</h2>
+            <h2 className="text-xs text-white/60"><LocalizedDate date={update.updateDate} /></h2>
             <ProfileBubble userId={update.userId}/>
         </div>
     );
