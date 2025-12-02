@@ -72,6 +72,6 @@ export const convertRawShowAnalyticsToShowWithAnalytics = (analyticsData: any): 
 }
 
 export const ShowProperties = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, totalSeasons, airdate, releaseDate';
-export const ShowPropertiesWithService = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, ShowServiceRelationship(service(id, name)), totalSeasons, airdate, releaseDate, pictureUrl';
+export const ShowPropertiesWithService = 'id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, "ShowServiceRelationship"(service(id, name)), service:service!show_service_fkey(id, name), totalSeasons, airdate, releaseDate, pictureUrl';
 export const ShowAnalyticsProperties = 'show_id, show_name, service_ids, service_names, "pictureUrl", running, "limitedSeries", "totalSeasons", "releaseDate", weekly_updates, monthly_updates, yearly_updates, avg_rating_points';
 

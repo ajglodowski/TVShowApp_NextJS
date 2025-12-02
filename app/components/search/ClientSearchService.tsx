@@ -2,7 +2,7 @@
 
 import { createClient } from "@/app/utils/supabase/client";
 import { Actor } from "@/app/models/actor";
-import { Show } from "@/app/models/show";
+import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowList } from "@/app/models/showList";
 import { ShowTag } from "@/app/models/showTag";
 import { UserBasicInfo } from "@/app/models/user";
@@ -20,7 +20,7 @@ export type SearchResult =
         try {
             const { data: showData } = await supabase
                 .from('show')
-                .select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, ShowServiceRelationship(service(id, name)), totalSeasons, airdate, releaseDate, pictureUrl')
+                .select(ShowPropertiesWithService)
                 .ilike('name', `%${query}%`)
                 .limit(5);
             
@@ -30,8 +30,9 @@ export type SearchResult =
                 type: 'show' as const,
                 data: {
                     ...show,
-                    services: show.ShowServiceRelationship ? 
-                        show.ShowServiceRelationship.map((item: any) => item.service) : [],
+                    services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
+                        ? show.ShowServiceRelationship.map((item: any) => item.service) 
+                        : (show.service ? [show.service] : []),
                 } as Show
             }));
         } catch (error) {

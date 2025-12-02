@@ -198,8 +198,8 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
              // Re-initializing queryBase to include !inner for filtering
              // Note: This replaces the previous assignment
              queryBase = supabase.from("show")
-                .select(`${ShowPropertiesWithService}, ShowServiceRelationship!inner(serviceId)`)
-                .in('ShowServiceRelationship.serviceId', serviceIds);
+                .select('id, name, created_at, lastUpdated, length, limitedSeries, currentlyAiring, running, "ShowServiceRelationship"!inner(serviceId, service(id, name)), totalSeasons, airdate, releaseDate, pictureUrl')
+                .in('"ShowServiceRelationship".serviceId', serviceIds);
         }
         if (filters.airDate.length > 0) queryBase = queryBase.in('airdate', filters.airDate);
         if (filters.length.length > 0) queryBase = queryBase.in('length', filters.length);
@@ -302,8 +302,9 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
             // Regular show table mapping (no analytics data)
             return {
                 ...show,
-                services: show.ShowServiceRelationship ? 
-                    show.ShowServiceRelationship.map((item: any) => item.service) : [],
+                services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
+                    ? show.ShowServiceRelationship.map((item: any) => item.service) 
+                    : (show.service ? [show.service] : []),
             } as ShowWithAnalytics;
         }
     });

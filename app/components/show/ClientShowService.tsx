@@ -1,5 +1,5 @@
 import { apiRoute } from "@/app/envConfig";
-import { Service } from "@/app/models/service";
+import { OtherService, Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
 import { createClient } from "@/app/utils/supabase/client";
@@ -36,8 +36,9 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
 
     const show: Show = {
         ...showData,
-        services: showData.ShowServiceRelationship ? 
-            showData.ShowServiceRelationship.map((item: any) => item.service) : []
+        services: (showData.ShowServiceRelationship && showData.ShowServiceRelationship.length > 0) 
+            ? showData.ShowServiceRelationship.map((item: any) => item.service) 
+            : (showData.service ? [showData.service] : [])
     };
     
     // Store in cache
@@ -49,7 +50,22 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
 export async function updateShow(show: Show): Promise<boolean> {
     const supabase = createClient();
     const showData: any = { ...show };
+    
+    // Determine legacy service ID for the NOT NULL constraint
+    // Priority: 1. First service in list, 2. Existing service ID, 3. Default "Other" ID
+    let legacyServiceId = OtherService.id;
+    
+    if (showData.services && showData.services.length > 0) {
+        legacyServiceId = showData.services[0].id;
+    } else if (showData.service && showData.service.id) {
+        legacyServiceId = showData.service.id;
+    }
+    
+    showData.service = legacyServiceId;
+
     delete showData.services; // Remove relationship field before upsert
+    delete showData.ShowServiceRelationship; // Remove relationship field before upsert
+    // showData.service is now an integer ID, so we keep it
     
     // Handle new show creation vs update
     let showId = show.id;

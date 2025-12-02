@@ -19,7 +19,15 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
     else response = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId}).filter('status', 'in', statusesString).order('updated', {ascending: false}).limit(15);
     
     if (response.data == null) return null;
-    const showData = response.data.map((show) => show.show) as unknown as Show[];
+    const showData = response.data.map((item: any) => {
+        const show = item.show;
+        return {
+            ...show,
+            services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
+                ? show.ShowServiceRelationship.map((r: any) => r.service) 
+                : (show.service ? [show.service] : [])
+        } as Show;
+    });
 
     if (!showData) {
         console.error(response.error);

@@ -5,7 +5,8 @@ import ClientShowTile from "../show/ShowTile/ClientShowTile";
 import { CheckInShowDTO } from "./HomeService";
 import { Button } from "@/components/ui/button";
 import { Check, Plus } from "lucide-react";
-import { updateCurrentSeason } from "@/app/(main)/show/[showId]/UserShowDataService";
+import { updateUserShowData } from "@/app/(main)/show/[showId]/UserShowDataService";
+import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
@@ -18,10 +19,11 @@ export default function CheckInShowTile({ checkInShow, userId }: { checkInShow: 
     const handleCaughtUp = async () => {
         setIsLoading(true);
         try {
-            const success = await updateCurrentSeason({
+            const success = await updateUserShowData({
+                updateType: UserUpdateCategory.ChangedSeason,
                 userId,
                 showId: checkInShow.show.id.toString(),
-                newSeason: checkInShow.show.totalSeasons
+                newValue: checkInShow.show.totalSeasons
             });
             if (success) {
                 toast.success(`Caught up on ${checkInShow.show.name}`);
@@ -40,10 +42,11 @@ export default function CheckInShowTile({ checkInShow, userId }: { checkInShow: 
         setIsLoading(true);
         const newSeason = checkInShow.currentSeason + 1;
         try {
-            const success = await updateCurrentSeason({
+            const success = await updateUserShowData({
+                updateType: UserUpdateCategory.ChangedSeason,
                 userId,
                 showId: checkInShow.show.id.toString(),
-                newSeason: newSeason
+                newValue: newSeason
             });
             if (success) {
                 toast.success(`Updated to Season ${newSeason}`);

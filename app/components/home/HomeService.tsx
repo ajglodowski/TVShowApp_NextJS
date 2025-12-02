@@ -14,7 +14,15 @@ export async function getWatchList({userId}: {userId: string}): Promise<Show[] |
     const supabase = await publicClient();
     const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: WatchlistStatusId}).limit(10);
     if (!showData) return null;   
-    const output = showData.map((obj) => obj.show) as unknown as Show[];
+    const output = showData.map((obj: any) => {
+        const show = obj.show;
+        return {
+            ...show,
+            services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
+                ? show.ShowServiceRelationship.map((r: any) => r.service) 
+                : (show.service ? [show.service] : [])
+        } as Show;
+    });
     return output;
 }
 
@@ -128,7 +136,15 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
     else response = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId}).filter('status', 'in', statusesString).order('updated', {ascending: false}).limit(15);
     
     if (response.data == null) return null;
-    const showData = response.data.map((show) => show.show) as unknown as Show[];
+    const showData = response.data.map((item: any) => {
+        const show = item.show;
+        return {
+            ...show,
+            services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
+                ? show.ShowServiceRelationship.map((r: any) => r.service) 
+                : (show.service ? [show.service] : [])
+        } as Show;
+    });
 
     if (!showData) {
         console.error(response.error);
@@ -170,10 +186,20 @@ export async function getStaleShows({userId}: {userId: string}): Promise<StaleSh
         .limit(15);
 
     if (!showData) return null;
-    const output = showData.map((obj) => ({
-        show: obj.show as unknown as Show,
-        updated: new Date(obj.updated)
-    }));
+    const output = showData.map((obj: any) => {
+        const show = obj.show;
+        const mappedShow = {
+            ...show,
+            services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
+                ? show.ShowServiceRelationship.map((r: any) => r.service) 
+                : (show.service ? [show.service] : [])
+        } as Show;
+        
+        return {
+            show: mappedShow,
+            updated: new Date(obj.updated)
+        };
+    });
     return output;
 }
 
@@ -216,7 +242,12 @@ export async function getCheckInShows({userId}: {userId: string}): Promise<Check
     const now = new Date();
     
     for (const obj of showData) {
-        const show = obj.show as unknown as Show;
+        const rawShow = obj.show as any;
+        const show = {
+            ...rawShow,
+            services: rawShow.ShowServiceRelationship ? rawShow.ShowServiceRelationship.map((r: any) => r.service) : []
+        } as Show;
+        
         const currentSeason = obj.currentSeason;
         const updatedDate = new Date(obj.updated);
         const status = obj.status as unknown as Status;
