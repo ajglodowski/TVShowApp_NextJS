@@ -22,7 +22,7 @@ export default async function ServiceCountCard({ userId }: { userId: string }) {
                 <CardTitle>Top Services</CardTitle>
             </CardHeader>
             <CardContent>
-                { serviceData.map((tagCount: ShowServiceCountDTO) => (
+                { serviceData.slice(0, 5).map((tagCount: ShowServiceCountDTO) => (
                     <div key={tagCount.service.id} className="space-y-2">
                         <div className="flex justify-between items-center text-sm">
                             <span className="">{tagCount.service.name}</span>

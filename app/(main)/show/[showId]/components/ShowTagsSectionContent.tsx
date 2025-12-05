@@ -6,6 +6,7 @@ import { TagCategory } from "@/app/models/tagCategory";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { backdropBackground } from "@/app/utils/stylingConstants";
 
 export default function ShowTagsSectionContent({showId, currentTags, allTags, tagCategories, isAdmin}: {showId: string, currentTags: ShowTag[] | null, allTags: ShowTag[] | null, tagCategories: TagCategory[] | null, isAdmin: boolean} ) {
     
@@ -28,7 +29,7 @@ export default function ShowTagsSectionContent({showId, currentTags, allTags, ta
         if (response) setAppliedTags(appliedTags.filter((appliedTag) => appliedTag.id !== tag.id));
     }
 
-    const tagStyle = 'p-1 px-2 m-1 rounded-full outline outline-white hover:bg-white hover:text-black';
+    const tagStyle = `${backdropBackground} p-1 px-2 m-1 rounded-full border border-white/30 hover:bg-white/20 text-white transition-colors`;
 
     function CurrentTagsSection() {
         if (currentTags === null) return (
@@ -57,7 +58,7 @@ export default function ShowTagsSectionContent({showId, currentTags, allTags, ta
                             }
                             {!editingTags &&
                                 <Link href={`/search?tags=${tag.id}`}>
-                                    <h2 className='p-1 px-2 mx-2 rounded-full outline outline-white hover:bg-white hover:text-black'>{tag.name}</h2>
+                                    <h2 className={`${backdropBackground} p-1 px-2 mx-2 rounded-full border border-white/30 hover:bg-white/20 text-white transition-colors`}>{tag.name}</h2>
                                 </Link>
                             }
                         </li>
@@ -113,7 +114,7 @@ export default function ShowTagsSectionContent({showId, currentTags, allTags, ta
             <h1 className='text-2xl font-bold my-auto'>Tags</h1>
             {isAdmin && (
               <button 
-                  className='p-1 mx-2 my-2 rounded-lg outline outline-white hover:bg-white hover:text-black'
+                  className={`${backdropBackground} p-1 px-3 mx-2 my-2 rounded-lg border border-white/30 hover:bg-white/20 text-white transition-colors`}
                   onClick={() => setEditingTags(!editingTags)}>
                   {editingTags ? 'Done' : 'Edit'}
               </button>

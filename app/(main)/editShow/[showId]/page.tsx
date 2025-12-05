@@ -2,21 +2,8 @@ import { getShow } from "@/app/(main)/show/[showId]/ShowService";
 import EditShowPage from "@/app/components/editShow/EditShow";
 import { createClient } from '@/app/utils/supabase/server';
 import { isAdmin } from '@/app/utils/userService';
-import Link from 'next/link';
 import { getShowImageUrlAction } from "../../show/[showId]/ShowImageService";
-
-function Unauthorized() {
-  return (
-    <div className='text-center my-auto mx-auto py-20'>
-      <h1 className='text-4xl font-bold mb-4'>Unauthorized</h1>
-      <h2 className='text-2xl mb-4'>You don't have permission to edit shows</h2>
-      <h2 className='text-5xl mb-6'>🚫</h2>
-      <Link href="/" className='text-lg underline hover:text-blue-400'>
-        Return to Home
-      </Link>
-    </div>
-  );
-}
+import Unauthorized from "@/app/components/Unauthorized";
 
 export default async function EditShow({ params }: { params: Promise<{ showId: string }> }) {
 
@@ -29,7 +16,7 @@ export default async function EditShow({ params }: { params: Promise<{ showId: s
   const userIsAdmin = await isAdmin(currentUserId);
   
   if (!userIsAdmin) {
-    return <Unauthorized />;
+    return <Unauthorized message="You don't have permission to edit shows" />;
   }
   
   const show = await getShow(showId);

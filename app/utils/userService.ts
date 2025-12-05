@@ -297,6 +297,53 @@ export async function getUserLowestRatedActors(userId: string): Promise<ActorRat
 }
 
 
+export type ShowTagWithId = {
+    showId: number;
+    tag: ShowTag;
+}
+
+export async function getUserWatchedShowsTags(userId: string): Promise<ShowTagWithId[] | null> {
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
+    
+    // 1. Get shows logged by user
+    const { data: userShows, error: userShowsError } = await supabase
+        .from("UserShowDetails")
+        .select('showId')
+        .match({userId: userId});
+        
+    if (userShowsError || !userShows) return null;
+    
+    const showIds = userShows.map(s => s.showId);
+    
+    if (showIds.length === 0) return [];
+
+    // 2. Get tags for these shows
+    const { data: tagData, error: tagError } = await supabase
+        .from("ShowTagRelationship")
+        .select('showId, tag:tagId (id, name, created_at, category:ShowTagCategory (id, name, created_at))')
+        .in('showId', showIds);
+
+    if (tagError) {
+        console.error(tagError);
+        return null;
+    }
+
+    // 3. Map to cleaner structure
+    const mappedData = tagData.map((item: any) => ({
+        showId: item.showId,
+        tag: {
+            id: item.tag.id,
+            name: item.tag.name,
+            created_at: item.tag.created_at,
+            category: item.tag.category
+        }
+    }));
+
+    return mappedData;
+}
+
 export async function getFollowerCount(userId: string): Promise<number | null> {
     const supabase = await createClient();
     const { count: count } = await supabase.from("UserFollowRelationship").select('*', { count: 'exact', head: true }).match({followingUserId: userId});

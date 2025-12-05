@@ -1,6 +1,7 @@
-import { getUserByUsername, getShowsLogged, getUserTopTags, getUserTopServices, getUserTagRatings, getUserServiceRatings, getUserTopActors, getUserHighestRatedActors, getUserLowestRatedActors } from "@/app/utils/userService";
+import { getUserByUsername, getShowsLogged, getUserTopTags, getUserTopServices, getUserTagRatings, getUserServiceRatings, getUserTopActors, getUserHighestRatedActors, getUserLowestRatedActors, getUserWatchedShowsTags } from "@/app/utils/userService";
 import { getUpdatesCreated, getListsCreated } from "../../components/ProfilePage/UserStatsCard/UserStatsCardService";
 import StatsCharts from "./StatsCharts";
+import TagNetworkChart from "./TagNetworkChart";
 import UserProfileHeader from "../../components/ProfilePage/UserProfileHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { backdropBackground } from "@/app/utils/stylingConstants";
@@ -26,7 +27,8 @@ export default async function StatsPage({ params }: { params: Promise<{ username
         serviceRatings,
         topActors,
         highestRatedActors,
-        lowestRatedActors
+        lowestRatedActors,
+        userShowTags
     ] = await Promise.all([
         getShowsLogged(userId),
         getUpdatesCreated(userId),
@@ -37,7 +39,8 @@ export default async function StatsPage({ params }: { params: Promise<{ username
         getUserServiceRatings(userId),
         getUserTopActors(userId),
         getUserHighestRatedActors(userId),
-        getUserLowestRatedActors(userId)
+        getUserLowestRatedActors(userId),
+        getUserWatchedShowsTags(userId)
     ]);
 
     const generalStats = {
@@ -68,6 +71,8 @@ export default async function StatsPage({ params }: { params: Promise<{ username
                 highestRatedActors={highestRatedActors}
                 lowestRatedActors={lowestRatedActors}
             />
+            
+            <TagNetworkChart data={userShowTags} />
         </div>
     );
 }
