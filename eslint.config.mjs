@@ -11,7 +11,8 @@ export default [
     ignores: [
       "components/ui/**",
       "app/utils/supabase/**",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      ".next/**"
     ]
   },
   pluginJs.configs.recommended,
@@ -20,5 +21,11 @@ export default [
   {rules: {
    "react/react-in-jsx-scope": "off",
    "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }],
+   "react/no-unescaped-entities": "off",
+   "@typescript-eslint/no-unused-vars": ["error", { 
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_",
+      "caughtErrorsIgnorePattern": "^_"
+    }]
   }},
 ];

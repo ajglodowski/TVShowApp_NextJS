@@ -3,7 +3,7 @@
 import { AirDate } from "@/app/models/airDate";
 import { Rating, RatingPoints } from "@/app/models/rating";
 import { Service } from "@/app/models/service";
-import { convertRawShowAnalyticsToShowWithAnalytics, ShowAnalytics, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics } from "@/app/models/show";
+import { convertRawShowAnalyticsToShowWithAnalytics, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics } from "@/app/models/show";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { Status } from "@/app/models/status";
 import { UserBasicInfo } from "@/app/models/user";
@@ -12,7 +12,6 @@ import { createClient, publicClient } from "@/app/utils/supabase/server";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cache } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
-import { ShowTag } from "@/app/models/showTag";
 import { UserWatchListData } from './types';
 
 export const getServices = cache(async (): Promise<Service[] | null> => {
@@ -383,7 +382,7 @@ export async function filterWatchlist(UserWatchListData: UserWatchListData[] | n
         
         // Query tag relationships for all shows in the watchlist
         const supabase = await createClient();
-        const { data: taggedShowsData, error } = await supabase
+        const { data: taggedShowsData, error: _error } = await supabase
             .from('ShowTagRelationship')
             .select('showId, tagId')
             .in('showId', showIds) // Only get relationships for shows in the watchlist

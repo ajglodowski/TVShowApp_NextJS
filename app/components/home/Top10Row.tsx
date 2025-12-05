@@ -1,9 +1,8 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import ShowTile from "../show/ShowTile/ShowTile";
-import { getTop10 } from "./HomeService";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
-import { Skeleton } from "@/components/ui/skeleton";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
+import { getTop10 } from "./HomeService";
 
 export default async function Top10Row() {
 

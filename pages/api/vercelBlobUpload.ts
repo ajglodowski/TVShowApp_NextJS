@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       body,
       request: req,
       onBeforeGenerateToken: async (
-        pathname,
+        _pathname,
         /* clientPayload */
       ) => {
         // Generate a client token for the browser to upload the file
@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           // Run any logic after the file upload completed
           // const { userId } = JSON.parse(tokenPayload);
           // await db.update({ avatar: blob.url, userId });
-        } catch (error) {
+        } catch (_error) {
           throw new Error('Could not update user');
         }
       },

@@ -1,20 +1,20 @@
-import { ComingSoonStatusId, CurrentlyAiringStatusId, WatchlistStatusId, Status } from '@/app/models/status';
+import { ComingSoonStatusId, CurrentlyAiringStatusId, Status, WatchlistStatusId } from '@/app/models/status';
+import { StatusIcon } from '@/app/utils/StatusIcon';
 import { createClient } from '@/app/utils/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronRight, History, Tv, TrendingUp, Play, ChartNoAxesColumnIncreasing, ChartNoAxesCombined, Hourglass, Repeat } from 'lucide-react';
+import { ChartNoAxesCombined, ChevronRight, History, Hourglass, Play, Repeat, Tv } from 'lucide-react';
 import Link from 'next/link';
+import CheckInRow, { LoadingCheckInRow } from './CheckInRow';
 import ComingSoonRow, { LoadingComingSoonRow } from './ComingSoonRow';
 import CurrentlyAiringLoading from './CurrentlyAiringRow/CurrentlyAiringLoading';
 import CurrentlyAiringRow from './CurrentlyAiringRow/CurrentlyAiringRow';
+import StaleShowsRow, { LoadingStaleShowsRow } from './StaleShowsRow';
 import Top10Row, { LoadingTop10Row } from './Top10Row';
 import WatchListRow, { LoadingWatchlistRow } from './WatchlistRow';
 import WelcomeBanner from './WelcomeBanner';
 import { LoadingYourShowsRow } from './YourShowsRow/LoadingYourShowsRow';
 import YourShowsRow from './YourShowsRow/YourShowsRow';
 import YourUpdatesRow, { LoadingYourUpdatesRow } from './YourUpdatesRow';
-import StaleShowsRow, { LoadingStaleShowsRow } from './StaleShowsRow';
-import CheckInRow, { LoadingCheckInRow } from './CheckInRow';
-import { StatusIcon } from '@/app/utils/StatusIcon';
 
 const getHeaderIcon = (header: string): React.ReactNode => {
     // Create a mock status object for StatusIcon function

@@ -1,5 +1,5 @@
 import { AirDate } from "./airDate";
-import { OtherService, Service } from "./service";
+import { Service } from "./service";
 import { ShowLength } from "./showLength";
 
 export type Show = {

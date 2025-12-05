@@ -1,4 +1,4 @@
-import { Show, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics } from "./show";
+import { ShowAnalyticsProperties, ShowWithAnalytics } from "./show";
 
 export type ShowList = {    
     id: string;

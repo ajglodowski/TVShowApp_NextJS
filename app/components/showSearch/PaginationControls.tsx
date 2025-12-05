@@ -1,10 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { backdropBackground } from '@/app/utils/stylingConstants';
-import { PaginationControlsProps } from './types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { PaginationControlsProps } from './types';
 
 export default function PaginationControls({ currentPage, previousPageUrl, nextPageUrl, totalPages, resultsCount }: PaginationControlsProps & { resultsCount?: number }) {
     const router = useRouter();

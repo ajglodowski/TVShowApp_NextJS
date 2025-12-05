@@ -1,12 +1,12 @@
 import { User } from "@/app/models/user";
 import { getFollowerCount, getFollowingCount, getShowsLogged } from "@/app/utils/userService";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight, Tv, Users } from "lucide-react";
 import Link from "next/link";
-import { getPresignedUserImageURL, getUserImageUrlAction } from "../../UserService";
+import { getUserImageUrlAction } from "../../UserService";
 import EditButton from "./EditButton";
 import FollowButton from "./FollowButton/FollowButton";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function UserProfileHeader({userId, userData}: {userId: string, userData: User}) {
     const user = userData;

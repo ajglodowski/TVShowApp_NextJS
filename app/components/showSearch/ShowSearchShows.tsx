@@ -3,13 +3,11 @@ import { ShowWithAnalytics } from '@/app/models/show';
 import { ShowSearchType } from '@/app/models/showSearchType';
 import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { Suspense } from 'react';
 import Divider from '../Divider';
 import ShowRow from '../show/ShowRow/ShowRow';
 import ShowRowSkeleton from '../show/ShowRow/ShowRowSkeleton';
-import { CurrentUserFilters, defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
-import { ShowSearchFiltersType } from './ShowSearchHeader/ShowSearchHeader';
+import { defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
 import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } from './ShowSearchService';
 import { ShowSearchShowsProps } from './types';
 
@@ -25,8 +23,8 @@ export default async function ShowSearchShows({
     currentUserFilters,
     watchlistOwnerFilters = defaultCurrentUserFilters,
     currentPage,
-    previousPageUrl,
-    nextPageUrl
+    previousPageUrl: _previousPageUrl,
+    nextPageUrl: _nextPageUrl
 }: ShowSearchShowsProps) {
     // Fetch shows based on filters
     let shows: ShowWithAnalytics[] | undefined = undefined;
@@ -279,7 +277,7 @@ export default async function ShowSearchShows({
     
     // Calculate total shows and pages
     const totalShowsCount = (filteredShows || []).length;
-    const totalPages = Math.ceil(totalShowsCount / ITEMS_PER_PAGE);
+    const _totalPages = Math.ceil(totalShowsCount / ITEMS_PER_PAGE);
     
     // Get the shows for the current page
     const paginatedData = filteredShows ? 
@@ -332,17 +330,17 @@ export default async function ShowSearchShows({
 }
 
 // Export the totalPages calculation function for use in pagination
-export async function calculateTotalPages({ 
-    filters, 
-    searchType, 
-    userId, 
-    currentUserId, 
-    searchResults, 
-    currentUserFilters,
-    watchlistOwnerFilters = defaultCurrentUserFilters
-}: Omit<ShowSearchShowsProps, 'currentPage' | 'previousPageUrl' | 'nextPageUrl'>): Promise<number> {
-    // This is a simplified version that duplicates the filtering logic
-    // In a real implementation, you'd want to extract this to a shared service
-    // For now, returning 1 as a placeholder
-    return 1;
-}
+// export async function calculateTotalPages({ 
+//     filters, 
+//     searchType, 
+//     userId, 
+//     currentUserId, 
+//     searchResults, 
+//     currentUserFilters,
+//     watchlistOwnerFilters = defaultCurrentUserFilters
+// }: Omit<ShowSearchShowsProps, 'currentPage' | 'previousPageUrl' | 'nextPageUrl'>): Promise<number> {
+//     // This is a simplified version that duplicates the filtering logic
+//     // In a real implementation, you'd want to extract this to a shared service
+//     // For now, returning 1 as a placeholder
+//     return 1;
+// }

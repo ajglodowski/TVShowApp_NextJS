@@ -1,23 +1,20 @@
 "use client"
 
-import type React from "react"
 
 import { useRouter } from "next/navigation"
-import { use, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { User } from "@/app/models/user"
 import { backdropBackground } from "@/app/utils/stylingConstants"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { AtSign } from "lucide-react"
-import ProfilePictureSection from "./ProfilePictureSection"
-import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
+import ProfilePictureSection from "./ProfilePictureSection"
 
 export type ProfileFormValues = {
     username: string

@@ -1,11 +1,11 @@
+import { getUserImageUrlAction } from "@/app/(main)/profile/UserService";
 import { UserBasicInfo } from "@/app/models/user";
+import { hoverBackdropBackground } from "@/app/utils/stylingConstants";
 import { getUser } from "@/app/utils/userService";
-import { getPresignedUserImageURL, getUserImageUrlAction } from "@/app/(main)/profile/UserService";
-import { LoadingImageSkeleton } from "../image/LoadingImageSkeleton";
+import { ChevronRight } from "lucide-react";
 import Image from 'next/image';
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import { hoverBackdropBackground } from "@/app/utils/stylingConstants";
+import { LoadingImageSkeleton } from "../image/LoadingImageSkeleton";
 
 export type ProfileRowProps = 
     | { userId: string; profileData?: never }

@@ -1,10 +1,9 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { LocalizedDaysAgo, LocalizedReleaseDate } from "../LocalizedDate";
 import ClientShowTile from "../show/ShowTile/ClientShowTile";
+import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
 import { getStaleShows } from "./HomeService";
-import { releaseDateToString } from "@/app/utils/timeUtils";
-import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
-import { LocalizedDaysAgo, LocalizedReleaseDate } from "../LocalizedDate";
 
 export async function LoadingStaleShowsRow() {
     return (

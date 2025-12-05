@@ -1,19 +1,17 @@
 "use client"
 import { Show } from "@/app/models/show"
 import type { Status } from "@/app/models/status"
+import { StatusIcon } from "@/app/utils/StatusIcon"
 import { backdropTabs } from "@/app/utils/stylingConstants"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { X } from "lucide-react"
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import ClientShowTile from "../../show/ShowTile/ClientShowTile"
-import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton"
 import { getYourShows } from "../HomeClientService"
-import { Skeleton } from "@/components/ui/skeleton"
 import { LoadingShows, LoadingStatusFilters } from "./LoadingYourShowsRow"
-import { StatusIcon } from "@/app/utils/StatusIcon"
 
 type YourShowsRowClientProps = {
   userId: string

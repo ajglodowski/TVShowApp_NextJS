@@ -40,7 +40,7 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
     };
     
     async function addShowToWatchlist() {
-        const response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId, showId: showId, newValue: null });
+        const _response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId, showId: showId, newValue: null });
         router.push(`/show/${showId}`);
     };
 

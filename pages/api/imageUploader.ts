@@ -23,10 +23,10 @@ const getSupabaseForAuth = async (req: NextApiRequest, res: NextApiResponse) => 
         get(name: string) {
           return cookieStore[name];
         },
-        set(name: string, value: string, options: any) {
+        set(name: string, value: string, _options: any) {
           res.setHeader('Set-Cookie', `${name}=${value}; Path=/; HttpOnly; SameSite=Lax`);
         },
-        remove(name: string, options: any) {
+        remove(name: string, _options: any) {
           res.setHeader('Set-Cookie', `${name}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
         },
       },

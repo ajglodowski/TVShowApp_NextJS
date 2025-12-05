@@ -1,8 +1,8 @@
 import { backdropTabs } from "@/app/utils/stylingConstants";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton";
 
 export default function CurrentlyAiringLoading() {
     return (

@@ -20,7 +20,7 @@ type TagFilterButtonProps = {
 
 export default function TagFilterButton({ 
     filters, 
-    pathname, 
+    pathname: _pathname, 
     tags,
     tagCategories
 }: TagFilterButtonProps) {

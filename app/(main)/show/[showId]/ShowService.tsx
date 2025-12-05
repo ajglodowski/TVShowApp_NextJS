@@ -3,16 +3,14 @@ import { serverBaseURL } from '@/app/envConfig';
 import { Actor } from "@/app/models/actor";
 import { Rating } from "@/app/models/rating";
 import { RatingCounts } from "@/app/models/ratingCounts";
-import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
-import { TagCategory } from "@/app/models/tagCategory";
 import { Status } from "@/app/models/status";
 import { StatusCount } from "@/app/models/statusCount";
+import { TagCategory } from "@/app/models/tagCategory";
 import { createClient, publicClient } from '@/app/utils/supabase/server';
 import { cacheLife } from 'next/dist/server/use-cache/cache-life';
 import { cache } from 'react';
-import { getTagCategoryIcon } from "@/app/models/tagCategory";
 
 export const getShow = cache(async (showId: string): Promise<Show | null> => {
   'use cache'

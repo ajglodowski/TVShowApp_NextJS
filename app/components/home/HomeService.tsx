@@ -96,7 +96,7 @@ function formatUpdate(updateData: UserUpdateDTO): UserUpdateTileDTO {
 export async function getUserUpdates({userId, updateLimit, fetchHidden}: {userId: string, updateLimit: number, fetchHidden?: boolean}): Promise<UserUpdateTileDTO[]|null> {
     
     const supabase = await publicClient();
-    let { data: updateData } = fetchHidden
+    const { data: updateData } = fetchHidden
         ? await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId}).order('updateDate', {ascending: false}).limit(updateLimit)
         : await supabase.from("UserUpdate").select(UserUpdatePropertiesWithShowName).match({userId: userId, hidden: fetchHidden}).order('updateDate', {ascending: false}).limit(updateLimit);
     

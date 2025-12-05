@@ -2,7 +2,6 @@
 import { AirDate } from "@/app/models/airDate";
 import { Service } from "@/app/models/service";
 import { ShowLength } from "@/app/models/showLength";
-import { backdropBackground } from "@/app/utils/stylingConstants";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -20,7 +19,7 @@ export default function ShowSearchFiltersRow({
     pathname: string 
 }) {
     const router = useRouter();
-    const [isPending, startTransition] = useTransition();
+    const [_isPending, startTransition] = useTransition();
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
         filters,
         (state, update: Partial<ShowSearchFiltersType>) => ({

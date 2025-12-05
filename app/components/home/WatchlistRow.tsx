@@ -1,9 +1,8 @@
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import ShowTile from "../show/ShowTile/ShowTile";
-import { getWatchList } from "./HomeService";
-import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import ShowTile from "../show/ShowTile/ShowTile";
+import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
+import { getWatchList } from "./HomeService";
 export default async function WatchListRow ({userId}: {userId: string}) {
 
     'use cache'

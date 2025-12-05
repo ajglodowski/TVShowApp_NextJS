@@ -1,12 +1,11 @@
-import { getActorsForShow } from "../ShowService";
-import ActorSearchClient from "./ActorSearchClient";
-import ActorManagement from "./ActorManagement";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { getActorsForShow } from "../ShowService";
+import ActorManagement from "./ActorManagement";
+import ActorSearchClient from "./ActorSearchClient";
 export default async function EditActorsPage({ params }: { params: Promise<{ showId: string }> }) {
     return (
         <Suspense fallback={<div>Loading...</div>}>

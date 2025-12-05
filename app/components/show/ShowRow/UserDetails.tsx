@@ -1,14 +1,14 @@
-import { UserShowDataWithUserInfo } from "@/app/models/userShowData"
-import { LovedIcon } from "@/public/icons/LovedIcon";
-import { LikedIcon } from "@/public/icons/LikedIcon";
-import { MehIcon } from "@/public/icons/MehIcon";
-import { DislikedIcon } from "@/public/icons/DislikedIcon";
+import { getUserImageUrlAction } from "@/app/(main)/profile/UserService";
 import { Rating } from "@/app/models/rating";
-import Image from "next/image";
-import { getPresignedUserImageURL, getUserImageUrlAction } from "@/app/(main)/profile/UserService";
+import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
+import { DislikedIcon } from "@/public/icons/DislikedIcon";
+import { LikedIcon } from "@/public/icons/LikedIcon";
+import { LovedIcon } from "@/public/icons/LovedIcon";
+import { MehIcon } from "@/public/icons/MehIcon";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import Image from "next/image";
+import Link from "next/link";
 export async function UserDetails({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
     
     'use cache'

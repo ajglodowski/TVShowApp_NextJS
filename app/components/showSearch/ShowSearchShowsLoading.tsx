@@ -1,4 +1,3 @@
-import { Skeleton } from '@/components/ui/skeleton';
 import Divider from '../Divider';
 import ShowRowSkeleton from '../show/ShowRow/ShowRowSkeleton';
 

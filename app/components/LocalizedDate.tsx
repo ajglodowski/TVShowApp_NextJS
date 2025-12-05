@@ -79,7 +79,7 @@ export function LocalizedDaysAway({ date, className }: LocalizedDateProps) {
         const now = new Date();
         const releaseDate = new Date(date);
         const diff = releaseDate.getTime() - now.getTime();
-        const days = Math.ceil(diff / (1000 * 60 * 60 * 24)); 
+        const _days = Math.ceil(diff / (1000 * 60 * 60 * 24)); 
         const daysFloor = Math.floor(diff / (1000 * 60 * 60 * 24));
 
         const getDaysAwayString = (d: number) => {

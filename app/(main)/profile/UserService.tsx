@@ -26,7 +26,7 @@ export function getUserImageUrlAction(imagePath: string): string {
 
 export const updateUserProfile = async (userId: string, profileData: ProfileFormValues): Promise<boolean> => {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data: _data, error } = await supabase
       .from("user")
       .update({
           username: profileData.username,

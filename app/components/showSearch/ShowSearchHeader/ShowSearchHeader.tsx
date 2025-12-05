@@ -72,10 +72,10 @@ export default async function ShowSearchHeader({
     userId,
     currentUserId,
     pageTitle,
-    currentPage,
-    totalPages,
-    previousPageUrl,
-    nextPageUrl
+    currentPage: _currentPage,
+    totalPages: _totalPages,
+    previousPageUrl: _previousPageUrl,
+    nextPageUrl: _nextPageUrl
 }: ShowSearchHeaderProps) {
     // Determine if viewing other user's watchlist where current user != watchlist owner
     const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 

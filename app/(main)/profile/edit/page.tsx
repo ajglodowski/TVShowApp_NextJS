@@ -1,9 +1,9 @@
 import { EditProfileForm, ProfileFormValues } from "@/app/components/editProfile/EditProfileClient";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import { createClient } from "@/app/utils/supabase/server";
-import { getUser, getUserByUsername } from "@/app/utils/userService";
+import { getUser } from "@/app/utils/userService";
 import { Card, CardContent } from "@/components/ui/card";
-import { getPresignedUserImageURL, getUserImageUrlAction, updateUserProfile } from "../UserService";
+import { getUserImageUrlAction, updateUserProfile } from "../UserService";
 
 export default async function EditProfilePage() {
 

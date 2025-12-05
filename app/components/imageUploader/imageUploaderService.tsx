@@ -1,5 +1,5 @@
 import { createClient } from "@/app/utils/supabase/client";
-import { upload, UploadOptions } from "@vercel/blob/client";
+import { upload, UploadOptions as _UploadOptions } from "@vercel/blob/client";
 
 export async function updateCurrentUserProfilePic(imageUrl: string): Promise<boolean> {
     const supabase = await createClient();
@@ -9,7 +9,7 @@ export async function updateCurrentUserProfilePic(imageUrl: string): Promise<boo
         return false;
     }
     const userId = userData.user.id;
-    const { data, error } = await supabase
+    const { data: _data, error } = await supabase
         .from('user')
         .update({ profilePhotoURL: imageUrl })
         .eq('id', userId);
@@ -24,7 +24,7 @@ export async function updateCurrentShowImage(showId: number, imageUrl: string): 
     
     const strippedImageUrl = imageUrl.replace(".jpeg", "");
     const supabase = await createClient();
-    const { data, error } = await supabase
+    const { data: _data, error } = await supabase
         .from('show')
         .update({ pictureUrl: strippedImageUrl })
         .eq('id', showId);
@@ -37,7 +37,7 @@ export async function updateCurrentShowImage(showId: number, imageUrl: string): 
 
 export async function uploadImageToVercelBlob(imagePath: string, imageData: Blob): Promise<boolean> {
     try {
-        const newBlob = await upload(imagePath, imageData, {
+        const _newBlob = await upload(imagePath, imageData, {
             access: 'public',
             handleUploadUrl: '/api/vercelBlobUpload',
           });

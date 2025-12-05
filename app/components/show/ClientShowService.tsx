@@ -73,7 +73,7 @@ export async function updateShow(show: Show): Promise<boolean> {
         showData.id = undefined;
     }
 
-    let query = supabase.from("show").upsert(showData).select('id').single();
+    const query = supabase.from("show").upsert(showData).select('id').single();
     
     const { data: insertedShow, error } = await query;
     if (error) {

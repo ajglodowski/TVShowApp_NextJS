@@ -20,7 +20,7 @@ type ShowSearchFilterButtonProps = {
 
 export default function ShowSearchFilterButton({ 
     filters, 
-    pathname, 
+    pathname: _pathname, 
     services 
 }: ShowSearchFilterButtonProps) {
     const router = useRouter();

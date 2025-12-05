@@ -1,10 +1,8 @@
-import { getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
+import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
 import Image from "next/image";
-import { Suspense } from "react";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 import { UserUpdateTileDTO } from "../UserUpdateService";
 import UserUpdateTileBody from "./UserUpdateTileBody";
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
 
 type UserUpdateTileProps = { updateDto: UserUpdateTileDTO; };
 

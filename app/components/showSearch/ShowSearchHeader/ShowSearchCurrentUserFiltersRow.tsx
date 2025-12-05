@@ -1,16 +1,14 @@
 'use client'
-import { backdropBackground } from "@/app/utils/stylingConstants";
-import { X } from "lucide-react";
-import { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
 import { Rating } from "@/app/models/rating";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { Status } from "@/app/models/status";
-import { ReactNode } from "react";
-import { useRouter } from "next/navigation";
-import { ShowSearchFiltersType } from "./ShowSearchHeader";
-import { Button } from "@/components/ui/button";
-import { useOptimistic, useTransition } from "react";
 import { StatusIcon } from "@/app/utils/StatusIcon";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ReactNode, useOptimistic, useTransition } from "react";
+import { CurrentUserFilters } from "./ShowSearchCurrentUserFilters";
+import { ShowSearchFiltersType } from "./ShowSearchHeader";
 
 type ShowSearchCurrentUserFiltersProps = {
     filters: CurrentUserFilters;
@@ -37,7 +35,7 @@ export default function ShowSearchCurrentUserFiltersRow({
     const isViewingOtherUserWatchlist = searchType === ShowSearchType.OTHER_USER_WATCHLIST && 
                                        currentUserId && userId && currentUserId !== userId;
     
-    const [isPending, startTransition] = useTransition();
+    const [_isPending, startTransition] = useTransition();
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
         filters,
         (state, update: Partial<CurrentUserFilters>) => ({

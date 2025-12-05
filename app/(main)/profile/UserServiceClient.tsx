@@ -46,7 +46,7 @@ export async function followUser(userToFollow: string, userFollowing: string): P
 
 export async function unfollowUser(userToUnfollow: string, userUnfollowing: string): Promise<boolean> {
     const supabase = await createClient();
-    const { data, error } = await supabase
+    const { data: _data, error } = await supabase
         .from('UserFollowRelationship')
         .delete()
         .match({ followingUserId: userToUnfollow, followerUser: userUnfollowing });

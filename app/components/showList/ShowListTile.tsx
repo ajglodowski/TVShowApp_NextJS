@@ -1,13 +1,12 @@
 import { getListData, getListEntries } from "@/app/(main)/list/[listId]/ListService";
-import { getPresignedShowImageURL } from "@/app/(main)/show/[showId]/ShowService";
+import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import ProfileBubble from "@/app/components/user/ProfileBubble";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import Image from "next/image";
 import Link from "next/link";
-import ProfileBubble from "@/app/components/user/ProfileBubble";
-import ShowsListTileSkeleton from "./ShowListTileSkeleton";
 import { Suspense } from "react";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import ShowsListTileSkeleton from "./ShowListTileSkeleton";
 
 export default async function ShowsListTile({listId}: {listId: number}) {
 

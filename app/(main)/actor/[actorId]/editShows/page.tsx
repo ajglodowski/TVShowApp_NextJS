@@ -1,16 +1,15 @@
 import { getActor, getShowsForActor } from "@/app/(main)/actor/ActorService";
-import ShowSearchClient from "./ShowSearchClient";
-import ShowManagement from "./ShowManagement";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { backdropBackground } from "@/app/utils/stylingConstants";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import ShowManagement from "./ShowManagement";
+import ShowSearchClient from "./ShowSearchClient";
 
 export default async function EditActorShowsPage({ params }: { params: Promise<{ actorId: string }> }) {
     
     const actorId = (await params).actorId;
-    let [fetchedActor, fetchedShows] = await Promise.all([getActor(actorId), getShowsForActor(actorId)]);
+    const [fetchedActor, fetchedShows] = await Promise.all([getActor(actorId), getShowsForActor(actorId)]);
     const actor = fetchedActor || null;
     const shows = fetchedShows || [];
 

@@ -1,11 +1,8 @@
-import { createClient } from "@/app/utils/supabase/server";
-import { getList, getShowsForList } from "./ListService";
-import ListShowsSection from "./components/ListShowsSection";
-import ProfileBubble from "@/app/components/user/ProfileBubble";
-import { Suspense } from "react";
-import ListLoading from "./loading";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { LocalizedDate } from "@/app/components/LocalizedDate";
+import ProfileBubble from "@/app/components/user/ProfileBubble";
+import { createClient } from "@/app/utils/supabase/server";
+import { getList } from "./ListService";
+import ListShowsSection from "./components/ListShowsSection";
 
 function ListNotFound() {
   return (

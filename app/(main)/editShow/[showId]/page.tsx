@@ -1,12 +1,9 @@
+import { getShow } from "@/app/(main)/show/[showId]/ShowService";
 import EditShowPage from "@/app/components/editShow/EditShow";
-import { getPresignedShowImageURL, getShow } from "@/app/(main)/show/[showId]/ShowService";
-import { Suspense } from "react";
-import EditShowLoading from "./loading";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
-import { getShowImageUrlAction } from "../../show/[showId]/ShowImageService";
 import { createClient } from '@/app/utils/supabase/server';
 import { isAdmin } from '@/app/utils/userService';
 import Link from 'next/link';
+import { getShowImageUrlAction } from "../../show/[showId]/ShowImageService";
 
 function Unauthorized() {
   return (

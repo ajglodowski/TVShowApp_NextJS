@@ -1,14 +1,14 @@
+import { getUserImageUrlAction } from "@/app/(main)/profile/UserService";
 import { Rating } from "@/app/models/rating";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
+import { backdropBackground } from "@/app/utils/stylingConstants";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DislikedIcon } from "@/public/icons/DislikedIcon";
 import { LikedIcon } from "@/public/icons/LikedIcon";
 import { LovedIcon } from "@/public/icons/LovedIcon";
 import { MehIcon } from "@/public/icons/MehIcon";
-import { DislikedIcon } from "@/public/icons/DislikedIcon";
-import Image from "next/image";
-import { backdropBackground } from "@/app/utils/stylingConstants";
-import { getPresignedUserImageURL, getUserImageUrlAction } from "@/app/(main)/profile/UserService";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import Image from "next/image";
 export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDataWithUserInfo }) {
 
     'use cache'

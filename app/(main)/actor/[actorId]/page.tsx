@@ -1,7 +1,6 @@
 import ShowRow from "@/app/components/show/ShowRow/ShowRow";
-import { getActor, getShowsForActor } from "../ActorService";
 import Link from "next/link";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { getActor, getShowsForActor } from "../ActorService";
 
 export default async function ActorPage({ params }: { params: Promise<{ actorId: string }> }) {
     

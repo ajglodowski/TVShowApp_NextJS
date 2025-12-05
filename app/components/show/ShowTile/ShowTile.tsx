@@ -1,9 +1,8 @@
-import { Show } from "@/app/models/show";
-import { getShow } from "@/app/(main)/show/[showId]/ShowService";
 import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import { getShow } from "@/app/(main)/show/[showId]/ShowService";
+import { Show } from "@/app/models/show";
 import Link from "next/link";
 import ShowTileContent, { ShowTileBadgeProps } from "./ShowTileContent";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
 type ShowTileProps = 
     | { showId: string; badges?: ShowTileBadgeProps[] }
     | { showDto: Show; badges?: ShowTileBadgeProps[] };

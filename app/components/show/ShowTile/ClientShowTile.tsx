@@ -1,11 +1,11 @@
 'use client'
+import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
 import { Show } from "@/app/models/show";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getPresignedShowImageURL, getShow } from "../ClientShowService";
+import { getShow } from "../ClientShowService";
 import ShowTileContent, { ShowTileBadgeProps } from "./ShowTileContent";
 import ShowTileSkeleton from "./ShowTileSkeleton";
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
 
 type ClientShowTileProps = 
     | { showId: string; badges?: ShowTileBadgeProps[] }
@@ -28,7 +28,7 @@ export default function ClientShowTile(props: ClientShowTileProps) {
 
         const fetchData = async () => {
             let fetchedShowData: Show | null = initialShowData;
-            let fetchedUrl: string | null = null;
+            const _fetchedUrl: string | null = null;
 
             try {
                 if (!initialShowData) {

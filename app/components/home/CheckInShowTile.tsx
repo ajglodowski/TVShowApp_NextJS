@@ -1,16 +1,15 @@
 "use client";
 
-import { Show } from "@/app/models/show";
-import ClientShowTile from "../show/ShowTile/ClientShowTile";
-import { CheckInShowDTO } from "./HomeService";
-import { Button } from "@/components/ui/button";
-import { Check, Plus } from "lucide-react";
 import { updateUserShowData } from "@/app/(main)/show/[showId]/UserShowDataService";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
+import { Button } from "@/components/ui/button";
+import { Check, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
 import { LocalizedDaysAgo } from "../LocalizedDate";
+import ClientShowTile from "../show/ShowTile/ClientShowTile";
+import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
+import { CheckInShowDTO } from "./HomeService";
 
 export default function CheckInShowTile({ checkInShow, userId }: { checkInShow: CheckInShowDTO, userId: string }) {
     const [isVisible, setIsVisible] = useState(true);
@@ -31,7 +30,7 @@ export default function CheckInShowTile({ checkInShow, userId }: { checkInShow: 
             } else {
                 toast.error("Failed to update season");
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("An error occurred");
         } finally {
             setIsLoading(false);
@@ -59,7 +58,7 @@ export default function CheckInShowTile({ checkInShow, userId }: { checkInShow: 
             } else {
                 toast.error("Failed to update season");
             }
-        } catch (error) {
+        } catch (_error) {
             toast.error("An error occurred");
         } finally {
             setIsLoading(false);

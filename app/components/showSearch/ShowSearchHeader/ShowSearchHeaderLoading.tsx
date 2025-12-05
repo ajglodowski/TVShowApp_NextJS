@@ -1,16 +1,15 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import ShowSearchInput from "./ShowSearchInput";
-import { ShowSearchHeaderProps } from "./ShowSearchHeader";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import ShowSearchCurrentUserFilters, { defaultCurrentUserFilters } from "./ShowSearchCurrentUserFilters";
-import SortButton from "./SortButton";
-import ShowSearchWatchlistOwnerFilters from "./ShowSearchWatchlistOwnerFilters";
-import ShowSearchFilterButtonSkeleton from "./ShowSearchFilterButtonSkeleton";
-import ShowSearchFiltersRow from "./ShowSearchFiltersRow";
-import ShowSearchTagsRow from "./ShowSearchTagsRow";
 import ShowSearchCurrentUserFiltersRow from "./ShowSearchCurrentUserFiltersRow";
-import ShowSearchWatchlistOwnerFiltersRow from "./ShowSearchWatchlistOwnerFiltersRow";
+import ShowSearchFilterButtonSkeleton from "./ShowSearchFilterButtonSkeleton";
 import ShowSearchTagsButtonSkeleton from "./ShowSearchFilterButtonSkeleton copy";
+import ShowSearchFiltersRow from "./ShowSearchFiltersRow";
+import { ShowSearchHeaderProps } from "./ShowSearchHeader";
+import ShowSearchInput from "./ShowSearchInput";
+import ShowSearchTagsRow from "./ShowSearchTagsRow";
+import ShowSearchWatchlistOwnerFilters from "./ShowSearchWatchlistOwnerFilters";
+import ShowSearchWatchlistOwnerFiltersRow from "./ShowSearchWatchlistOwnerFiltersRow";
+import SortButton from "./SortButton";
 
 export default function ShowSearchHeaderLoading({ 
     filters, 

@@ -43,7 +43,7 @@ function LoadingShow() {
 export default function EditShowPage({ show, presignedImageUrl }: { show: Show, presignedImageUrl: string | null }) {
   const showId = show.id;
 
-  const [originalShowData, setOriginalShowData] = useState<Show | null | undefined>(show);
+  const [originalShowData, _setOriginalShowData] = useState<Show | null | undefined>(show);
   const [showData, setShowData] = useState<Show | null | undefined>(show);
   const [services, setServices] = useState<Service[] | null | undefined>(undefined);
 

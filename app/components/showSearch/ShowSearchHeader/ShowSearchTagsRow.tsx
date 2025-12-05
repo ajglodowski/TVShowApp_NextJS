@@ -1,6 +1,4 @@
 'use client'
-import { ShowTag } from "@/app/models/showTag";
-import { backdropBackground } from "@/app/utils/stylingConstants";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,7 +15,7 @@ export default function ShowSearchTagsRow({
     pathname: string 
 }) {
     const router = useRouter();
-    const [isPending, startTransition] = useTransition();
+    const [_isPending, startTransition] = useTransition();
     const [optimisticFilters, updateOptimisticFilters] = useOptimistic(
         filters,
         (state, update: Partial<ShowSearchFiltersType>) => ({

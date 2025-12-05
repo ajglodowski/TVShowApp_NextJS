@@ -1,7 +1,6 @@
 import { ProfileRow } from "@/app/components/user/ProfileRow";
 import { createClient } from "@/app/utils/supabase/server";
 import { getFollowerList, getUserByUsername, getUserFollowRelationship } from "@/app/utils/userService";
-import { cacheLife } from "next/dist/server/use-cache/cache-life";
 
 export default async function FollowersPage({ params }: { params: Promise<{ username: string }> }) {
     

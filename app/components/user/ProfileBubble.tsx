@@ -1,8 +1,8 @@
+import { getUserImageUrlAction } from "@/app/(main)/profile/UserService";
 import { getUser } from "@/app/utils/userService";
-import ProfileBubbleClient from "./ProfileBubbleClient";
-import { getPresignedUserImageURL, getUserImageUrlAction } from "@/app/(main)/profile/UserService";
-import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import ProfileBubbleClient from "./ProfileBubbleClient";
 
 type ProfileBubbleProps = { userId: string; };
 

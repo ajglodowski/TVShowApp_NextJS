@@ -25,8 +25,8 @@ type ShowSearchWatchlistOwnerFiltersProps = {
 export default function ShowSearchWatchlistOwnerFilters({ 
     filters, 
     pathname, 
-    currentFilters,
-    userId,
+    currentFilters: _currentFilters,
+    userId: _userId,
     statuses
 }: ShowSearchWatchlistOwnerFiltersProps) {
     const router = useRouter();

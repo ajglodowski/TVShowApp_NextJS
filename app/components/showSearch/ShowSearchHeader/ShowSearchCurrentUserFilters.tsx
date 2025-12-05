@@ -42,7 +42,7 @@ type ShowSearchCurrentUserFiltersProps = {
 export default function ShowSearchCurrentUserFilters({ 
     filters, 
     pathname, 
-    currentFilters,
+    currentFilters: _currentFilters,
     searchType = ShowSearchType.UNRESTRICTED,
     userId,
     currentUserId,

@@ -2,8 +2,6 @@ import ShowSearch from "@/app/components/showSearch/ShowSearch";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { createClient } from "@/app/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
-import LoadingCurrentUserWatchlist from "./loading";
 
 
 export default async function CurrentUserWatchlist({

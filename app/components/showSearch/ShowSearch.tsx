@@ -144,7 +144,7 @@ async function ShowSearchHeaderWithResults({
     pageTitle?: string;
 }) {
     // Calculate results count using the same logic as ShowSearchShows
-    const resultsCount = await calculateResultsCount({
+    const _resultsCount = await calculateResultsCount({
         filters,
         searchType: searchType || ShowSearchType.UNRESTRICTED,
         userId,
