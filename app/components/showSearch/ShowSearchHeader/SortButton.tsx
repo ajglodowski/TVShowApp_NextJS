@@ -20,7 +20,7 @@ export type SortOption = `${SortField}-${SortDirection}`;
 type SortButtonProps = {
     currentSort?: SortOption | undefined;
     pathname: string;
-    currentFilters: Record<string, any>;
+    currentFilters: Record<string, unknown>;
 }
 
 export default function SortButton({ currentSort, pathname, currentFilters }: SortButtonProps) {
@@ -43,9 +43,9 @@ export default function SortButton({ currentSort, pathname, currentFilters }: So
                 // Handle arrays (like service, length, airDate, tags)
                 if (Array.isArray(value) && value.length > 0) {
                     if (key === 'service') {
-                        params.set(key, value.map((s: any) => s.id).join(','));
+                        params.set(key, value.map((s: unknown) => (s as { id: number }).id).join(','));
                     } else if (key === 'tags') {
-                        params.set(key, value.map((t: any) => t.id).join(','));
+                        params.set(key, value.map((t: unknown) => (t as { id: number }).id).join(','));
                     } else {
                         params.set(key, value.join(','));
                     }

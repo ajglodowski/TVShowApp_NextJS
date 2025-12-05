@@ -1,3 +1,4 @@
+import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { Status, WatchlistStatusId } from "@/app/models/status";
 import { createClient, publicClient } from "@/app/utils/supabase/server";
@@ -14,14 +15,14 @@ export async function getWatchList({userId}: {userId: string}): Promise<Show[] |
     const supabase = await publicClient();
     const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: WatchlistStatusId}).limit(10);
     if (!showData) return null;   
-    const output = showData.map((obj: any) => {
-        const show = obj.show;
+    const output = showData.map((obj: unknown) => {
+        const show = (obj as { show: { ShowServiceRelationship: { service: Service }[], service?: Service } }).show;
         return {
             ...show,
             services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
-                ? show.ShowServiceRelationship.map((r: any) => r.service) 
-                : (show.service ? [show.service] : [])
-        } as Show;
+                ? show.ShowServiceRelationship.map((r: unknown) => (r as { service: Service }).service) 
+                : (show.service ? [show.service as unknown as Service] : [])
+        } as unknown as Show;
     });
     return output;
 }
@@ -136,14 +137,14 @@ export async function getYourShows({userId, selectedStatuses}: {userId: string, 
     else response = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId}).filter('status', 'in', statusesString).order('updated', {ascending: false}).limit(15);
     
     if (response.data == null) return null;
-    const showData = response.data.map((item: any) => {
-        const show = item.show;
+    const showData = response.data.map((item: unknown) => {
+        const show = (item as { show: { ShowServiceRelationship: { service: Service }[], service?: Service } }).show;
         return {
             ...show,
             services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
-                ? show.ShowServiceRelationship.map((r: any) => r.service) 
-                : (show.service ? [show.service] : [])
-        } as Show;
+                ? show.ShowServiceRelationship.map((r: unknown) => (r as { service: Service }).service) 
+                : (show.service ? [show.service as unknown as Service] : [])
+        } as unknown as Show;
     });
 
     if (!showData) {
@@ -186,18 +187,18 @@ export async function getStaleShows({userId}: {userId: string}): Promise<StaleSh
         .limit(15);
 
     if (!showData) return null;
-    const output = showData.map((obj: any) => {
-        const show = obj.show;
+    const output = showData.map((obj: unknown) => {
+        const show = (obj as { show: { ShowServiceRelationship: { service: Service }[], service?: Service } }).show;
         const mappedShow = {
             ...show,
             services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
-                ? show.ShowServiceRelationship.map((r: any) => r.service) 
-                : (show.service ? [show.service] : [])
-        } as Show;
+                ? show.ShowServiceRelationship.map((r: unknown) => (r as { service: Service }).service) 
+                : (show.service ? [show.service as unknown as Service] : [])
+        } as unknown as Show;
         
         return {
             show: mappedShow,
-            updated: new Date(obj.updated)
+            updated: new Date((obj as { updated: string }).updated)
         };
     });
     return output;
@@ -242,11 +243,11 @@ export async function getCheckInShows({userId}: {userId: string}): Promise<Check
     const now = new Date();
     
     for (const obj of showData) {
-        const rawShow = obj.show as any;
+        const rawShow = (obj as unknown as { show: Show & { ShowServiceRelationship: { service: Service }[] } }).show;
         const show = {
             ...rawShow,
-            services: rawShow.ShowServiceRelationship ? rawShow.ShowServiceRelationship.map((r: any) => r.service) : []
-        } as Show;
+            services: rawShow.ShowServiceRelationship ? rawShow.ShowServiceRelationship.map((r: unknown) => (r as { service: Service }).service) : []
+        } as unknown as Show;
         
         const currentSeason = obj.currentSeason;
         const updatedDate = new Date(obj.updated);

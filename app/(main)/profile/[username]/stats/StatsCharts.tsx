@@ -66,7 +66,13 @@ export default function StatsCharts({ generalStats, topTags, topServices, tagRat
         .map(a => ({ name: a.actor.name, value: parseFloat(a.avgRating.toFixed(2)), count: a.count }))
         .sort((a, b) => a.value - b.value); // Sort lowest rated by value ascending
 
-    const CustomTooltip = ({ active, payload, label: _label }: any) => {
+    interface CustomTooltipProps {
+        active?: boolean;
+        payload?: { payload: { name: string; count?: number }; value: number }[];
+        label?: string;
+    }
+
+    const CustomTooltip = ({ active, payload, label: _label }: CustomTooltipProps) => {
         if (active && payload && payload.length) {
             return (
                 <div className="bg-black/80 border border-white/10 p-2 rounded text-white text-sm z-50">

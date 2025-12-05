@@ -7,6 +7,13 @@ export default [
   {files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"]},
   { languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
   {languageOptions: { globals: globals.browser }},
+  {
+    settings: {
+      react: {
+        version: "detect"
+      }
+    }
+  },
   { 
     ignores: [
       "components/ui/**",
@@ -28,4 +35,15 @@ export default [
       "caughtErrorsIgnorePattern": "^_"
     }]
   }},
+  {
+    files: ["next.config.js", "postcss.config.js"],
+    languageOptions: {
+      globals: globals.node
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-var-requires": "off",
+      "no-undef": "off"
+    }
+  }
 ];

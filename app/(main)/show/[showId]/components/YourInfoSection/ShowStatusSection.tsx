@@ -1,6 +1,7 @@
 'use client'
 
 import { Status } from "@/app/models/status";
+import { Rating } from "@/app/models/rating";
 import { UserShowData } from "@/app/models/userShowData";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { StatusIcon } from "@/app/utils/StatusIcon";
@@ -8,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function ShowStatusSection({ showId, userId, userShowData, allStatuses, updateFunction, loggedIn }: { showId: string, userId: string | undefined, userShowData: UserShowData | null, allStatuses: Status[] | null, updateFunction: Function, loggedIn: boolean }) {
+export default function ShowStatusSection({ showId, userId, userShowData, allStatuses, updateFunction, loggedIn }: { showId: string, userId: string | undefined, userShowData: UserShowData | null, allStatuses: Status[] | null, updateFunction: (params: { updateType: UserUpdateCategory, userId: string, showId: string, newValue: number | Rating | Status | null | undefined }) => Promise<boolean>, loggedIn: boolean }) {
 
     const [currentStatus, setCurrentStatus] = useState(userShowData?.status);
     const otherStatuses = allStatuses?.filter((status) => status.id !== currentStatus?.id);
@@ -28,7 +29,7 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
 
     async function changeCurrentStatus(status: Status) {
         console.log(`Changing status to ${status.name}`);
-        const updateResponse = await updateFunction({ updateType: UserUpdateCategory.UpdatedStatus, userId: userId, showId: showId, newValue: status });
+        const updateResponse = await updateFunction({ updateType: UserUpdateCategory.UpdatedStatus, userId: userId!, showId: showId, newValue: status });
         if (updateResponse) {
             setCurrentStatus(status);
             toast.success(`Status updated to ${status.name}`);
@@ -40,7 +41,7 @@ export default function ShowStatusSection({ showId, userId, userShowData, allSta
     };
     
     async function addShowToWatchlist() {
-        const _response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId, showId: showId, newValue: null });
+        const _response = await updateFunction({ updateType: UserUpdateCategory.AddedToWatchlist, userId: userId!, showId: showId, newValue: null });
         router.push(`/show/${showId}`);
     };
 

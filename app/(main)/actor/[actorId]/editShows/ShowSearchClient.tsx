@@ -13,7 +13,7 @@ interface ShowSearchClientProps {
 
 export default function ShowSearchClient({ actorId, currentShows }: ShowSearchClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[] | null>([]);
+  const [searchResults, setSearchResults] = useState<Pick<Show, 'id' | 'name'>[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async (query: string) => {

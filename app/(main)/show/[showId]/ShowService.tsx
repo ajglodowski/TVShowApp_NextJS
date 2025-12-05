@@ -3,6 +3,7 @@ import { serverBaseURL } from '@/app/envConfig';
 import { Actor } from "@/app/models/actor";
 import { Rating } from "@/app/models/rating";
 import { RatingCounts } from "@/app/models/ratingCounts";
+import { Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
 import { Status } from "@/app/models/status";
@@ -21,8 +22,8 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
   const show: Show = {
     ...showData,
     services: (showData.ShowServiceRelationship && showData.ShowServiceRelationship.length > 0) 
-        ? showData.ShowServiceRelationship.map((item: any) => item.service) 
-        : (showData.service ? [showData.service] : []),
+        ? showData.ShowServiceRelationship.map((item: unknown) => (item as { service: Service }).service) 
+        : (showData.service ? [showData.service as unknown as Service] : []),
   };
   return show;
 });
@@ -43,12 +44,15 @@ export async function getTags(showId: string): Promise<ShowTag[] | null> {
 
 	if (!tagData) return null;
 	
-	const tags = tagData.map((obj: any) => ({
-		id: obj.tag.id,
-		name: obj.tag.name,
-		created_at: obj.tag.created_at,
-		category: obj.tag.category
-	})) as ShowTag[];
+	const tags = tagData.map((item: unknown) => {
+		const obj = item as { tag: { id: number; name: string; created_at: string; category: { id: number; name: string; created_at: string } } };
+		return {
+			id: obj.tag.id,
+			name: obj.tag.name,
+			created_at: obj.tag.created_at,
+			category: obj.tag.category
+		};
+	}) as unknown as ShowTag[];
 	
 	return tags;
 }
@@ -71,12 +75,15 @@ export const getAllTags = async function (): Promise<ShowTag[] | null> {
     return null;
   }
 
-  const tags = tagData.map((tag: any) => ({
-    id: tag.id,
-    name: tag.name,
-    created_at: tag.created_at,
-    category: tag.category
-  })) as ShowTag[];
+  const tags = tagData.map((item: unknown) => {
+    const tag = item as { id: number; name: string; created_at: string; category: { id: number; name: string; created_at: string } };
+    return {
+        id: tag.id,
+        name: tag.name,
+        created_at: tag.created_at,
+        category: tag.category
+    };
+  }) as unknown as ShowTag[];
   
   return tags;
 };

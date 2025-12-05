@@ -92,15 +92,15 @@ export default function ShowSearchFiltersRow({
         return pathname + url.search;
     };
 
-    const isService = (item: any): item is Service => {
+    const isService = (item: unknown): item is Service => {
         return (item as Service).id !== undefined; // Adjust this check based on your Service type
     };
 
-    // const isShowLength = (item: any): item is ShowLength => {
+    // const isShowLength = (item: unknown): item is ShowLength => {
     //     return Object.values(ShowLength).includes(item as ShowLength);
     // };
 
-    // const isAirDate = (item: any): item is AirDate => {
+    // const isAirDate = (item: unknown): item is AirDate => {
     //     return Object.values(AirDate).includes(item as AirDate);
     // };
 
@@ -146,8 +146,7 @@ export default function ShowSearchFiltersRow({
                                         const newAirDates = optimisticFilters.airDate.filter(a => a !== item);
                                         updateOptimisticFilters({ airDate: newAirDates });
                                     } else if (key === 'totalSeasons') {
-                                        // @ts-ignore
-                                        const newSeasons = optimisticFilters.totalSeasons.filter(s => s !== item);
+                                        const newSeasons = optimisticFilters.totalSeasons.filter(s => s !== item as string);
                                         updateOptimisticFilters({ totalSeasons: newSeasons });
                                     }
                                     router.push(createRemoveFilterURL(key as keyof ShowSearchFiltersType, item));

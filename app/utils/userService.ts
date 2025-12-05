@@ -331,15 +331,26 @@ export async function getUserWatchedShowsTags(userId: string): Promise<ShowTagWi
     }
 
     // 3. Map to cleaner structure
-    const mappedData = tagData.map((item: any) => ({
-        showId: item.showId,
-        tag: {
-            id: item.tag.id,
-            name: item.tag.name,
-            created_at: item.tag.created_at,
-            category: item.tag.category
-        }
-    }));
+    const mappedData = tagData.map((obj: unknown) => {
+        const item = obj as {
+            showId: number;
+            tag: {
+                id: number;
+                name: string;
+                created_at: string;
+                category: { id: number; name: string; created_at: string };
+            }
+        };
+        return {
+            showId: item.showId,
+            tag: {
+                id: item.tag.id,
+                name: item.tag.name,
+                created_at: item.tag.created_at,
+                category: item.tag.category
+            }
+        };
+    }) as unknown as ShowTagWithId[];
 
     return mappedData;
 }

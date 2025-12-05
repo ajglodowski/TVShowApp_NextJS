@@ -110,7 +110,7 @@ export async function addToWatchList({userId, showId}: {showId: string, userId: 
     return true;
 }
 
-export async function updateUserShowData({updateType, userId, showId, newValue }: {updateType: UserUpdateCategory, userId: string, showId: string, newValue: number | Rating | Status | undefined }): Promise<boolean> {
+export async function updateUserShowData({updateType, userId, showId, newValue }: {updateType: UserUpdateCategory, userId: string, showId: string, newValue: number | Rating | Status | null | undefined }): Promise<boolean> {
     let response = true;
     let update: UserUpdate | null = null;
     switch (updateType) {

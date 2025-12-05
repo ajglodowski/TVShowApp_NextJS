@@ -37,8 +37,8 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
     const show: Show = {
         ...showData,
         services: (showData.ShowServiceRelationship && showData.ShowServiceRelationship.length > 0) 
-            ? showData.ShowServiceRelationship.map((item: any) => item.service) 
-            : (showData.service ? [showData.service] : [])
+            ? showData.ShowServiceRelationship.map((item: unknown) => (item as { service: Service }).service) 
+            : (showData.service ? [showData.service as unknown as Service] : [])
     };
     
     // Store in cache
@@ -49,23 +49,26 @@ export const getShow = cache(async (showId: string): Promise<Show | null> => {
 
 export async function updateShow(show: Show): Promise<boolean> {
     const supabase = createClient();
-    const showData: any = { ...show };
+    const showWithExtras = show as Show & { ShowServiceRelationship?: unknown; service?: { id: number } };
     
     // Determine legacy service ID for the NOT NULL constraint
     // Priority: 1. First service in list, 2. Existing service ID, 3. Default "Other" ID
     let legacyServiceId = OtherService.id;
     
-    if (showData.services && showData.services.length > 0) {
-        legacyServiceId = showData.services[0].id;
-    } else if (showData.service && showData.service.id) {
-        legacyServiceId = showData.service.id;
+    if (showWithExtras.services && showWithExtras.services.length > 0) {
+        legacyServiceId = showWithExtras.services[0].id;
+    } else if (showWithExtras.service && showWithExtras.service.id) {
+        legacyServiceId = showWithExtras.service.id;
     }
     
-    showData.service = legacyServiceId;
+    // Remove relationship fields before upsert
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { services, ShowServiceRelationship, service, ...rest } = showWithExtras;
 
-    delete showData.services; // Remove relationship field before upsert
-    delete showData.ShowServiceRelationship; // Remove relationship field before upsert
-    // showData.service is now an integer ID, so we keep it
+    const showData = { 
+        ...rest, 
+        service: legacyServiceId 
+    } as Record<string, unknown>;
     
     // Handle new show creation vs update
     let showId = show.id;
@@ -189,7 +192,7 @@ export async function getServices(): Promise<Service[] | null> {
     return services;
 }
 
-export async function searchShows(query: string): Promise<any[] | null> {
+export async function searchShows(query: string): Promise<{ id: number; name: string }[] | null> {
   'use client'
   const supabase = createClient();
   const { data } = await supabase.from('show').select('id, name').ilike('name', `%${query}%`).limit(10);

@@ -1,6 +1,7 @@
 'use client'
 
 import { Rating } from '@/app/models/rating';
+import { Status } from '@/app/models/status';
 import { UserShowData } from '@/app/models/userShowData';
 import { UserUpdateCategory } from '@/app/models/userUpdateType';
 import { DislikedIcon } from '@/public/icons/DislikedIcon';
@@ -9,15 +10,15 @@ import { LovedIcon } from '@/public/icons/LovedIcon';
 import { MehIcon } from '@/public/icons/MehIcon';
 import { useState } from 'react';
 
-export default function UserRatingsSection ({ userInfo, updateFunction }: { userInfo: UserShowData | null, updateFunction: Function }) {
+export default function UserRatingsSection ({ userInfo, updateFunction }: { userInfo: UserShowData | null, updateFunction: (params: { updateType: UserUpdateCategory, userId: string, showId: string, newValue: number | Rating | Status | null | undefined }) => Promise<boolean> }) {
     const [currentRating, setCurrentRating] = useState<Rating | null>(userInfo?.rating || null);
     const ratings = Object.values(Rating) as Rating[];
 
     if (!userInfo) return (<></>);
 
-    function updateRating(rating: Rating| null) {
+    async function updateRating(rating: Rating| null) {
         const updateCategory = rating ? UserUpdateCategory.ChangedRating : UserUpdateCategory.RemovedRating;
-        const updateResponse = updateFunction({ updateType: updateCategory , userId: userInfo!.userId, showId: userInfo!.showId, newValue: rating });
+        const updateResponse = await updateFunction({ updateType: updateCategory , userId: userInfo!.userId, showId: userInfo!.showId, newValue: rating });
         if (updateResponse) setCurrentRating(rating);
         else console.error(`Error updating rating to ${rating}`);
     }

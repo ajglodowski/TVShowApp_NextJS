@@ -1,6 +1,7 @@
 'use client'
 
 import { createClient } from "@/app/utils/supabase/client";
+import { Service } from "@/app/models/service";
 import { Actor } from "@/app/models/actor";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowList } from "@/app/models/showList";
@@ -26,15 +27,18 @@ export type SearchResult =
             
             if (!showData) return [];
             
-            return showData.map((show: any) => ({
-                type: 'show' as const,
-                data: {
-                    ...show,
-                    services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
-                        ? show.ShowServiceRelationship.map((item: any) => item.service) 
-                        : (show.service ? [show.service] : []),
-                } as Show
-            }));
+            return showData.map((showItem: unknown) => {
+                const show = showItem as { ShowServiceRelationship: { service: Service }[], service?: Service };
+                return {
+                    type: 'show' as const,
+                    data: {
+                        ...show,
+                        services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
+                            ? show.ShowServiceRelationship.map((item: unknown) => (item as { service: Service }).service) 
+                            : (show.service ? [show.service as unknown as Service] : []),
+                    } as unknown as Show
+                };
+            });
         } catch (error) {
             console.error('Error searching shows:', error);
             return [];

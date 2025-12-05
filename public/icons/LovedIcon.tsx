@@ -1,3 +1,5 @@
+import { IconProps } from "./IconProps";
+
 export const LovedIcon = (props: IconProps) => {
     const color = props.color;
     const size = props.size;

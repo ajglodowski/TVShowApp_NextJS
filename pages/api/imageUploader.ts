@@ -3,7 +3,7 @@ import formidable from 'formidable';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 
 export const config = {
   api: {
@@ -23,10 +23,10 @@ const getSupabaseForAuth = async (req: NextApiRequest, res: NextApiResponse) => 
         get(name: string) {
           return cookieStore[name];
         },
-        set(name: string, value: string, _options: any) {
+        set(name: string, value: string, _options: CookieOptions) {
           res.setHeader('Set-Cookie', `${name}=${value}; Path=/; HttpOnly; SameSite=Lax`);
         },
-        remove(name: string, _options: any) {
+        remove(name: string, _options: CookieOptions) {
           res.setHeader('Set-Cookie', `${name}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
         },
       },

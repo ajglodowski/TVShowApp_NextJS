@@ -1,4 +1,4 @@
-import { convertRawShowAnalyticsToShowWithAnalytics } from "@/app/models/show";
+import { convertRawShowAnalyticsToShowWithAnalytics, ShowAnalytics } from "@/app/models/show";
 import { ShowList, ShowListEntry, ShowListEntryParams, ShowListParams } from "@/app/models/showList";
 import { createClient, publicClient } from "@/app/utils/supabase/server";
 
@@ -21,9 +21,10 @@ export async function getShowsForList( listId: string ): Promise<ShowListEntry[]
     if (!entryData) return null; 
 
     const mappedEntryData: ShowListEntry[] = entryData.map((entry) => {
+        const showAnalytics = Array.isArray(entry.show_analytics) ? entry.show_analytics[0] : entry.show_analytics;
         return {
             ...entry,
-            show: convertRawShowAnalyticsToShowWithAnalytics(entry.show_analytics)
+            show: convertRawShowAnalyticsToShowWithAnalytics(showAnalytics as ShowAnalytics)
         }
     });
     return mappedEntryData;
@@ -47,41 +48,3 @@ export async function getListEntries(listId: number, limit: number| null): Promi
     const showList = showData.map((obj) => obj as unknown as ShowListEntry);
     return showList;
 }
-
-// export async function fetchShowListData(listId: string): Promise<{ listData: OriginalShowList | null, entries: TypedShowListEntry[] | null }> {
-//     console.log(`Fetching list data for ID: ${listId}`);
-//     const supabase = await createClient();
-
-//     const { data: listData, error: listError } = await supabase
-//         .from('showList')
-//         .select('id, name, description, ordered, private, creator, created_at, updated_at')
-//         .match({ id: listId }) // Match based on the string UUID
-//         .single();
-
-//     if (listError) {
-//         console.error('Error fetching list data:', listError);
-//         throw new Error(`Failed to fetch list details: ${listError.message}`);
-//     }
-//     if (!listData) {
-//         return { listData: null, entries: null }; // List not found
-//     }
-
-//     const { data: entryData, error: entryError } = await supabase
-//         .from('ShowListRelationship')
-//         // Select the nested show data explicitly
-//         .select('id, listId, show:showId(id, name, pictureUrl), position, created_at')
-//         .match({ listId: listId }) // Match based on the string UUID
-//         .order('position', { ascending: true });
-
-//     if (entryError) {
-//         console.error('Error fetching list entries:', entryError);
-//         console.warn('Failed to fetch list entries, proceeding with list details only.')
-//         // Return listData but indicate entry fetch failure
-//         return { listData: listData as OriginalShowList, entries: null };
-//     }
-
-//     // Cast the fetched entries to our more specific type
-//     const entries = (entryData as unknown as TypedShowListEntry[]) || [];
-
-//     return { listData: listData as OriginalShowList, entries };
-// }

@@ -1,3 +1,5 @@
+import { RatingCounts } from '@/app/models/ratingCounts';
+import { StatusCount } from '@/app/models/statusCount';
 import type { Show } from '@/app/models/show';
 import { RGBAToHexA } from '@/app/utils/colorUtil';
 import { backdropTabsTrigger } from '@/app/utils/stylingConstants';
@@ -23,8 +25,8 @@ interface ShowPageContentProps {
   showId: string;
   currentUserId: string | undefined;
   userIsAdmin: boolean;
-  ratingCounts: any;
-  statusCounts: any;
+  ratingCounts: RatingCounts | null;
+  statusCounts: StatusCount[] | null;
 }
 
 const adjustHexColor = (color: string, amount: number) => {

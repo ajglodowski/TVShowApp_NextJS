@@ -21,7 +21,20 @@ export const getFriendsUserDetails = async (showId: number): Promise<UserShowDat
         return undefined;
     }
 
-    const shows: UserShowDataWithUserInfo[] = data.map((row: any) => ({
+    const shows: UserShowDataWithUserInfo[] = data.map((item: unknown) => {
+        const row = item as {
+            userid: string;
+            username: string;
+            profilephotourl: string;
+            status: number;
+            statusname: string;
+            showid: string;
+            updated: Date;
+            currentseason: number;
+            rating: Rating;
+            created_at: Date;
+        };
+        return {
         user: {
             id: row.userid,
             username: row.username,
@@ -36,7 +49,7 @@ export const getFriendsUserDetails = async (showId: number): Promise<UserShowDat
         currentSeason: row.currentseason,
         rating: row.rating,
         createdAt: row.created_at
-    }));
+    }});
 
     return shows;
 }

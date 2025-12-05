@@ -1,17 +1,19 @@
 'use client'
 
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
+import { Rating } from "@/app/models/rating";
+import { Status } from "@/app/models/status";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useState } from "react";
 
 export default function SeasonsRow({ userId, currentSeason, totalSeasons, showId, updateFunction }:
-    { userId: string | undefined, currentSeason: number | undefined, totalSeasons: number | undefined, showId: string, updateFunction: Function }) {
+    { userId: string | undefined, currentSeason: number | undefined, totalSeasons: number | undefined, showId: string, updateFunction: (params: { updateType: UserUpdateCategory, userId: string, showId: string, newValue: number | Rating | Status | null | undefined }) => Promise<boolean> }) {
 
   const [currentSeasonState, setCurrentSeasonState] = useState(currentSeason);
 
   async function changeCurrentSeason(season: number){
-    const updateResponse = await updateFunction({ updateType: UserUpdateCategory.ChangedSeason, userId: userId, showId: showId, newValue: season });
+    const updateResponse = await updateFunction({ updateType: UserUpdateCategory.ChangedSeason, userId: userId!, showId: showId, newValue: season });
     if (updateResponse) setCurrentSeasonState(season);
     else console.log(`Error updating season to ${season} for user ${userId} show ${showId}`);
   };

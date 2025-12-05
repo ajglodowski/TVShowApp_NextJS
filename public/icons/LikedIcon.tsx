@@ -1,4 +1,5 @@
 import { RatingColors } from "@/app/models/rating";
+import { IconProps } from "./IconProps";
 
 export const LikedIcon = (props: IconProps) => {
     const color = props.color;

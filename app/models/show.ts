@@ -43,16 +43,16 @@ export type ShowWithAnalytics = Show & {
     avg_rating_points?: number;
 }
 
-export const convertRawShowAnalyticsToShowWithAnalytics = (analyticsData: any): ShowWithAnalytics => {
+export const convertRawShowAnalyticsToShowWithAnalytics = (analyticsData: ShowAnalytics): ShowWithAnalytics => {
     
     const result: ShowWithAnalytics = {
         id: analyticsData.show_id,
         name: analyticsData.show_name,
         created_at: new Date(8.64e15), // Default value as it's not in the view
         lastUpdated: new Date(8.64e15), // Default value as it's not in the view
-        length: analyticsData.length || null,
+        length: ShowLength.NONE,
         limitedSeries: analyticsData.limitedSeries || false,
-        currentlyAiring: analyticsData.currentlyAiring || false,
+        currentlyAiring: false,
         running: analyticsData.running || false,
         services: analyticsData.service_ids && analyticsData.service_names ? 
             analyticsData.service_ids.map((id: number, index: number) => ({
@@ -60,7 +60,7 @@ export const convertRawShowAnalyticsToShowWithAnalytics = (analyticsData: any): 
                 name: analyticsData.service_names[index]
             })) : [],
         totalSeasons: analyticsData.totalSeasons || 1,
-        airdate: analyticsData.airdate,
+        airdate: undefined,
         releaseDate: analyticsData.releaseDate,
         pictureUrl: analyticsData.pictureUrl,
         weekly_updates: typeof analyticsData.weekly_updates === 'number' ? analyticsData.weekly_updates : 0,

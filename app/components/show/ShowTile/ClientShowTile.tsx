@@ -48,7 +48,7 @@ export default function ClientShowTile(props: ClientShowTileProps) {
                 }
                     */
 
-            } catch (err: any) {
+            } catch (err: unknown) {
                 if (isCancelled) return;
                 console.error("Error loading show tile data:", err);
                 setShowData(null);

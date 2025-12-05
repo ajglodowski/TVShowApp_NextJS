@@ -3,7 +3,8 @@
 import { AirDate } from "@/app/models/airDate";
 import { Rating, RatingPoints } from "@/app/models/rating";
 import { Service } from "@/app/models/service";
-import { convertRawShowAnalyticsToShowWithAnalytics, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics } from "@/app/models/show";
+import { convertRawShowAnalyticsToShowWithAnalytics, ShowAnalyticsProperties, ShowPropertiesWithService, ShowWithAnalytics, ShowAnalytics } from "@/app/models/show";
+import { ShowLength } from "@/app/models/showLength";
 import { ShowSearchType } from "@/app/models/showSearchType";
 import { Status } from "@/app/models/status";
 import { UserBasicInfo } from "@/app/models/user";
@@ -293,18 +294,19 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
     
     if (!showData) return null;
     
-    const shows: ShowWithAnalytics[] = showData.map((show: any) => {
+    const shows: ShowWithAnalytics[] = showData.map((showItem: unknown) => {
+        const show = showItem as { ShowServiceRelationship: { service: Service }[], service?: Service };
         if (useAnalyticsView) {
             // Map analytics view fields to ShowWithAnalytics type
-            return convertRawShowAnalyticsToShowWithAnalytics(show);
+            return convertRawShowAnalyticsToShowWithAnalytics(showItem as ShowAnalytics);
         } else {
             // Regular show table mapping (no analytics data)
             return {
                 ...show,
                 services: (show.ShowServiceRelationship && show.ShowServiceRelationship.length > 0) 
-                    ? show.ShowServiceRelationship.map((item: any) => item.service) 
-                    : (show.service ? [show.service] : []),
-            } as ShowWithAnalytics;
+                    ? show.ShowServiceRelationship.map((item: unknown) => (item as { service: Service }).service) 
+                    : (show.service ? [show.service as unknown as Service] : []),
+            } as unknown as ShowWithAnalytics;
         }
     });
     
@@ -321,7 +323,19 @@ export async function fetchUsersWatchlist(userId: string): Promise<UserWatchList
         return null;
     }
 
-    const shows: UserWatchListData[] = data.map((row: any) => ({
+    const shows: UserWatchListData[] = data.map((item: unknown) => {
+        const row = item as {
+            id: number; created_at: Date; lastupdated: Date; name: string;
+            services: number[]; service_names: string[];
+            running: boolean; limitedseries: boolean; totalseasons: number;
+            releasedate: Date; airdate: AirDate; currentlyairing: boolean;
+            length: ShowLength; pictureurl: string;
+            weekly_updates: number; monthly_updates: number; yearly_updates: number; avg_rating_points: number;
+            user_id: string; username: string; profilephotourl: string;
+            showid: string; status: Status; user_details_updated: Date;
+            currentseason: number; rating: Rating; user_details_created_at: Date;
+        };
+        return {
         show: {
             id: row.id,
             created_at: row.created_at,
@@ -357,9 +371,9 @@ export async function fetchUsersWatchlist(userId: string): Promise<UserWatchList
             updated: row.user_details_updated,
             currentSeason: row.currentseason,
             rating: row.rating,
-            createdAt: row.user_details_created_at
+            created_at: row.user_details_created_at
         }
-    }));
+    } as UserWatchListData});
     return shows;
 }
 

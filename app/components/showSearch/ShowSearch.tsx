@@ -1,8 +1,8 @@
 'use server';
 import { Suspense } from 'react';
 import { parseCurrentUserFilters, parseFiltersFromSearchParams, parseWatchlistOwnerFilters } from './ShowSearchFilterParsing';
-import { defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
-import ShowSearchHeader from './ShowSearchHeader/ShowSearchHeader';
+import { defaultCurrentUserFilters, CurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
+import ShowSearchHeader, { ShowSearchFiltersType } from './ShowSearchHeader/ShowSearchHeader';
 import ShowSearchHeaderLoading from './ShowSearchHeader/ShowSearchHeaderLoading';
 import ShowSearchShows from './ShowSearchShows';
 import ShowSearchShowsLoading from './ShowSearchShowsLoading';
@@ -133,10 +133,10 @@ async function ShowSearchHeaderWithResults({
     currentUserId,
     pageTitle
 }: {
-    filters: any;
+    filters: ShowSearchFiltersType;
     searchResults: string;
-    currentUserFilters: any;
-    watchlistOwnerFilters?: any;
+    currentUserFilters: CurrentUserFilters;
+    watchlistOwnerFilters?: CurrentUserFilters;
     pathname: string;
     searchType?: ShowSearchType;
     userId?: string;
@@ -179,13 +179,13 @@ async function calculateResultsCount({
     currentUserFilters,
     watchlistOwnerFilters = defaultCurrentUserFilters,
 }: {
-    filters: any;
+    filters: ShowSearchFiltersType;
     searchType: ShowSearchType;
     userId?: string;
     currentUserId?: string;
     searchResults: string;
-    currentUserFilters: any;
-    watchlistOwnerFilters?: any;
+    currentUserFilters: CurrentUserFilters;
+    watchlistOwnerFilters?: CurrentUserFilters;
 }): Promise<number> {
     try {
         // Fetch shows based on filters (same logic as ShowSearchShows)
@@ -368,13 +368,13 @@ async function ShowSearchPaginationWrapper({
     previousPageUrl,
     nextPageUrl
 }: {
-    filters: any;
+    filters: ShowSearchFiltersType;
     searchType: ShowSearchType;
     userId?: string;
     currentUserId?: string;
     searchResults: string;
-    currentUserFilters: any;
-    watchlistOwnerFilters?: any;
+    currentUserFilters: CurrentUserFilters;
+    watchlistOwnerFilters?: CurrentUserFilters;
     currentPage: number;
     previousPageUrl?: string;
     nextPageUrl?: string;
