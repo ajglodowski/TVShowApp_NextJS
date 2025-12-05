@@ -1,4 +1,4 @@
-type _IconProps = {
+type IconProps = {
     color?: string;
     size?: number;
 }
