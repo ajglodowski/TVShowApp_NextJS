@@ -1,16 +1,15 @@
-import { createClient } from '@/app/utils/supabase/server';
-import { isAdmin } from '@/app/utils/userService';
+import { getAllTagCategories } from '@/app/(main)/show/[showId]/ShowService';
 import Unauthorized from '@/app/components/Unauthorized';
-import { WikiImportSearchClient } from '@/app/components/wiki/WikiImportSearchClient';
 import { WikiImportForm } from '@/app/components/wiki/WikiImportForm';
-import { getWikidataDraftAction } from './actions';
+import { WikiImportSearchClient } from '@/app/components/wiki/WikiImportSearchClient';
 import { Service } from '@/app/models/service';
 import { ShowTag } from '@/app/models/showTag';
-import { TagCategory } from '@/app/models/tagCategory';
-import { getAllTagCategories } from '@/app/(main)/show/[showId]/ShowService';
 import { backdropBackground } from '@/app/utils/stylingConstants';
-import Link from 'next/link';
+import { createClient } from '@/app/utils/supabase/server';
+import { isAdmin } from '@/app/utils/userService';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { getWikidataDraftAction } from './actions';
 
 export default async function WikiImportPage({
     searchParams
@@ -68,8 +67,12 @@ export default async function WikiImportPage({
         return {
             id: tag.id,
             name: tag.name,
-            created_at: tag.created_at,
-            category: tag.category
+            created_at: new Date(tag.created_at),
+            category: {
+                id: tag.category.id,
+                name: tag.category.name,
+                created_at: new Date(tag.category.created_at)
+            }
         };
     }) as ShowTag[];
     const allTagCategories = await getAllTagCategories();

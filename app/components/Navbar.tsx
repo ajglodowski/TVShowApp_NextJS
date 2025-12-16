@@ -1,12 +1,10 @@
-import React from 'react';
-import Link from 'next/link';
-import AuthButton from '@/supabase_components/AuthButton';
-import { ClientSearch } from './search/ClientSearch';
-import { NavbarMobileMenu } from './NavbarMobileMenu';
 import { createClient } from '@/app/utils/supabase/server';
 import { isAdmin } from '@/app/utils/userService';
-import { backdropBackground } from '@/app/utils/stylingConstants';
+import AuthButton from '@/supabase_components/AuthButton';
 import { PlusCircle } from 'lucide-react';
+import Link from 'next/link';
+import { NavbarMobileMenu } from './NavbarMobileMenu';
+import { ClientSearch } from './search/ClientSearch';
 
 async function Navbar() {
     const supabase = await createClient();
