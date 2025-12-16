@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ClientSearch } from './search/ClientSearch';
-import { Menu } from 'lucide-react';
+import { Menu, PlusCircle } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { useIsMobile } from '@/components/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 
-export function NavbarMobileMenu() {
+export function NavbarMobileMenu({ isAdmin }: { isAdmin: boolean }) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const isMobile = useIsMobile();
 
@@ -58,6 +58,17 @@ export function NavbarMobileMenu() {
                                 Discover
                             </Link>
                         </SheetClose>
+                        {isAdmin && (
+                            <SheetClose asChild>
+                                <Link 
+                                    href="/newShow/import" 
+                                    className="flex items-center gap-2 px-4 py-2 rounded-md bg-white hover:bg-gray-100 text-black font-medium transition-colors"
+                                >
+                                    <PlusCircle className="h-5 w-5" />
+                                    <span>Add Show</span>
+                                </Link>
+                            </SheetClose>
+                        )}
                         <div className="pt-4 border-t border-neutral-700">
                             <p className="text-sm font-medium text-white mb-2">Search</p>
                             <ClientSearch onResultClick={() => setMobileMenuOpen(false)} usePortal={false} />
@@ -68,4 +79,3 @@ export function NavbarMobileMenu() {
         </div>
     );
 }
-

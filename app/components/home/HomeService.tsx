@@ -13,7 +13,12 @@ export async function getWatchList({userId}: {userId: string}): Promise<Show[] |
     if (!userId) return null;
     
     const supabase = await publicClient();
-    const { data: showData } = await supabase.from("UserShowDetails").select(`show (${ShowPropertiesWithService})`).match({userId: userId, status: WatchlistStatusId}).limit(10);
+    const { data: showData } = await supabase
+        .from("UserShowDetails")
+        .select(`show (${ShowPropertiesWithService})`)
+        .match({userId: userId, status: WatchlistStatusId})
+        .order('updated', {ascending: false})
+        .limit(10);
     if (!showData) return null;   
     const output = showData.map((obj: unknown) => {
         const show = (obj as { show: { ShowServiceRelationship: { service: Service }[], service?: Service } }).show;

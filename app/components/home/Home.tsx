@@ -81,25 +81,21 @@ export default async function Home () {
             <WelcomeBanner />
             {rows.map((row) => (
                 <Card key={row.header} className={` bg-black bg-opacity-50 rounded-md text-white border-none`}>
-                    <CardHeader className="px-2 mx-2 py-0 pt-4">
-                            { row.link && 
-                                <Link href={row.link} className="flex-row justify-between hover:underline">
-                                    <span className='flex justify-between'>
-                                        <CardTitle className="flex items-center gap-2">
-                                            {getHeaderIcon(row.header)}
-                                            {row.header}
-                                        </CardTitle>
-                                        <ChevronRight className="w-6 h-6" />
-                                    </span>
-                                </Link> 
-                            }
-                            {
-                                !row.link &&
+                    <CardHeader className="p-0 px-2 pt-4 pb-2">
+                        {row.link ? (
+                            <Link href={row.link} className="flex items-center justify-between gap-3 hover:underline">
                                 <CardTitle className="flex items-center gap-2">
                                     {getHeaderIcon(row.header)}
                                     {row.header}
                                 </CardTitle>
-                            }
+                                <ChevronRight className="w-6 h-6" />
+                            </Link>
+                        ) : (
+                            <CardTitle className="flex items-center gap-2">
+                                {getHeaderIcon(row.header)}
+                                {row.header}
+                            </CardTitle>
+                        )}
                     </CardHeader>
                     <CardContent className="m-0 p-0">
                         {row.component}
@@ -128,7 +124,7 @@ export async function LoadingHome() {
             <WelcomeBanner />
             {rows.map((row) => (
                 <Card key={row.header} className="bg-black bg-opacity-50 rounded-md text-white border-none">
-                    <CardHeader className="px-2 mx-2 py-0 pt-4">
+                    <CardHeader className="p-0 px-2 pt-4 pb-2">
                         <CardTitle className="flex items-center gap-2">
                             {getHeaderIcon(row.header)}
                             {row.header}

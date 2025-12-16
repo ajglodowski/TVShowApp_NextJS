@@ -1,93 +1,129 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+## TV Show App
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
-
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+**TV Show App** is a social TV tracking + discovery app with a “social feed” feel: log shows, track watch status, rate shows, explore tags, follow users, and browse profiles with stats/visualizations.
 
 ## Features
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- **Auth & accounts (Supabase Auth)**: sign up, login, email callback flow, reset/update password pages.
+- **Watchlist + logging**: track shows by status (watchlist, catching up, rewatching, etc.) and keep progress up to date.
+- **Show pages**: show details, ratings + status counts, tags/categories, cast/actors, similar show recommendations.
+- **Profiles**: user pages, following/followers, lists, stats (including tag/service breakdowns and charts).
+- **Images**:
+  - Show images + profile pictures stored in **Google Cloud Storage**, served via `/pages/api` routes and/or pre-signed URLs.
+  - Optional Vercel Blob upload path (experimental).
+- **Modern UI**: App Router, React 19, Tailwind, Radix/shadcn UI components, charts.
 
-## Demo
+## Tech stack
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- **Next.js (App Router)**: UI and routing live under `app/` (with some legacy `/pages/api` API routes for file handling).
+- **Supabase**: Auth + Postgres data (tables/views/RPC).
+- **Storage**: Google Cloud Storage for images (plus optional Vercel Blob support).
+- **Caching**: uses Next.js `useCache` (`'use cache'`) + `cacheLife()` and React `cache()` to reduce repeated Supabase calls.
 
-## Deploy to Vercel
+## High-level architecture
 
-Vercel deployment will guide you through creating a Supabase account and project.
+### Routing and UI organization
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+- **App Router routes** live in `app/`.
+  - `app/(main)/...` contains the main authenticated app routes (shows, profile, lists, search, etc.).
+  - `app/components/...` contains shared UI components and page-level composition components.
+- **Pages Router API routes** live in `pages/api/` (used where raw Node APIs are needed for multipart uploads and binary streaming).
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This%20starter%20configures%20Supabase%20Auth%20to%20use%20cookies%2C%20making%20the%20user's%20session%20available%20throughout%20the%20entire%20Next.js%20app%20-%20Client%20Components%2C%20Server%20Components%2C%20Route%20Handlers%2C%20Server%20Actions%20and%20Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6)
+### Data access pattern (“Service” modules)
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+Most routes/components delegate data fetching into `*Service.ts(x)` modules (for example `app/components/home/HomeService.tsx`, `app/(main)/show/[showId]/ShowService.tsx`, `app/utils/userService.ts`).
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+Common traits:
 
-## Clone and run locally
+- **Server-side Supabase access** via `app/utils/supabase/server.ts`
+  - `publicClient()` uses the anon key for public reads (views, counts, etc.).
+  - `createClient()` creates a cookie-aware Supabase server client for authenticated reads/writes.
+- **Client-side Supabase access** via `app/utils/supabase/client.ts` for browser interactions.
+- **Caching**: many fetchers use `cache()` + `'use cache'`/`cacheLife()` to avoid re-fetching stable data.
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+### Auth flow
 
-2. Create a Next.js app using the Supabase Starter template npx command
+- **Signup logic** lives in `app/utils/supabase/AuthService.ts` (server action).
+  - Creates the Supabase Auth user, then inserts a matching row into the `user` table.
+  - Includes username validation + uniqueness checks.
+- **Email redirect callback** is handled by `app/(main)/auth/callback/route.ts`, which exchanges the auth code for a session.
+- **Session refresh / route protection (optional middleware)**: `app/utils/supabase/middleware.ts` exposes `updateSession(request)`, which can be wired into a Next.js `middleware.ts` to refresh cookies and redirect unauthenticated users to `/login`.
 
-   ```bash
-   npx create-next-app -e with-supabase
-   ```
+### Images and media
 
-3. Use `cd` to change into the app's directory
+This repo uses **Google Cloud Storage** for images, with multiple access patterns:
 
-   ```bash
-   cd name-of-new-app
-   ```
+- **Upload (authenticated)**: `pages/api/imageUploader.ts`
+  - Accepts multipart form uploads (Formidable), converts to JPEG (Sharp), writes to GCS, returns the stored path.
+  - Checks the current user via a Supabase server client before allowing upload.
+- **Fetch (stream bytes)**: `pages/api/imageFetcher.ts`
+  - Reads an object from GCS and returns the binary with caching headers.
+- **Fetch (pre-signed URL)**: `pages/api/imageUrlFetcher.ts` and `app/actions/imageActions.ts`
+  - Generates a short-lived signed URL for reads from GCS.
+- **Average color**: `pages/api/averageColor.ts` and `app/actions/imageActions.ts`
+  - Computes a 1x1 resize and returns an `rgb(r,g,b)` string used for UI styling.
 
-4. Rename `.env.local.example` to `.env.local` and update the following:
+There is also an **optional** Vercel Blob integration at `pages/api/vercelBlobUpload.ts` plus `app/components/imageUploader/imageUploaderService.tsx`.
 
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
+### “Environment-aware” base URLs
 
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
+`app/envConfig.tsx` centralizes how the app chooses a base URL in local vs production. Some services build API URLs using this (for example `/api/imageFetcher` URLs).
 
-5. You can now run the Next.js local development server:
+## Project structure (guide)
 
-   ```bash
-   npm run dev
-   ```
+- **Routes**: `app/(main)/...`
+  - `show/[showId]/...`: show pages and related services
+  - `profile/[username]/...`: profiles + stats
+  - `list/[listId]/...`: lists
+  - `search/`, `discoverShows/`, `watchlist/`, `login/`, `signup/`, `resetPassword/`, `updatePassword/`
+- **UI components**: `app/components/...` and `components/ui/...` (shadcn/Radix)
+- **Domain models**: `app/models/...` (typed DTOs)
+- **Supabase helpers**: `app/utils/supabase/...`
+- **API routes**: `pages/api/...` (uploads, image fetch, signed URLs)
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+## Running locally
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+### Prereqs
 
-## Feedback and issues
+- Node.js + npm
+- A Supabase project (Auth + Postgres)
+- A Google Cloud Storage bucket (or configure/disable image features)
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+### Install & run
 
-## More Supabase examples
+```bash
+npm install
+npm run dev
+```
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+App runs at `http://localhost:3000`.
+
+## Environment variables
+
+Create `.env.local` (not committed) and configure at least:
+
+### Supabase
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (used by the cookie-aware server client in `app/utils/supabase/server.ts`)
+
+### Google Cloud Storage (for production/deploy)
+
+- `GCP_BUCKET_NAME`
+- `GCP_PROJECT_ID`
+- `GCP_SERVICE_ACCOUNT_EMAIL`
+- `GCP_PRIVATE_KEY` (make sure newlines are correctly escaped if needed)
+
+### Local GCP auth
+
+For local dev, the code supports using a local credential file (`gcpCreds.json`) and/or falling back to your `gcloud` default credentials depending on the route/action.
+
+## Deployment notes
+
+- **Vercel** is the intended deployment target.
+- `next.config.js` allows remote images from Vercel-hosted domains, Google Cloud Storage (`storage.googleapis.com`), and `localhost`.
+
+## Contributing / maintenance
+
+- “Service” modules are the preferred place to add/adjust Supabase queries so components stay focused on rendering.

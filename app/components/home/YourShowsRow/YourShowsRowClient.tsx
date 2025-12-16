@@ -134,7 +134,7 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
 
   return (
     <div className="">
-      <div className="mx-2 mb-2">
+      <div className="px-2 pb-2">
         <StatusFilters />
       </div>
       <ShowRow />

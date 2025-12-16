@@ -72,14 +72,14 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
                 )}
 
 
-                {badges && (
-                    <div className="flex flex-wrap gap-1">
+                {badges && badges.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1 -ml-1.5">
                         {badges.map((badge, index) => {
                             const IconComponent = badge.icon || getIcon(badge.iconName);
                             return (
-                                <div key={index} className={`flex items-center gap-1 backdrop-blur-sm rounded-full text-sm px-2 py-0.5 ${badge.color || "bg-primary/20 text-primary-foreground"}`}>
+                                <div key={index} className={`flex items-center gap-1 backdrop-blur-sm rounded-full text-xs px-1.5 py-0.5 ${badge.color || "bg-primary/20 text-primary-foreground"}`}>
                                     {IconComponent && <IconComponent className="w-3 h-3" />}
-                                    <span>{badge.text}</span>
+                                    <span className="text-xs">{badge.text}</span>
                                 </div>
                             )
                         })}
