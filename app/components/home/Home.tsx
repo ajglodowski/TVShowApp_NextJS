@@ -2,12 +2,13 @@ import { ComingSoonStatusId, CurrentlyAiringStatusId, Status, WatchlistStatusId 
 import { StatusIcon } from '@/app/utils/StatusIcon';
 import { createClient } from '@/app/utils/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartNoAxesCombined, ChevronRight, History, Hourglass, Play, Repeat, Tv } from 'lucide-react';
+import { ChartNoAxesCombined, ChevronRight, History, Hourglass, Play, Repeat, Sparkles, Tv } from 'lucide-react';
 import Link from 'next/link';
 import CheckInRow, { LoadingCheckInRow } from './CheckInRow';
 import ComingSoonRow, { LoadingComingSoonRow } from './ComingSoonRow';
 import CurrentlyAiringLoading from './CurrentlyAiringRow/CurrentlyAiringLoading';
 import CurrentlyAiringRow from './CurrentlyAiringRow/CurrentlyAiringRow';
+import RecommendationsRow, { LoadingRecommendationsRow } from './RecommendationsRow';
 import StaleShowsRow, { LoadingStaleShowsRow } from './StaleShowsRow';
 import Top10Row, { LoadingTop10Row } from './Top10Row';
 import WatchListRow, { LoadingWatchlistRow } from './WatchlistRow';
@@ -30,6 +31,8 @@ const getHeaderIcon = (header: string): React.ReactNode => {
             return <History className="w-5 h-5" />;
         case 'Your shows':
             return <Tv className="w-5 h-5" />;
+        case 'Recommended for You':
+            return <Sparkles className="w-5 h-5" />;
         case 'Currently Airing':
             return StatusIcon(createMockStatus('Currently Airing'), 5);
         case 'Top 10 this week':
@@ -68,6 +71,7 @@ export default async function Home () {
     const rows: HomeRow[] = [
         {header: "Your Recent Updates", component: <YourUpdatesRow userId={currentUserId}/>},
         {header: "Your shows", component: <YourShowsRow userId={currentUserId}/>, link: "/watchlist"}, 
+        {header: "Recommended for You", component: <RecommendationsRow userId={currentUserId}/>},
         {header: "Currently Airing", component: <CurrentlyAiringRow userId={currentUserId}/>, link: "/watchlist?statuses=" + CurrentlyAiringStatusId}, 
         {header: "Top 10 this week", component: <Top10Row/>},
         {header: "Coming Soon", component: <ComingSoonRow userId={currentUserId}/>, link: "/watchlist?statuses=" + ComingSoonStatusId}, 
@@ -111,6 +115,7 @@ export async function LoadingHome() {
     const rows = [
         {header: "Your Recent Updates", component: <LoadingYourUpdatesRow />},
         {header: "Your shows", component: <LoadingYourShowsRow />}, 
+        {header: "Recommended for You", component: <LoadingRecommendationsRow />},
         {header: "Currently Airing", component: <CurrentlyAiringLoading />}, 
         {header: "Top 10 this week", component: <LoadingTop10Row />},
         {header: "Coming Soon", component: <LoadingComingSoonRow />}, 

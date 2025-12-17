@@ -4,7 +4,9 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "backfill:embeddings": "npx tsx scripts/backfillShowEmbeddings.ts",
+    "backfill:embeddings:all": "npx tsx scripts/backfillShowEmbeddings.ts --include-users"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
@@ -48,11 +50,12 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@eslint/js": "^9.25.1",
+    "@tailwindcss/postcss": "^4",
     "@types/formidable": "^3.4.5",
     "@types/react": "19.2.6",
     "@types/react-dom": "19.2.3",
+    "dotenv": "^17.2.3",
     "eslint": "^9.25.1",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.0.0",

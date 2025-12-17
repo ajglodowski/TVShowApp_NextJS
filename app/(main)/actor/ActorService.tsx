@@ -1,6 +1,7 @@
 import { Actor, ActorParams } from "@/app/models/actor";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { createClient } from "@/app/utils/supabase/server";
+import { refreshShowEmbedding } from "@/app/utils/recommendations/ShowEmbeddingService";
 
 export async function getActor( actorId: string ): Promise<Actor | null> {
     const supabase = await createClient();
@@ -25,6 +26,10 @@ export async function addActorToShow(actorId: number, showId: number): Promise<b
         console.error(error);
         return false;
     }
+    // Refresh show embedding asynchronously (fire and forget)
+    refreshShowEmbedding(showId).catch((err) => {
+        console.error("Failed to refresh show embedding:", err);
+    });
     return true;
 }
 
@@ -35,5 +40,9 @@ export async function removeActorFromShow(actorId: number, showId: number): Prom
         console.error(error);
         return false;
     }
+    // Refresh show embedding asynchronously (fire and forget)
+    refreshShowEmbedding(showId).catch((err) => {
+        console.error("Failed to refresh show embedding:", err);
+    });
     return true;
 }

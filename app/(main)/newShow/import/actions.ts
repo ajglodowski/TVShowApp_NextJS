@@ -4,6 +4,7 @@ import { createClient } from '@/app/utils/supabase/server';
 import { ShowLength } from '@/app/models/showLength';
 import { OtherService } from '@/app/models/service';
 import { redirect } from 'next/navigation';
+import { refreshShowEmbedding } from '@/app/utils/recommendations/ShowEmbeddingService';
 
 export type WikidataSearchResult = {
     id: string;
@@ -359,7 +360,13 @@ export async function createShowFromWikidataAction(payload: CreateShowPayload) {
         await supabase.from('ShowExternalReference').insert(refRows);
     }
 
-    // 5. Redirect
+    // 5. Refresh show embedding for recommendations
+    // Fire and forget - don't block the redirect
+    refreshShowEmbedding(showId).catch((err) => {
+        console.error("Failed to refresh show embedding:", err);
+    });
+
+    // 6. Redirect
     redirect(`/show/${showId}`);
 }
 

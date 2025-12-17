@@ -4,6 +4,7 @@ import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
 import { createClient } from "@/app/utils/supabase/client";
 import { cache } from "react";
+import { refreshShowEmbedding } from "@/app/utils/recommendations/ShowEmbeddingService";
 
 export const getShowFromCache = (showId: string): Show | null => {
     const cacheKey = `show_v2_${showId}`;
@@ -120,6 +121,12 @@ export async function updateShow(show: Show): Promise<boolean> {
         }
     }
 
+    // Refresh show embedding asynchronously (fire and forget)
+    // This updates the show's feature vector for recommendations
+    refreshShowEmbedding(showId).catch((err) => {
+        console.error("Failed to refresh show embedding:", err);
+    });
+
     return true;
 }
 
@@ -171,6 +178,10 @@ export async function addShowTag(showId: string, tag: ShowTag): Promise<boolean>
       console.error(error);
       return false;
     }
+    // Refresh show embedding asynchronously
+    refreshShowEmbedding(Number(showId)).catch((err) => {
+      console.error("Failed to refresh show embedding:", err);
+    });
     return true;
   }
   
@@ -181,6 +192,10 @@ export async function removeShowTag(showId: string, tag: ShowTag): Promise<boole
       console.error(error);
       return false;
     }
+    // Refresh show embedding asynchronously
+    refreshShowEmbedding(Number(showId)).catch((err) => {
+      console.error("Failed to refresh show embedding:", err);
+    });
     return true;
 }
 

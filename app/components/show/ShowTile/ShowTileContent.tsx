@@ -1,5 +1,5 @@
 import { Show } from "@/app/models/show";
-import { Clock, Calendar, Info, AlertCircle, LucideIcon } from 'lucide-react';
+import { Clock, Calendar, Info, AlertCircle, TrendingUp, Sparkles, LucideIcon } from 'lucide-react';
 import Image from "next/image";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 
@@ -14,7 +14,7 @@ export type ShowTileContentProps = {
 export type ShowTileBadgeProps = {
     text: string | React.ReactNode
     icon?: LucideIcon
-    iconName?: 'Clock' | 'Calendar' | 'Info' | 'AlertCircle'
+    iconName?: 'Clock' | 'Calendar' | 'Info' | 'AlertCircle' | 'TrendingUp' | 'Sparkles'
     color?: string
 }
 
@@ -28,6 +28,8 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
             case 'Calendar': return Calendar;
             case 'Info': return Info;
             case 'AlertCircle': return AlertCircle;
+            case 'TrendingUp': return TrendingUp;
+            case 'Sparkles': return Sparkles;
             default: return null;
         }
     }

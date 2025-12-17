@@ -7,6 +7,7 @@ import { Rating } from "@/app/models/rating";
 import { UserUpdate } from "@/app/models/userUpdate";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
 import { cacheLife, revalidateTag } from 'next/cache';
+import { refreshUserEmbedding } from "@/app/utils/recommendations/RecommendationService";
 
 export async function getUserShowData({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserShowData | null> {
 
@@ -96,6 +97,13 @@ export async function updateRating({userId, showId, newRating}: {showId: string,
         console.error(error);
         return false;
     }
+    
+    // Refresh user embedding asynchronously (fire and forget)
+    // This updates the user's preference vector based on their new ratings
+    refreshUserEmbedding(userId).catch((err) => {
+        console.error("Failed to refresh user embedding:", err);
+    });
+    
     return true;
 }
 
