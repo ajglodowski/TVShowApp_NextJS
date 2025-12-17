@@ -1,4 +1,7 @@
+import Unauthorized from "@/app/components/Unauthorized";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { createClient } from "@/app/utils/supabase/server";
+import { isAdmin } from "@/app/utils/userService";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -6,6 +9,7 @@ import { Suspense } from "react";
 import { getActorsForShow } from "../ShowService";
 import ActorManagement from "./ActorManagement";
 import ActorSearchClient from "./ActorSearchClient";
+
 export default async function EditActorsPage({ params }: { params: Promise<{ showId: string }> }) {
     return (
         <Suspense fallback={<div>Loading...</div>}>
@@ -16,6 +20,17 @@ export default async function EditActorsPage({ params }: { params: Promise<{ sho
 
 async function EditActorsPageContent({ params }: { params: Promise<{ showId: string }> }) {
     const showId = parseInt((await params).showId);
+    
+    // Check if user is admin
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const currentUserId = user?.id;
+    const userIsAdmin = await isAdmin(currentUserId);
+    
+    if (!userIsAdmin) {
+        return <Unauthorized message="You don't have permission to edit actors" />;
+    }
+    
     const actors = await getActorsForShow(showId) || [];
     
     return (

@@ -1,10 +1,10 @@
 'use client'
 
 import { Actor } from "@/app/models/actor";
-import { useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { useActionState, useEffect, useState, useRef } from "react";
+import { Search, Plus, AlertCircle, CheckCircle2 } from "lucide-react";
 import { searchActors } from "@/app/(main)/actor/ActorServiceClient";
-import { handleAddActorToShow } from "./actions";
+import { handleAddActorToShow, handleCreateActorAndAddToShow, ActionResult } from "./actions";
 
 interface ActorSearchClientProps {
   showId: number;
@@ -15,6 +15,21 @@ export default function ActorSearchClient({ showId, currentActors }: ActorSearch
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Actor[] | null>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [newActorName, setNewActorName] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const [createState, createAction, isCreating] = useActionState<ActionResult | null, FormData>(
+    handleCreateActorAndAddToShow,
+    null
+  );
+
+  // Clear form and show success message when actor is created
+  useEffect(() => {
+    if (createState?.ok) {
+      setNewActorName('');
+      formRef.current?.reset();
+    }
+  }, [createState]);
 
   const handleSearch = async (query: string) => {
     if (query.trim() === '') {
@@ -50,17 +65,69 @@ export default function ActorSearchClient({ showId, currentActors }: ActorSearch
     return () => clearTimeout(timeoutId);
   }, [searchQuery, currentActors]);
 
+  // Quick create with search query when no results found
+  const handleQuickCreate = () => {
+    setNewActorName(searchQuery.trim());
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search for actors..."
-          className="pl-10 w-full p-2 bg-white/5 text-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30"
-        />
+      {/* Create Actor Section */}
+      <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+        <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <Plus className="h-5 w-5" />
+          Create New Actor
+        </h2>
+        <form ref={formRef} action={createAction} className="flex flex-col gap-3">
+          <input type="hidden" name="showId" value={showId} />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              name="actorName"
+              value={newActorName}
+              onChange={(e) => setNewActorName(e.target.value)}
+              placeholder="Enter actor name..."
+              className="flex-1 p-2 bg-white/5 text-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30"
+              disabled={isCreating}
+            />
+            <button
+              type="submit"
+              disabled={isCreating || !newActorName.trim()}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isCreating ? 'Creating...' : 'Create & Add'}
+            </button>
+          </div>
+          
+          {/* Success/Error Messages */}
+          {createState?.ok && (
+            <div className="flex items-center gap-2 p-2 bg-green-600/20 border border-green-500/50 rounded-lg text-green-300">
+              <CheckCircle2 className="h-4 w-4" />
+              <span>{createState.message}</span>
+            </div>
+          )}
+          {createState?.error && (
+            <div className="flex items-center gap-2 p-2 bg-red-600/20 border border-red-500/50 rounded-lg text-red-300">
+              <AlertCircle className="h-4 w-4" />
+              <span>{createState.error}</span>
+            </div>
+          )}
+        </form>
+      </div>
+
+      {/* Search Existing Actors Section */}
+      <div>
+        <h2 className="text-lg font-semibold mb-3">Search Existing Actors</h2>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search for actors..."
+            className="pl-10 w-full p-2 bg-white/5 text-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/30"
+          />
+        </div>
       </div>
 
       {/* Search Results */}
@@ -92,10 +159,21 @@ export default function ActorSearchClient({ showId, currentActors }: ActorSearch
               ))}
             </ul>
           ) : (
-            <p className="text-white/60">No actors found</p>
+            <div className="text-white/60">
+              <p>No actors found matching &ldquo;{searchQuery}&rdquo;</p>
+              {searchQuery.trim() && (
+                <button
+                  type="button"
+                  onClick={handleQuickCreate}
+                  className="mt-2 text-sm text-blue-400 hover:text-blue-300 underline"
+                >
+                  Create &ldquo;{searchQuery.trim()}&rdquo; as a new actor
+                </button>
+              )}
+            </div>
           )}
         </div>
       )}
     </div>
   );
-} 
+}

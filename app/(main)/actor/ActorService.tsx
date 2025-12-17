@@ -46,3 +46,38 @@ export async function removeActorFromShow(actorId: number, showId: number): Prom
     });
     return true;
 }
+
+/**
+ * Find an actor by exact name match (case-insensitive)
+ */
+export async function findActorByNameExactCI(name: string): Promise<Actor | null> {
+    const supabase = await createClient();
+    // Use ilike without wildcards for case-insensitive exact match
+    const { data: actorData } = await supabase
+        .from("actor")
+        .select(ActorParams)
+        .ilike('name', name.trim())
+        .maybeSingle();
+    
+    if (!actorData) return null;
+    return actorData as Actor;
+}
+
+/**
+ * Create a new actor with the given name
+ */
+export async function createActor(name: string): Promise<Actor | null> {
+    const supabase = await createClient();
+    const { data: actorData, error } = await supabase
+        .from("actor")
+        .insert({ name: name.trim() })
+        .select(ActorParams)
+        .single();
+    
+    if (error) {
+        console.error("Error creating actor:", error);
+        return null;
+    }
+    
+    return actorData as Actor;
+}
