@@ -10,7 +10,7 @@ export const UserDetailsDropdown = ({ currentUserInfo, otherUsersInfo }: { curre
     const filteredOtherUsers = otherUsersInfo.filter(user => user.user.id !== currentUserInfo.user.id);
     
     return (
-        <div className="w-full flex justify-end">
+        <div className="w-auto flex justify-end">
             <div className="flex items-center">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -18,7 +18,7 @@ export const UserDetailsDropdown = ({ currentUserInfo, otherUsersInfo }: { curre
                             <AvatarsBubbleRow currentUserInfo={currentUserInfo} otherUsersInfo={filteredOtherUsers}/>
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className={`${backdropBackground} text-white`}>
+                    <DropdownMenuContent align="end" className={`${backdropBackground} text-white min-w-[300px]`}>
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
                                 <UserDetails userInfo={currentUserInfo} />

@@ -13,9 +13,9 @@ export default async function YourUpdatesRow ({userId}: {userId: string}) {
     if (updates.length === 0) return (<div>No Updates found</div>);
 
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex space-x-4 p-4">
+                <div className="flex gap-4 py-2">
                     {updates.map((update) => (
                         <div key={update.userUpdate.id} className="flex-shrink-0">
                             <UserUpdateTile key={update.showName} updateDto={update}/>
@@ -30,9 +30,9 @@ export default async function YourUpdatesRow ({userId}: {userId: string}) {
 
 export async function LoadingYourUpdatesRow() {
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex space-x-4 p-4">
+                <div className="flex gap-4 py-2">
                     {Array.from({ length: 10 }).map((_, index) => (
                         <div key={index} className="flex-shrink-0">
                             <LoadingUserUpdateTile />

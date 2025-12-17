@@ -24,7 +24,7 @@ export default async function Top10Row() {
     }
 
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {shows.map((showInfo,index) => (
@@ -44,7 +44,7 @@ export default async function Top10Row() {
 
 export async function LoadingTop10Row() {
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {Array.from({ length: 10 }).map((_, index) => (

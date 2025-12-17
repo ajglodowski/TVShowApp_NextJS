@@ -3,13 +3,26 @@
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { PaginationControlsProps } from './types';
 
-export default function PaginationControls({ currentPage, previousPageUrl, nextPageUrl, totalPages, resultsCount }: PaginationControlsProps & { resultsCount?: number }) {
+interface UpdatesPaginationControlsProps {
+    currentPage: number;
+    previousPageUrl?: string;
+    nextPageUrl?: string;
+    totalPages: number;
+    resultsCount: number;
+}
+
+export default function UpdatesPaginationControls({ 
+    currentPage, 
+    previousPageUrl, 
+    nextPageUrl, 
+    totalPages, 
+    resultsCount 
+}: UpdatesPaginationControlsProps) {
     const router = useRouter();
     
-    if (totalPages <= 1 && !resultsCount) {
-        return null; // Don't render if there's only one page and no results to show
+    if (totalPages <= 1 && resultsCount === 0) {
+        return null;
     }
 
     function handlePreviousPage() {
@@ -27,11 +40,11 @@ export default function PaginationControls({ currentPage, previousPageUrl, nextP
     const buttonClassName = 'p-2 bg-transparent hover:bg-white/10 text-white';
 
     return (
-        <div className="flex justify-between items-center py-2">
+        <div className="flex justify-between items-center py-3 px-1">
             {/* Results Count */}
             <div className='flex items-center gap-2 text-sm'>
-                <span className='font-semibold'>Results:</span>
-                <span className='text-muted-foreground'>{resultsCount || 0} shows</span>
+                <span className='font-semibold text-white'>Results:</span>
+                <span className='text-white/60'>{resultsCount} {resultsCount === 1 ? 'update' : 'updates'}</span>
             </div>
             
             {/* Pagination Controls */}
@@ -46,7 +59,7 @@ export default function PaginationControls({ currentPage, previousPageUrl, nextP
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
                     
-                    <div className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                    <div className="text-xs sm:text-sm text-white/60 whitespace-nowrap">
                         <span className="hidden sm:inline">Page {currentPage} of {totalPages}</span>
                         <span className="sm:hidden">{currentPage}/{totalPages}</span>
                     </div>
@@ -64,3 +77,4 @@ export default function PaginationControls({ currentPage, previousPageUrl, nextP
         </div>
     );
 }
+

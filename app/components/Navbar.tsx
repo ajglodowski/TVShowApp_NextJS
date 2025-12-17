@@ -12,47 +12,45 @@ async function Navbar() {
     const userIsAdmin = await isAdmin(user?.id);
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-neutral-800 bg-neutral-800/95 backdrop-blur supports-[backdrop-filter]:bg-neutral-800/60 overflow-x-hidden overflow-y-visible">
-            <div className="container flex h-14 items-center">
-                <div className="flex w-64 text-center items-center">
-                    <Link href="/" className="mr-6 flex items-center space-x-2">
-                        <span className="font-semibold text-xs sm:text-xl text-white">TV Show App</span>
+        <header className="fixed top-0 z-50 w-full border-b border-neutral-800 bg-neutral-900/95 backdrop-blur supports-backdrop-filter:bg-neutral-900/80 overflow-visible">
+            <div className="flex h-14 items-center px-4 md:px-6 gap-4">
+                {/* Logo */}
+                <Link href="/" className="flex items-center shrink-0 mr-4 md:mr-8">
+                    <span className="font-semibold text-base sm:text-lg text-white whitespace-nowrap">TV Show App</span>
+                </Link>
+
+                {/* Desktop Navigation */}
+                <nav className="hidden md:flex items-center gap-6 text-sm font-medium flex-1">
+                    <Link href="/" className="transition-colors hover:text-white text-gray-300">
+                        Home
                     </Link>
-                </div>
-                <nav className="flex justify-between w-full items-center overflow-y-visible">
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center space-x-2 md:space-x-6 text-sm font-medium flex-1 overflow-y-visible">
-                        <Link href="/" className="transition-colors hover:text-white text-gray-300">
-                            Home
+                    <Link href="/watchlist" className="transition-colors hover:text-white text-gray-300">
+                        Watchlist
+                    </Link>
+                    <Link href="/discoverShows" className="transition-colors hover:text-white text-gray-300">
+                        Discover
+                    </Link>
+                    {userIsAdmin && (
+                        <Link 
+                            href="/newShow/import" 
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors border border-white/20"
+                        >
+                            <PlusCircle className="h-3.5 w-3.5" />
+                            <span>New Show</span>
                         </Link>
-                        <Link href="/watchlist" className="transition-colors hover:text-white text-gray-300">
-                            Watchlist
-                        </Link>
-                        <Link href="/discoverShows" className="transition-colors hover:text-white text-gray-300">
-                            Discover
-                        </Link>
-                        {userIsAdmin && (
-                            <Link 
-                                href="/newShow/import" 
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white hover:bg-gray-50 text-black font-medium transition-all border-2 border-transparent hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.5)]"
-                            >
-                                <PlusCircle className="h-4 w-4" />
-                                <span>Add Show</span>
-                            </Link>
-                        )}
-                        <div className="flex-1 max-w-md ml-4 relative overflow-y-visible">
-                            <ClientSearch />
-                        </div>
-                    </div>
-
-                    {/* Mobile Navigation */}
-                    <NavbarMobileMenu isAdmin={userIsAdmin} />
-
-                    {/* Avatar - Always in corner */}
-                    <div className="ml-auto flex items-center">
-                        <AuthButton />
+                    )}
+                    <div className="flex-1 max-w-sm ml-auto relative">
+                        <ClientSearch />
                     </div>
                 </nav>
+
+                {/* Mobile Navigation */}
+                <NavbarMobileMenu isAdmin={userIsAdmin} />
+
+                {/* Avatar - Always in corner */}
+                <div className="flex items-center shrink-0">
+                    <AuthButton />
+                </div>
             </div>
         </header>
     );

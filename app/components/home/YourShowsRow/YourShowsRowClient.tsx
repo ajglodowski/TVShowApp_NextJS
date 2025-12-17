@@ -71,35 +71,33 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
 
     return (
       <div className="space-y-2">
-        <div className="flex items-center flex-wrap gap-2 min-h-8">
-          {selectedStatus.length > 0 && (
-            <>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clearAllSelections}
-                className="flex items-center gap-1 h-8 border border-white/20 bg-transparent hover:bg-white/10 hover:text-white"
-              >
-                Clear all <X className="h-3 w-3" />
-              </Button>
+        {selectedStatus.length > 0 && (
+          <div className="flex items-center flex-wrap gap-2 min-h-8">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearAllSelections}
+              className="flex items-center gap-1 h-8 border border-white/20 bg-transparent hover:bg-white/10 text-white"
+            >
+              Clear all <X className="h-3 w-3" />
+            </Button>
 
-              {selectedStatus.map((status) => (
-                <button
-                  key={status.id}
-                  onClick={() => handleStatusChange(status)}
+            {selectedStatus.map((status) => (
+              <button
+                key={status.id}
+                onClick={() => handleStatusChange(status)}
+              >
+                <Badge
+                  variant="secondary"
+                  className="flex font-medium items-center gap-1 h-8 px-3 bg-white text-black rounded-lg"
                 >
-                  <Badge
-                    variant="secondary"
-                    className="flex font-medium items-center gap-1 h-8 px-3 bg-white text-black rounded-lg"
-                  >
-                    {status.name}
-                    <X className="h-3 w-3" />
-                  </Badge>
-                </button>
-              ))}
-            </>
-          )}
-        </div>
+                  {status.name}
+                  <X className="h-3 w-3" />
+                </Badge>
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="relative">
           <Tabs defaultValue="all" className="w-full">
@@ -112,10 +110,9 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
                     onClick={() => handleStatusChange(status)}
                     className={
                       selectedStatus.includes(status)
-                        ? "data-[state=active]:bg-white data-[state=active]:text-black hover:bg-gray-200 hover:text-black rounded-lg"
-                        : " text-white hover:bg-white hover:text-black rounded-lg"
+                        ? "bg-white text-black rounded-lg font-medium"
+                        : "text-white/60 hover:bg-white/20 hover:text-white rounded-lg"
                     }
-                    data-state={selectedStatus.includes(status) ? "active" : "inactive"}
                   >
                     <div className="flex items-center gap-1">
                       <StatusIcon {...status} />

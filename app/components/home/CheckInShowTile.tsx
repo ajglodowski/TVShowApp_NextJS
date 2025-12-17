@@ -81,26 +81,28 @@ export default function CheckInShowTile({ checkInShow, userId }: { checkInShow: 
             
             <div className="flex flex-col gap-2 mt-1 opacity-100 transition-opacity w-full">
                 {/* Suggested Resolutions */}
-                <div className="flex gap-2 justify-between w-full">
+                <div className="flex flex-col gap-2 w-full">
                     <Button 
                         size="sm" 
                         variant="outline" 
-                        className="h-8 text-xs flex-1 bg-black/50 hover:bg-white hover:text-black border-white/20 px-1"
+                        className="h-9 text-sm w-full bg-black/60 border-white/20 text-white hover:border-primary hover:bg-primary/10 hover:text-primary font-medium transition-all duration-200"
                         onClick={handlePlusOne}
                         disabled={isLoading}
+                        aria-label={`Move to season ${checkInShow.currentSeason + 1} of ${checkInShow.show.name}`}
                     >
-                        <Plus className="w-3 h-3 mr-1" />
-                        S{checkInShow.currentSeason + 1}
+                        <Plus className="w-4 h-4" />
+                        Season {checkInShow.currentSeason + 1}
                     </Button>
                     
                     <Button 
                         size="sm" 
                         variant="outline" 
-                        className="h-8 text-xs flex-1 bg-black/50 hover:bg-white hover:text-black border-white/20 px-1"
+                        className="h-9 text-sm w-full bg-black/60 border-white/20 text-white hover:border-primary hover:bg-primary/10 hover:text-primary font-medium transition-all duration-200"
                         onClick={handleCaughtUp}
                         disabled={isLoading}
+                        aria-label={`Mark ${checkInShow.show.name} as caught up to season ${checkInShow.show.totalSeasons}`}
                     >
-                        <Check className="w-3 h-3 mr-1" />
+                        <Check className="w-4 h-4" />
                         Caught Up
                     </Button>
                 </div>

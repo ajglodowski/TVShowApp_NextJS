@@ -1,6 +1,6 @@
-import { backdropBackground } from "@/app/utils/stylingConstants";
 import { createClient } from "@/app/utils/supabase/server";
 import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 
 export default async function EditButton({ userId }: { userId: string }) {
@@ -12,14 +12,14 @@ export default async function EditButton({ userId }: { userId: string }) {
     if (currentUserId != userId) return <></>;
 
     return (
-         <Link
-            href={`/profile/edit`}
-        >
+         <Link href={`/profile/edit`}>
             <Button
                 variant="outline"
-                className={`${backdropBackground} hover:bg-white hover:text-black`}
-                >
-                Edit
+                size="sm"
+                className="border-white/20 bg-white/5 hover:bg-white hover:text-black hover:border-white transition-all"
+            >
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit Profile
             </Button>
          </Link>
     );

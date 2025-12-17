@@ -127,7 +127,7 @@ export const getPresignedShowImageURL = cache(async (showName: string, tile: boo
   return presignedUrl;
 });
 
-export const fetchAverageShowColor = cache(async function (showName: string): Promise<string> {
+export const fetchAverageShowColor = async (showName: string): Promise<string> => {
   'use cache';
   cacheLife('days');
   // Construct the image path using the raw showName
@@ -136,7 +136,7 @@ export const fetchAverageShowColor = cache(async function (showName: string): Pr
   const averageColor = await getAverageColorAction(imagePath);
   // Return the result from the action, defaulting to black if null
   return averageColor || "rgb(0,0,0)";
-});
+};
 
 export async function getRatingCounts(showId: string): Promise<RatingCounts | null> {
 	'use cache'

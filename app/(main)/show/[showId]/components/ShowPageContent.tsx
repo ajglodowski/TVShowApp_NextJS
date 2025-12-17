@@ -62,7 +62,6 @@ export default async function ShowPageContent({
 }: ShowPageContentProps) {
   const pictureUrl = show.pictureUrl;
   const showImageUrl = pictureUrl ? getShowImageUrlAction(pictureUrl) : null;
-  
   const backgroundColor = pictureUrl 
     ? await fetchAverageShowColor(pictureUrl)
     : 'rgb(0,0,0)';

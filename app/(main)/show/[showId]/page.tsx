@@ -25,13 +25,15 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   const { data: { user }, } = await supabase.auth.getUser();
   const currentUserId = user?.id;
   
+  const startTime = performance.now();
   const [userIsAdmin, showData, ratingCounts, statusCounts] = await Promise.all([
     isAdmin(currentUserId),
     getShow(showId),
     getRatingCounts(showId),
     getStatusCounts(showId),
   ]);
-
+  const endTime = performance.now();
+  console.log(`Time taken: ${endTime - startTime} milliseconds`);
   if (!showData) {
     return <ShowNotFound />
   }

@@ -64,7 +64,7 @@ export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { cur
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full px-2">
       <Tabs
         defaultValue={initialDefaultDay}
         className="w-full"
@@ -74,11 +74,11 @@ export default function CurrentlyAiringRowClient({ currentlyAiringShows }: { cur
             <TabsTrigger 
                 key={day} 
                 value={day} 
-                className="rounded-lg text-white hover:bg-white hover:text-black data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:hover:bg-gray-200"
+                className="rounded-lg text-white/60 hover:bg-white/20 hover:text-white transition-all duration-150 aria-selected:bg-white aria-selected:text-black aria-selected:font-medium aria-selected:hover:bg-gray-100"
             >
-                <div className="flex-wrap">
-                    <p className="flex-row"> {day} </p>
-                    { day === today && <p className="flex-row font-bold"> Today </p>}
+                <div className="flex flex-col items-center py-1 px-1">
+                    <p className="text-sm"> {day} </p>
+                    { day === today && <p className="text-xs font-bold opacity-80"> Today </p>}
                 </div>
             </TabsTrigger>
           ))}

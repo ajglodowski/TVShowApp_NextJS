@@ -30,7 +30,7 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
 
 
     return (
-        <div className="flex items-center justify-center mx-2">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {shows.map((show) => (
@@ -50,7 +50,7 @@ export default async function ComingSoonRow ({userId}: {userId: string}) {
 
 export async function LoadingComingSoonRow() {
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {Array.from({ length: 10 }).map((_, index) => (

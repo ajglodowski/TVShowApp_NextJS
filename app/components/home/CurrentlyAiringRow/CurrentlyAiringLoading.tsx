@@ -6,7 +6,7 @@ import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton";
 
 export default function CurrentlyAiringLoading() {
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
       <Tabs
         className="w-full"
       >

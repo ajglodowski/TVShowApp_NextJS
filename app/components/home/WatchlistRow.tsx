@@ -14,7 +14,7 @@ export default async function WatchListRow ({userId}: {userId: string}) {
     if (shows.length === 0) return (<div>No Shows in Watchlist. Add some shows to watch</div>);
 
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {shows.map((show) => (
@@ -31,7 +31,7 @@ export default async function WatchListRow ({userId}: {userId: string}) {
 
 export async function LoadingWatchlistRow() {
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {Array.from({ length: 10 }).map((_, index) => (

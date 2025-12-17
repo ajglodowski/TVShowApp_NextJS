@@ -1,18 +1,15 @@
 "use client"
 
-
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 
 import { User } from "@/app/models/user"
-import { backdropBackground } from "@/app/utils/stylingConstants"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { AtSign } from "lucide-react"
+import { AtSign, ArrowLeft, Check, Lock, Mail, User as UserIcon } from "lucide-react"
 import { toast } from "sonner"
 import ProfilePictureSection from "./ProfilePictureSection"
 
@@ -43,14 +40,13 @@ export function EditProfileForm({ userData, email, presignedImageUrl, saveFuncti
     })
 
     async function onSubmit(data: ProfileFormValues) {
-        // This would be replaced with actual API call to update the profile
         const success = await saveFunction(data);
         if (success) {
             toast.success("Profile updated", {
                 description: "Your profile has been successfully updated.",
                 action: {
                     label: "Go to Profile",
-                    onClick: () => router.push("/profile")
+                    onClick: () => router.push(`/profile/${data.username}`)
                 }
             })
         } else {
@@ -61,37 +57,75 @@ export function EditProfileForm({ userData, email, presignedImageUrl, saveFuncti
     }
 
     return (
-        <div>
-            <ProfilePictureSection userData={userData} presignedImageUrl={presignedImageUrl} />
-
-            <div className="my-4">
-                <Label>Email</Label>
-                <p className="underline">{email}</p>
-                <p className="text-muted-foreground text-sm text-white/70">
-                    This is your login email. It cannot be changed.
-                </p>
+        <div className="p-6 md:p-8">
+            {/* Profile Picture Section */}
+            <div className="mb-8 pb-8 border-b border-white/10">
+                <ProfilePictureSection userData={userData} presignedImageUrl={presignedImageUrl} />
             </div>
 
+            {/* Email Display */}
+            <div className="mb-8 pb-8 border-b border-white/10">
+                <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-5 h-5 text-white/60" />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium text-white/80 mb-1 block">Email</label>
+                        <p className="text-white font-medium">{email}</p>
+                        <p className="text-white/50 text-sm mt-1">
+                            This is your login email. It cannot be changed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Form */}
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    {/* Username Field */}
                     <FormField
                         control={form.control}
                         name="username"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Username</FormLabel>
-                                <FormControl className={`${backdropBackground}`}>
-                                    <div className="relative flex-1 w-full mb-4 md:mb-0 rounded-md px-4 py-2 border-white border">
-                                        <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
-                                        <input
-                                        className="ml-4 bg-inherit text-white"
-                                        placeholder="yourusername"
-                                        required
-                                        {...field}
+                                <FormLabel className="text-white/80">Username</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
+                                        <Input
+                                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20"
+                                            placeholder="yourusername"
+                                            required
+                                            {...field}
                                         />
                                     </div>
                                 </FormControl>
-                                <FormDescription className="text-white/80">
+                                <FormDescription className="text-white/50">
+                                    This is your unique identifier. It will appear in your profile URL.
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Name Field */}
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="text-white/80">Display Name</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/40" />
+                                        <Input 
+                                            className="pl-10 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20" 
+                                            placeholder="John Doe" 
+                                            {...field} 
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormDescription className="text-white/50">
                                     This is your public display name. It can be your real name or a pseudonym.
                                 </FormDescription>
                                 <FormMessage />
@@ -99,75 +133,74 @@ export function EditProfileForm({ userData, email, presignedImageUrl, saveFuncti
                         )}
                     />
 
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl className={`${backdropBackground}`}>
-                                    <Input className="" placeholder="John Doe" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
+                    {/* Bio Field */}
                     <FormField
                         control={form.control}
                         name="bio"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Bio</FormLabel>
-                                <FormControl className={`${backdropBackground}`}>
+                                <FormLabel className="text-white/80">Bio</FormLabel>
+                                <FormControl>
                                     <Textarea
-                                        placeholder="Tell us a little bit about yourself"
-                                        className="resize-none"
+                                        placeholder="Tell us a little bit about yourself and what shows you love..."
+                                        className="min-h-[120px] bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-primary focus:ring-primary/20 resize-none"
                                         {...field}
                                     />
                                 </FormControl>
+                                <FormDescription className="text-white/50">
+                                    Write a short bio to introduce yourself to other users.
+                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
 
+                    {/* Private Account Toggle */}
                     <FormField
                         control={form.control}
                         name="isPrivate"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Private Account</FormLabel>
-                                    <FormDescription className="text-white/80">
-                                        When your account is private, only people you approve can see your profile and updates.
-                                    </FormDescription>
+                            <FormItem className="flex flex-row items-start justify-between rounded-xl bg-white/5 border border-white/10 p-5 gap-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                        <Lock className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <FormLabel className="text-base text-white">Private Account</FormLabel>
+                                        <FormDescription className="text-white/50">
+                                            When enabled, only people you approve can see your profile and activity.
+                                        </FormDescription>
+                                    </div>
                                 </div>
-                                <FormControl className="ml-16">
+                                <FormControl>
                                     <Switch
                                         checked={field.value}
                                         onCheckedChange={field.onChange}
                                         aria-label="Private account"
+                                        className="data-[state=checked]:bg-primary"
                                     />
                                 </FormControl>
                             </FormItem>
                         )}
                     />
 
-                    <div className="flex w-full items-center justify-center space-x-4">
+                    {/* Action Buttons */}
+                    <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-6 border-t border-white/10">
                         <Button
                             type="button"
                             variant="outline"
-                            className={`bg-red-700 hover:bg-white hover:text-red-700 hover:border-red-700 text-white`}
+                            className="w-full sm:w-auto border-white/20 bg-transparent text-white/70 hover:bg-white/10 hover:text-white"
                             onClick={() => router.back()}
                         >
+                            <ArrowLeft className="w-4 h-4 mr-2" />
                             Cancel
                         </Button>
                         <Button
-                            variant="outline"
-                            className={`${backdropBackground} hover:bg-white hover:text-black`}
                             type="submit"
+                            className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
                         >
-                            Update profile
+                            <Check className="w-4 h-4 mr-2" />
+                            Save Changes
                         </Button>
                     </div>
                 </form>

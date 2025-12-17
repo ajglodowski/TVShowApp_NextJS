@@ -39,15 +39,14 @@ export default async function ShowRow({ show, currentUserInfo, otherUsersInfo, f
     }
     
     return (
-        <Link href={`/show/${showData.id}`}>
-            <div className="flex flex-nowrap justify-between">
+        <div className="flex flex-nowrap justify-between w-full">
+            <Link href={`/show/${showData.id}`} className="flex-1 min-w-0 block">
                 <ShowRowInfo showData={showData} />
-                <Suspense fallback={<Skeleton className="w-16 h-16 rounded-md" />}>
-                    {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={otherUsersInfo || []}/>}
-                </Suspense>
-                
-            </div>
-        </Link>
+            </Link>
+            <Suspense fallback={<Skeleton className="w-16 h-16 rounded-md" />}>
+                {currentUserInfo && <UserDetailsDropdown currentUserInfo={currentUserInfo} otherUsersInfo={otherUsersInfo || []}/>}
+            </Suspense>
+        </div>
     );
 
 }

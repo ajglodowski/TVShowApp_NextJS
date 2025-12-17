@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-fixed bg-no-repeat bg-cover bg-[radial-gradient(circle_at_0%_0%,rgb(120,60,20)_0%,rgb(60,25,5)_50%,rgb(5,5,5)_100%)] text-foreground overflow-x-hidden">
         <Navbar />
         <ScrollToTop />
-        <main className="flex flex-col items-center">
+        <main className="flex flex-col items-center pt-14">
           {children}
           <SpeedInsights />
         </main>

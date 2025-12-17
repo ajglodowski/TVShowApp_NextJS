@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { Label as LabelPrimitive, Slot as SlotPrimitive } from "radix-ui"
 
 import {
   Controller,
@@ -87,15 +86,15 @@ const FormItem = React.forwardRef<
 FormItem.displayName = "FormItem"
 
 const FormLabel = React.forwardRef<
-  React.ElementRef<typeof LabelPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+  HTMLLabelElement,
+  React.LabelHTMLAttributes<HTMLLabelElement>
 >(({ className, ...props }, ref) => {
   const { error, formItemId } = useFormField()
 
   return (
     <Label
       ref={ref}
-      className={cn(error && "text-red-500 dark:text-red-900", className)}
+      className={cn(error && "text-destructive", className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -103,14 +102,36 @@ const FormLabel = React.forwardRef<
 })
 FormLabel.displayName = "FormLabel"
 
+// Simple Slot implementation that passes props to its child
+interface SlotProps extends React.HTMLAttributes<HTMLElement> {
+  children?: React.ReactNode
+}
+
+const Slot = React.forwardRef<HTMLElement, SlotProps>(
+  ({ children, ...props }, ref) => {
+    if (!React.isValidElement(children)) {
+      return null
+    }
+
+    const childProps = children.props as Record<string, unknown>
+    
+    return React.cloneElement(children, {
+      ...props,
+      ...childProps,
+      ref: ref,
+    } as React.HTMLAttributes<HTMLElement>)
+  }
+)
+Slot.displayName = "Slot"
+
 const FormControl = React.forwardRef<
-  React.ElementRef<typeof SlotPrimitive.Slot>,
-  React.ComponentPropsWithoutRef<typeof SlotPrimitive.Slot>
->(({ ...props }, ref) => {
+  HTMLElement,
+  React.HTMLAttributes<HTMLElement>
+>(({ children, ...props }, ref) => {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
   return (
-    <SlotPrimitive.Slot
+    <Slot
       ref={ref}
       id={formItemId}
       aria-describedby={
@@ -120,7 +141,9 @@ const FormControl = React.forwardRef<
       }
       aria-invalid={!!error}
       {...props}
-    />
+    >
+      {children}
+    </Slot>
   )
 })
 FormControl.displayName = "FormControl"
@@ -135,7 +158,7 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn("text-sm text-gray-500 dark:text-gray-400", className)}
+      className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
   )
@@ -157,7 +180,7 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn("text-sm font-medium text-red-500 dark:text-red-900", className)}
+      className={cn("text-sm font-medium text-destructive", className)}
       {...props}
     >
       {body}

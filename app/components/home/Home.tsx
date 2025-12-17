@@ -80,24 +80,24 @@ export default async function Home () {
         <div className="px-2 space-y-2">
             <WelcomeBanner />
             {rows.map((row) => (
-                <Card key={row.header} className={` bg-black bg-opacity-50 rounded-md text-white border-none`}>
-                    <CardHeader className="p-0 px-2 pt-4 pb-2">
+                <Card key={row.header} className="!bg-black/50 rounded-md text-white !border-none py-0 gap-0 shadow-none">
+                    <CardHeader className="px-4 pt-3 pb-1">
                         {row.link ? (
                             <Link href={row.link} className="flex items-center justify-between gap-3 hover:underline">
-                                <CardTitle className="flex items-center gap-2">
+                                <CardTitle className="flex items-center gap-2 text-xl">
                                     {getHeaderIcon(row.header)}
                                     {row.header}
                                 </CardTitle>
                                 <ChevronRight className="w-6 h-6" />
                             </Link>
                         ) : (
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="flex items-center gap-2 text-xl">
                                 {getHeaderIcon(row.header)}
                                 {row.header}
                             </CardTitle>
                         )}
                     </CardHeader>
-                    <CardContent className="m-0 p-0">
+                    <CardContent className="p-0 pb-2">
                         {row.component}
                     </CardContent>
                 </Card>
@@ -123,14 +123,14 @@ export async function LoadingHome() {
         <div className="px-2 space-y-2">
             <WelcomeBanner />
             {rows.map((row) => (
-                <Card key={row.header} className="bg-black bg-opacity-50 rounded-md text-white border-none">
-                    <CardHeader className="p-0 px-2 pt-4 pb-2">
-                        <CardTitle className="flex items-center gap-2">
+                <Card key={row.header} className="!bg-black/50 rounded-md text-white !border-none py-0 gap-0 shadow-none">
+                    <CardHeader className="px-4 pt-3 pb-1">
+                        <CardTitle className="flex items-center gap-2 text-xl">
                             {getHeaderIcon(row.header)}
                             {row.header}
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="m-0 p-0">
+                    <CardContent className="p-0 pb-2">
                         {row.component}
                     </CardContent>
                 </Card>

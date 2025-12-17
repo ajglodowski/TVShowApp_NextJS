@@ -1,10 +1,13 @@
 import { createClient } from '@/app/utils/supabase/server'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { ArrowLeft, Tv2, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { backdropBackground } from '@/app/utils/stylingConstants'
-import { ChevronRight } from 'lucide-react'
 
 export default async function ResetPassword({
   searchParams,
@@ -32,53 +35,124 @@ export default async function ResetPassword({
     return redirect('/updatePassword')
   }
 
+  const message = (await searchParams)?.message
+
   return (
-    <div className="flex-1 flex flex-col w-full px-8 sm:max-w-lg justify-center gap-2 bg-black">
-      <Card className={`justify-center ${backdropBackground} md:max-w-lg px-4 my-8 border-none shadow-lg rounded-lg`}>
-        <CardHeader className="flex">
-          <div className='text-white space-y-2'>
-            <h1 className='text-xl font-bold'>Reset Your Password</h1>
-            <h2 className='text-md text-white/80'>Enter your email to receive password reset instructions</h2>
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col pt-4 border-t border-b border-white items-center justify-center">
-          <form
-            className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
-            action={resetPassword}
-          >
-            <label className="text-md" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border mb-6"
-              name="email"
-              placeholder="you@example.com"
-              required
+    <div className="fixed inset-0 w-full flex bg-[radial-gradient(circle_at_0%_0%,rgb(120,60,20)_0%,rgb(60,25,5)_50%,rgb(5,5,5)_100%)]">
+      {/* Left side - decorative */}
+      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center">
+        {/* Diagonal lines pattern */}
+        <div className="absolute inset-0 opacity-[0.04]">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute h-px bg-white origin-left"
+              style={{
+                width: '200%',
+                top: `${i * 8}%`,
+                left: '-50%',
+                transform: 'rotate(-12deg)',
+              }}
             />
-            <Button 
-              variant={"outline"}
-              className={`${backdropBackground} hover:bg-green-600 hover:text-white rounded-md px-4 py-2 text-foreground mb-2`}>
-              Send Reset Link
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-center pt-4">
-          <Link 
-            href="/login"
-            className="text-sm text-foreground/80 hover:text-foreground/100 transition-colors">
-            <div className='flex items-center gap-2'>
-              <p className="text-sm">Remember your password?</p>
-              <p>Back to login</p>
-              <ChevronRight className="h-4 w-4 text-foreground/70 hover:text-foreground/100 transition-colors" />
+          ))}
+        </div>
+        
+        {/* Center content */}
+        <div className="relative z-10 max-w-md px-12">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground">
+              <Tv2 className="w-6 h-6" />
             </div>
-          </Link>
-        </CardFooter>
-      </Card>
-      {(await searchParams)?.message && (
-        <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-          {(await searchParams).message}
-        </p>
-      )}
+            <span className="text-2xl font-bold tracking-tight text-white">TV Show App</span>
+          </div>
+          
+          <h2 className="text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
+            Forgot your<br />
+            <span className="text-primary">password?</span>
+          </h2>
+          
+          <p className="text-white/60 text-lg leading-relaxed">
+            No worries! Enter your email and we&apos;ll send you instructions to reset your password.
+          </p>
+        </div>
+        
+        {/* Corner accent */}
+        <div className="absolute bottom-0 right-0 w-64 h-64 border-l border-t border-white/10 rounded-tl-[100px]" />
+      </div>
+
+      {/* Right side - form */}
+      <div className={`flex-1 flex items-center justify-center p-6 lg:p-12 ${backdropBackground}`}>
+        <div className="w-full max-w-sm animate-in">
+          {/* Mobile header - only shows on smaller screens */}
+          <div className="flex items-center gap-3 mb-8 lg:hidden">
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground">
+              <Tv2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold text-white tracking-tight">
+                TV Show App
+              </h1>
+              <p className="text-xs text-white/60">
+                Reset your password
+              </p>
+            </div>
+          </div>
+
+          {/* Reset Password Card */}
+          <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl text-white">Reset password</CardTitle>
+              <CardDescription className="text-white/60">
+                Enter your email to receive reset instructions
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              <form action={resetPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-white/80">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                    className="h-11 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  />
+                </div>
+
+                <Button type="submit" className="w-full h-11">
+                  Send reset link
+                  <Mail className="w-4 h-4" />
+                </Button>
+              </form>
+
+              {message && (
+                <div className="mt-4 p-3 rounded-md bg-destructive/20 border border-destructive/30 text-destructive text-sm text-center">
+                  {message}
+                </div>
+              )}
+            </CardContent>
+
+            <div className="px-6">
+              <Separator className="bg-white/10" />
+            </div>
+
+            <CardFooter className="pt-4 pb-6">
+              <Link href="/login" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full h-11 border-white/20 bg-transparent hover:border-primary hover:bg-primary/5 transition-all duration-200"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-1 text-primary" />
+                  <span className="text-white/70">Back to</span>
+                  <span className="ml-1 text-primary font-medium">Sign in</span>
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }

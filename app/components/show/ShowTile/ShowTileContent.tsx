@@ -77,7 +77,7 @@ export default function ShowTileContent({showData, presignedUrl, badges}: ShowTi
                         {badges.map((badge, index) => {
                             const IconComponent = badge.icon || getIcon(badge.iconName);
                             return (
-                                <div key={index} className={`flex items-center gap-1 backdrop-blur-sm rounded-full text-xs px-1.5 py-0.5 ${badge.color || "bg-primary/20 text-primary-foreground"}`}>
+                                <div key={index} className={`flex items-center gap-1 backdrop-blur-sm rounded-full text-xs px-1.5 py-0.5 ${badge.color || "bg-black/60 text-white"}`}>
                                     {IconComponent && <IconComponent className="w-3 h-3" />}
                                     <span className="text-xs">{badge.text}</span>
                                 </div>

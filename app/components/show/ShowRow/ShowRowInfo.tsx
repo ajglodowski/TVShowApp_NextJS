@@ -23,7 +23,7 @@ export async function ShowRowInfo({ showData }: { showData: Show | ShowWithAnaly
     showImageUrl= showData.pictureUrl ? getShowImageUrlAction(showData.pictureUrl) : null;
 
     return (
-        <div className="relative flex space-x-2 md:w-3/4 w-full my-auto justify-start overflow-hidden">
+        <div className="relative flex space-x-2 w-full my-auto justify-start overflow-hidden">
             <div className="relative min-w-16 w-16 h-16 shrink-0 my-auto">
                 <div className="absolute inset-0">
                     {showImageUrl &&

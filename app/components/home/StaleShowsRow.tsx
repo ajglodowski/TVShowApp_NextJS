@@ -7,7 +7,7 @@ import { getStaleShows } from "./HomeService";
 
 export async function LoadingStaleShowsRow() {
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {Array.from({ length: 5 }).map((_, index) => (
@@ -42,7 +42,7 @@ export default async function StaleShowsRow({ userId }: { userId: string }) {
     }
 
     return (
-        <div className="w-full">
+        <div className="w-full px-2">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">
                 <div className="flex">
                     {shows.map((staleShow) => (

@@ -1,6 +1,9 @@
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import { AtSign, ChevronRight } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { ArrowRight, Tv2, AtSign } from 'lucide-react'
 import Link from 'next/link'
 import { backdropBackground } from '@/app/utils/stylingConstants'
 import { signUp } from '@/app/utils/supabase/AuthService'
@@ -10,112 +13,200 @@ export default async function Signup({
 }: {
   searchParams: Promise<{ message: string }>
 }) {
-    
-  const signUpFunction = signUp;
-
-  const Header = () => {
-    return (
-      <div className='text-white text-center mt-4 space-y-2'>
-        <h1 className='text-xl font-bold'>Welcome to TV Show App</h1>
-        <h2 className='text-md text-white/80'>If you&#39;re new here please enter your details below to create your account and get started</h2>
-      </div>
-    );
-  }
+  const signUpFunction = signUp
+  const message = (await searchParams)?.message
 
   return (
-    <div className="w-screen h-screen bg-black my-8 flex items-center justify-center">
-      <Card className={`justify-center ${backdropBackground} md:max-w-md my-auto px-4 border-none shadow-lg rounded-lg`}>
-        <CardHeader className="flex justify-center">
-            <Header />
-        </CardHeader>
-        <CardContent className="flex flex-col pt-4 border-t border-b border-white items-center justify-center">
-          <form
-            className="animate-in flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
-            action={signUpFunction}
-          >
-            <label className="text-md" htmlFor="username">
-              Username
-            </label>
-            <div className="relative flex-1 w-full mb-4 md:mb-0 rounded-md px-4 py-2 bg-inherit border">
-                <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" />
-                <input
-                className="ml-4 bg-inherit text-white"
-                name="username"
-                placeholder="yourusername"
-                required
-                />
-                {/* <Input
-                    className={`pl-10 bg-white/5 text-white`}
-                    type="text"
-                    name="search"
-                    placeholder="Search through results" 
-                    defaultValue={searchResults}
-                /> */}
+    <div className="fixed inset-0 w-full flex bg-[radial-gradient(circle_at_0%_0%,rgb(120,60,20)_0%,rgb(60,25,5)_50%,rgb(5,5,5)_100%)]">
+      {/* Left side - decorative */}
+      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center">
+        {/* Diagonal lines pattern */}
+        <div className="absolute inset-0 opacity-[0.04]">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute h-px bg-white origin-left"
+              style={{
+                width: '200%',
+                top: `${i * 8}%`,
+                left: '-50%',
+                transform: 'rotate(-12deg)',
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Center content */}
+        <div className="relative z-10 max-w-md px-12">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground">
+              <Tv2 className="w-6 h-6" />
             </div>
-            <label className="text-md" htmlFor="name">
-              Name
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border"
-              name="name"
-              placeholder="Your name"
-              required
-            />
-            <p className='text-xs text-white/80'>*Not Required</p>
-            <label className="text-md" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border mb-2"
-              name="email"
-              placeholder="you@example.com"
-              required
-            />
-            <label className="text-md" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border"
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              required
-            />
-            <p className='text-sm text-white/80'>Password must be at least 8 characters long</p>
-            <label className="text-md" htmlFor="confirmPassword">
-              Confirm Password
-            </label>
-            <input
-              className="rounded-md px-4 py-2 bg-inherit border mb-2"
-              type="password"
-              name="confirmPassword"
-              placeholder="••••••••"
-              required
-            />
-            <Button 
-                variant={"outline"}
-                className={`${backdropBackground} hover:bg-green-600 hover:text-white rounded-md px-4 py-2 my-2 text-foreground mb-2`}>
-                Sign Up
-            </Button>
-            {(await searchParams)?.message && (
-              <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-                {(await searchParams).message}
+            <span className="text-2xl font-bold tracking-tight text-white">TV Show App</span>
+          </div>
+          
+          <h2 className="text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
+            Join the<br />
+            <span className="text-primary">community.</span>
+          </h2>
+          
+          <p className="text-white/60 text-lg leading-relaxed">
+            Create your account and start tracking your favorite shows, sharing with friends, and discovering new content.
+          </p>
+          
+          {/* Stats or features */}
+          <div className="mt-10 grid grid-cols-3 gap-6">
+            <div>
+              <div className="text-2xl font-bold text-white">Track</div>
+              <div className="text-sm text-white/50">Your progress</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-white">Rate</div>
+              <div className="text-sm text-white/50">What you watch</div>
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-white">Share</div>
+              <div className="text-sm text-white/50">With friends</div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Corner accent */}
+        <div className="absolute bottom-0 right-0 w-64 h-64 border-l border-t border-white/10 rounded-tl-[100px]" />
+      </div>
+
+      {/* Right side - form */}
+      <div className={`flex-1 flex items-center justify-center p-6 lg:p-12 ${backdropBackground} overflow-y-auto`}>
+        <div className="w-full max-w-sm animate-in my-auto">
+          {/* Mobile header - only shows on smaller screens */}
+          <div className="flex items-center gap-3 mb-6 lg:hidden">
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground">
+              <Tv2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold text-white tracking-tight">
+                TV Show App
+              </h1>
+              <p className="text-xs text-white/60">
+                Create your account
               </p>
-            )}
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-center pt-4">
-          <Link 
-            href="/login"
-            className="text-sm text-foreground/80 hover:text-foreground/100 transition-colors">
-            <div className='flex items-center gap-2'>
-              <p className="text-sm">Already have an account?</p>
-              <p>Back to login</p>
-              <ChevronRight className="h-4 w-4 text-foreground/70 hover:text-foreground/100 transition-colors" />
             </div>
-          </Link>
-        </CardFooter>
-      </Card>
+          </div>
+
+          {/* Signup Card */}
+          <Card className="border-white/10 bg-white/5 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl text-white">Create account</CardTitle>
+              <CardDescription className="text-white/60">
+                Enter your details to get started
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              <form action={signUpFunction} className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="username" className="text-white/80">Username</Label>
+                  <div className="relative">
+                    <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                    <Input
+                      id="username"
+                      name="username"
+                      type="text"
+                      placeholder="yourusername"
+                      required
+                      className="h-10 pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="name" className="text-white/80">Name</Label>
+                    <span className="text-xs text-white/40">Optional</span>
+                  </div>
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Your name"
+                    className="h-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  />
+                </div>
+                
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-white/80">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                    className="h-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  />
+                </div>
+                
+                <div className="space-y-1.5">
+                  <Label htmlFor="password" className="text-white/80">Password</Label>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="••••••••"
+                    required
+                    className="h-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  />
+                  <p className="text-xs text-white/40">At least 8 characters</p>
+                </div>
+                
+                <div className="space-y-1.5">
+                  <Label htmlFor="confirmPassword" className="text-white/80">Confirm password</Label>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    required
+                    className="h-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  />
+                </div>
+
+                <Button type="submit" className="w-full h-11 mt-2">
+                  Create account
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </form>
+
+              {message && (
+                <div className="mt-4 p-3 rounded-md bg-destructive/20 border border-destructive/30 text-destructive text-sm text-center">
+                  {message}
+                </div>
+              )}
+            </CardContent>
+
+            <div className="px-6">
+              <Separator className="bg-white/10" />
+            </div>
+
+            <CardFooter className="pt-3 pb-5">
+              <Link href="/login" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full h-10 border-white/20 bg-transparent hover:border-primary hover:bg-primary/5 transition-all duration-200"
+                >
+                  <span className="text-white/70">Already have an account?</span>
+                  <span className="ml-1 text-primary font-medium">Sign in</span>
+                  <ArrowRight className="w-4 h-4 ml-1 text-primary" />
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+
+          {/* Footer */}
+          <p className="text-center text-xs text-white/30 mt-4">
+            By creating an account, you agree to our Terms and Privacy Policy
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
