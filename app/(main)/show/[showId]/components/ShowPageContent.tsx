@@ -27,6 +27,8 @@ interface ShowPageContentProps {
   userIsAdmin: boolean;
   ratingCounts: RatingCounts | null;
   statusCounts: StatusCount[] | null;
+  matchPercent: number | null;
+  matchReason: string | null;
 }
 
 const adjustHexColor = (color: string, amount: number) => {
@@ -59,6 +61,8 @@ export default async function ShowPageContent({
   userIsAdmin,
   ratingCounts,
   statusCounts,
+  matchPercent,
+  matchReason,
 }: ShowPageContentProps) {
   const pictureUrl = show.pictureUrl;
   const showImageUrl = pictureUrl ? getShowImageUrlAction(pictureUrl) : null;
@@ -83,9 +87,21 @@ export default async function ShowPageContent({
             <Skeleton className="w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] mx-auto object-contain rounded-md" />
           </div>}
         </div>
-        <h1 className='text-7xl sm:text-9xl font-extrabold tracking-tighter text-center -mt-16 break-words'>{show.name}</h1>
+        <h1 className='text-7xl sm:text-9xl font-extrabold tracking-tighter text-center -mt-16 wrap-break-word'>{show.name}</h1>
       </div>
       <h2 className='text-2xl tracking-tight text-center'>{show.length} minutes - {show.services.map(s => s.name).join(", ")}</h2>
+      {currentUserId && (
+        <div className='text-center mt-2'>
+          <span className='inline-flex items-center rounded-md bg-black/40 px-3 py-1 text-lg font-semibold text-white shadow'>
+            Match: {matchPercent !== null ? `${matchPercent}%` : '—'}
+          </span>
+          {matchPercent === null && matchReason === 'no_user_embedding' && (
+            <div className='text-sm text-white/80 mt-1'>
+              Rate a few shows to unlock personalized match scores.
+            </div>
+          )}
+        </div>
+      )}
       
       <div className='flex flex-wrap md:flex-nowrap w-full px-4'>
         <Suspense fallback={<LoadingYourInfoSection />}>

@@ -15,6 +15,14 @@ export type RecommendationResult = {
 };
 
 /**
+ * Result from the get_show_match RPC
+ */
+export type ShowMatchResult = {
+  similarityScore: number | null;
+  reason: string;
+};
+
+/**
  * Get personalized show recommendations for a user.
  * 
  * Uses the precomputed UserEmbedding for fast ANN search.
@@ -49,6 +57,37 @@ export async function getRecommendationsForUser(
     similarityScore: row.similarity_score,
     isFallback: row.is_fallback,
   }));
+}
+
+/**
+ * Get a similarity match score between the current (logged-in) user and a specific show.
+ *
+ * Uses the same cosine-distance-to-similarity conversion as recommendations:
+ * similarity = 1 - (distance / 2), giving a range [0, 1].
+ *
+ * @param showId The show's bigint id
+ */
+export async function getShowMatchForCurrentUser(showId: number): Promise<ShowMatchResult> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("get_show_match", {
+    p_show_id: showId,
+  });
+
+  if (error) {
+    console.error("Error fetching show match:", error);
+    throw new Error(`Failed to fetch show match: ${error.message}`);
+  }
+
+  const row = Array.isArray(data) ? data[0] : null;
+  if (!row) {
+    return { similarityScore: null, reason: "no_data" };
+  }
+
+  return {
+    similarityScore: row.similarity_score ?? null,
+    reason: row.reason ?? "unknown",
+  };
 }
 
 /**

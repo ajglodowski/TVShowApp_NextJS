@@ -5,6 +5,7 @@ import { getRatingCounts, getShow, getStatusCounts } from './ShowService';
 import ShowPageContent from './components/ShowPageContent';
 import { isAdmin } from '@/app/utils/userService';
 import LoadingShowPage from './loading';
+import { getShowMatchForCurrentUser } from '@/app/utils/recommendations/RecommendationService';
 
 function ShowNotFound() {
   return (
@@ -26,11 +27,12 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   const currentUserId = user?.id;
   
   const startTime = performance.now();
-  const [userIsAdmin, showData, ratingCounts, statusCounts] = await Promise.all([
+  const [userIsAdmin, showData, ratingCounts, statusCounts, showMatch] = await Promise.all([
     isAdmin(currentUserId),
     getShow(showId),
     getRatingCounts(showId),
     getStatusCounts(showId),
+    currentUserId ? getShowMatchForCurrentUser(Number(showId)) : Promise.resolve(null),
   ]);
   const endTime = performance.now();
   console.log(`Time taken: ${endTime - startTime} milliseconds`);
@@ -38,6 +40,10 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
     return <ShowNotFound />
   }
   const show = showData as Show;
+  const matchPercent =
+    showMatch?.similarityScore !== null && showMatch?.similarityScore !== undefined
+      ? Math.max(0, Math.min(100, Math.round(showMatch.similarityScore * 100)))
+      : null;
 
   return (
     <Suspense fallback={
@@ -52,6 +58,8 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
         userIsAdmin={userIsAdmin}
         ratingCounts={ratingCounts}
         statusCounts={statusCounts}
+        matchPercent={matchPercent}
+        matchReason={showMatch?.reason ?? null}
       />
     </Suspense>
   );

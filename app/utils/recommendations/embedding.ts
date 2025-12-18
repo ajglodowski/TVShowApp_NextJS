@@ -153,7 +153,7 @@ export function computeShowEmbedding(input: ShowEmbeddingInput): number[] {
 
   // Length feature (weight: 0.6 - ≈3/5 of tags, matches SQL ratio)
   const lengthValue = input.length ?? ShowLength.NONE;
-  addFeature(embedding, `length:${lengthValue}`, 0.6);
+  addFeature(embedding, `length:${lengthValue}`, 0.4);
 
   // Service features (weight: 0.4 - ≈2/5 of tags, matches SQL ratio)
   for (const serviceId of input.serviceIds) {
@@ -162,21 +162,21 @@ export function computeShowEmbedding(input: ShowEmbeddingInput): number[] {
 
   // Actor features (weight: 0.3 - small impact as requested)
   for (const actorId of input.actorIds) {
-    addFeature(embedding, `actor:${actorId}`, 0.3);
+    addFeature(embedding, `actor:${actorId}`, 0.5);
   }
 
   // === EXTRA FEATURES (tie-breakers only) ===
 
   // Boolean features (weight: 0.08 - very low, just tie-breakers)
-  addFeature(embedding, `running:${input.running}`, 0.08);
-  addFeature(embedding, `limitedSeries:${input.limitedSeries}`, 0.08);
+  addFeature(embedding, `running:${input.running}`, 0.1);
+  addFeature(embedding, `limitedSeries:${input.limitedSeries}`, 0.7);
   addFeature(embedding, `currentlyAiring:${input.currentlyAiring}`, 0.08);
 
   // Seasons bucket (weight: 0.06 - tie-breaker)
   addFeature(embedding, seasonsBucket(input.totalSeasons), 0.06);
 
   // Year bucket (weight: 0.05 - tie-breaker)
-  addFeature(embedding, yearBucket(input.releaseYear), 0.05);
+  addFeature(embedding, yearBucket(input.releaseYear), 0.01);
 
   // Normalize to unit vector for cosine similarity
   return normalizeVector(embedding);
