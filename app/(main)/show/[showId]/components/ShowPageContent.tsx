@@ -19,6 +19,7 @@ import { LoadingUserUpdatesSection, UserUpdatesSection } from './UserUpdatesSect
 import { LoadingYourInfoSection, YourInfoSection } from './YourInfoSection/YourInfoSection';
 import { getShowImageUrlAction } from '../ShowImageService';
 import { fetchAverageShowColor } from '../ShowService';
+import { ShowMatchBadge, ShowMatchBadgeLoading } from './ShowMatchBadge';
 
 interface ShowPageContentProps {
   show: Show;
@@ -27,8 +28,6 @@ interface ShowPageContentProps {
   userIsAdmin: boolean;
   ratingCounts: RatingCounts | null;
   statusCounts: StatusCount[] | null;
-  matchPercent: number | null;
-  matchReason: string | null;
 }
 
 const adjustHexColor = (color: string, amount: number) => {
@@ -61,8 +60,6 @@ export default async function ShowPageContent({
   userIsAdmin,
   ratingCounts,
   statusCounts,
-  matchPercent,
-  matchReason,
 }: ShowPageContentProps) {
   const pictureUrl = show.pictureUrl;
   const showImageUrl = pictureUrl ? getShowImageUrlAction(pictureUrl) : null;
@@ -91,16 +88,9 @@ export default async function ShowPageContent({
       </div>
       <h2 className='text-2xl tracking-tight text-center'>{show.length} minutes - {show.services.map(s => s.name).join(", ")}</h2>
       {currentUserId && (
-        <div className='text-center mt-2'>
-          <span className='inline-flex items-center rounded-md bg-black/40 px-3 py-1 text-lg font-semibold text-white shadow'>
-            Match: {matchPercent !== null ? `${matchPercent}%` : '—'}
-          </span>
-          {matchPercent === null && matchReason === 'no_user_embedding' && (
-            <div className='text-sm text-white/80 mt-1'>
-              Rate a few shows to unlock personalized match scores.
-            </div>
-          )}
-        </div>
+        <Suspense fallback={<ShowMatchBadgeLoading />}>
+          <ShowMatchBadge showId={parseInt(showId)} />
+        </Suspense>
       )}
       
       <div className='flex flex-wrap md:flex-nowrap w-full px-4'>

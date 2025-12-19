@@ -36,7 +36,9 @@ export const getUserByUsername = cache(async (username: string): Promise<User | 
   });
 
 export async function getShowsLogged( userId: string ): Promise<number | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
     const { count: count } = await supabase.from("UserShowDetails").select('*', { count: 'exact', head: true }).match({userId: userId});
     
     if (!count) return null;   
@@ -53,7 +55,9 @@ export function getUserImageURL(username: string): string {
 }
 
 export async function getUserFollowRelationship(followingUser: string, followerUser: string): Promise<UserFollowRelationship | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('seconds');
+    const supabase = await publicClient();
     const { data: relationshipData } = await supabase.from("UserFollowRelationship").select().match({followingUserId: followingUser, followerUser: followerUser}).single();
     if (!relationshipData) return null;
 
@@ -356,14 +360,18 @@ export async function getUserWatchedShowsTags(userId: string): Promise<ShowTagWi
 }
 
 export async function getFollowerCount(userId: string): Promise<number | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
     const { count: count } = await supabase.from("UserFollowRelationship").select('*', { count: 'exact', head: true }).match({followingUserId: userId});
     if (count == null) return null;   
     
     return count as number;
 }
 export async function getFollowingCount(userId: string): Promise<number | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('minutes');
+    const supabase = await publicClient();
     const { count: count } = await supabase.from("UserFollowRelationship").select('*', { count: 'exact', head: true }).match({followerUser: userId});
     if (count == null) return null;   
     

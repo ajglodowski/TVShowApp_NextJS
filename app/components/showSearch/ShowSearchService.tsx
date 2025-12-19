@@ -314,7 +314,9 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
 }
 
 export async function fetchUsersWatchlist(userId: string): Promise<UserWatchListData[] | null> {
-    const supabase = await createClient();
+    'use cache'
+    cacheLife('seconds');
+    const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('fetch_watchlist_for_user', { userid: userId });
 

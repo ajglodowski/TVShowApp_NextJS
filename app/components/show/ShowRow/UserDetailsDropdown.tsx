@@ -1,9 +1,9 @@
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
-import { UserDetails } from "./UserDetails";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { AvatarsBubbleRow } from "./AvatarsBubbleRow";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AvatarsBubbleRow } from "./AvatarsBubbleRow";
+import { UserDetails } from "./UserDetails";
 
 export const UserDetailsDropdown = ({ currentUserInfo, otherUsersInfo }: { currentUserInfo: UserShowDataWithUserInfo, otherUsersInfo: UserShowDataWithUserInfo[] }) => {
     // Filter out duplicate users from otherUsersInfo that match currentUserInfo

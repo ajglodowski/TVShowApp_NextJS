@@ -10,6 +10,7 @@ import { isAdmin } from '@/app/utils/userService';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getWikidataDraftAction } from './actions';
+import { JwtPayload } from '@supabase/supabase-js';
 
 export default async function WikiImportPage({
     searchParams
@@ -17,8 +18,8 @@ export default async function WikiImportPage({
     searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const currentUserId = user?.id;
+    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
+    const currentUserId = claims?.sub;
     const userIsAdmin = await isAdmin(currentUserId);
 
     if (!userIsAdmin) {

@@ -117,7 +117,7 @@ export async function getUserUpdates({userId, updateLimit, fetchHidden}: {userId
 export async function getCurrentlyAiring({userId}: {userId: string}): Promise<CurrentlyAiringDTO[] | null> {
 
     if (!userId) return null;
-    const supabase = await createClient();
+    const supabase = await publicClient();
     const { data: showData } = await supabase.from("UserShowDetails").select('show: showId (name, airdate, id)').match({userId: userId, status: 5});
     if (!showData) return null;
     const output = showData.map((obj) => obj.show) as unknown as CurrentlyAiringDTO[];

@@ -5,11 +5,13 @@ import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { NavbarMobileMenu } from './NavbarMobileMenu';
 import { ClientSearch } from './search/ClientSearch';
+import { JwtPayload } from '@supabase/supabase-js';
 
 async function Navbar() {
     const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const userIsAdmin = await isAdmin(user?.id);
+    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
+    const user = claims?.sub;
+    const userIsAdmin = await isAdmin(user);
 
     return (
         <header className="fixed top-0 z-50 w-full border-b border-neutral-800 bg-neutral-900/95 backdrop-blur supports-backdrop-filter:bg-neutral-900/80 overflow-visible">

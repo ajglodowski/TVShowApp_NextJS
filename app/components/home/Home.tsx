@@ -4,6 +4,7 @@ import { createClient } from '@/app/utils/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartNoAxesCombined, ChevronRight, History, Hourglass, Play, Repeat, Sparkles, Tv } from 'lucide-react';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import CheckInRow, { LoadingCheckInRow } from './CheckInRow';
 import ComingSoonRow, { LoadingComingSoonRow } from './ComingSoonRow';
 import CurrentlyAiringLoading from './CurrentlyAiringRow/CurrentlyAiringLoading';
@@ -16,6 +17,7 @@ import WelcomeBanner from './WelcomeBanner';
 import { LoadingYourShowsRow } from './YourShowsRow/LoadingYourShowsRow';
 import YourShowsRow from './YourShowsRow/YourShowsRow';
 import YourUpdatesRow, { LoadingYourUpdatesRow } from './YourUpdatesRow';
+import { JwtPayload } from '@supabase/supabase-js';
 
 const getHeaderIcon = (header: string): React.ReactNode => {
     // Create a mock status object for StatusIcon function
@@ -53,8 +55,8 @@ const getHeaderIcon = (header: string): React.ReactNode => {
 export default async function Home () {
     
     const supabase = await createClient();
-    const { data: { user }, } = await supabase.auth.getUser();
-    const currentUserId = user?.id;
+    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
+    const currentUserId = claims?.sub;
     if (!currentUserId) {
         return (
             <div>Login Please</div>
@@ -64,20 +66,21 @@ export default async function Home () {
     type HomeRow = {
         header: string;
         component: React.ReactNode;
+        loadingComponent: React.ReactNode;
         link?: string;
     }
 
     
     const rows: HomeRow[] = [
-        {header: "Your Recent Updates", component: <YourUpdatesRow userId={currentUserId}/>},
-        {header: "Your shows", component: <YourShowsRow userId={currentUserId}/>, link: "/watchlist"}, 
-        {header: "Recommended for You", component: <RecommendationsRow userId={currentUserId}/>},
-        {header: "Currently Airing", component: <CurrentlyAiringRow userId={currentUserId}/>, link: "/watchlist?statuses=" + CurrentlyAiringStatusId}, 
-        {header: "Top 10 this week", component: <Top10Row/>},
-        {header: "Coming Soon", component: <ComingSoonRow userId={currentUserId}/>, link: "/watchlist?statuses=" + ComingSoonStatusId}, 
-        {header: "Stale Shows", component: <StaleShowsRow userId={currentUserId}/>},
-        {header: "Check In On", component: <CheckInRow userId={currentUserId}/>},
-        {header: "Shows for you to start", component: <WatchListRow userId={currentUserId}/>, link: "/watchlist?statuses=" + WatchlistStatusId}, 
+        {header: "Your Recent Updates", component: <YourUpdatesRow userId={currentUserId}/>, loadingComponent: <LoadingYourUpdatesRow />},
+        {header: "Your shows", component: <YourShowsRow userId={currentUserId}/>, loadingComponent: <LoadingYourShowsRow />, link: "/watchlist"}, 
+        {header: "Recommended for You", component: <RecommendationsRow userId={currentUserId}/>, loadingComponent: <LoadingRecommendationsRow />},
+        {header: "Currently Airing", component: <CurrentlyAiringRow userId={currentUserId}/>, loadingComponent: <CurrentlyAiringLoading />, link: "/watchlist?statuses=" + CurrentlyAiringStatusId}, 
+        {header: "Top 10 this week", component: <Top10Row/>, loadingComponent: <LoadingTop10Row />},
+        {header: "Coming Soon", component: <ComingSoonRow userId={currentUserId}/>, loadingComponent: <LoadingComingSoonRow />, link: "/watchlist?statuses=" + ComingSoonStatusId}, 
+        {header: "Stale Shows", component: <StaleShowsRow userId={currentUserId}/>, loadingComponent: <LoadingStaleShowsRow />},
+        {header: "Check In On", component: <CheckInRow userId={currentUserId}/>, loadingComponent: <LoadingCheckInRow />},
+        {header: "Shows for you to start", component: <WatchListRow userId={currentUserId}/>, loadingComponent: <LoadingWatchlistRow />, link: "/watchlist?statuses=" + WatchlistStatusId}, 
     ]
 
     return (
@@ -102,7 +105,9 @@ export default async function Home () {
                         )}
                     </CardHeader>
                     <CardContent className="p-0 pb-2">
-                        {row.component}
+                        <Suspense fallback={row.loadingComponent}>
+                            {row.component}
+                        </Suspense>
                     </CardContent>
                 </Card>
             ))}

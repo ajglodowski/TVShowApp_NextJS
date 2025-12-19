@@ -68,6 +68,8 @@ export async function getRecommendationsForUser(
  * @param showId The show's bigint id
  */
 export async function getShowMatchForCurrentUser(showId: number): Promise<ShowMatchResult> {
+//   "use cache"
+//   cacheLife('minutes');
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc("get_show_match", {

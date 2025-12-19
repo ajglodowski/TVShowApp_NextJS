@@ -5,6 +5,7 @@ import { getUser } from '@/app/utils/userService'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { JwtPayload } from '@supabase/supabase-js'
 import { revalidateTag } from 'next/cache'
 import Image from "next/image"
 import Link from 'next/link'
@@ -22,9 +23,9 @@ export default function AuthButton() {
 async function AuthButtonContent() {
 
   const supabase = await createClient();
-  const { data: { user }, } = await supabase.auth.getUser();
-
-  const userInfo = user ? await getUser(user.id) : null 
+  const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
+  const userId = claims?.sub;
+  const userInfo = userId ? await getUser(userId) : null 
 
   const signOut = async () => {
     'use server'
@@ -103,7 +104,7 @@ async function AuthButtonContent() {
   }
 
 
-  return user && userInfo ? (
+  return userId && userInfo ? (
     <div className="flex justify-center items-center p-1 m-2">
       <ActiveUser />
     </div>

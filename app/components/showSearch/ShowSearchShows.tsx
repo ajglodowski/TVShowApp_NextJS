@@ -307,9 +307,11 @@ export default async function ShowSearchShows({
                 {paginatedData.length > 0 ? (
                     paginatedData.map((show: ShowWithAnalytics) => (
                         <div className='px-4' key={show.id}>
+
                             <Suspense fallback={<ShowRowSkeleton />}>
                                 <ShowRow 
-                                    show={show} 
+                                    show={show}
+                                    currentUserId={currentUserId}
                                     currentUserInfo={displayUserInfoMap.get(show.id)}
                                     otherUsersInfo={otherUsersInfoMap.get(show.id)}
                                     fetchCurrentUsersInfo={(searchType !== ShowSearchType.OTHER_USER_WATCHLIST)}

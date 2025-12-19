@@ -3,8 +3,11 @@ import ShowTile from "../show/ShowTile/ShowTile";
 import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
 import { getTop10 } from "./HomeService";
+import { cacheLife } from "next/cache";
 
 export default async function Top10Row() {
+    'use cache'
+    cacheLife('hours');
 
     const shows = await getTop10();
 

@@ -19,7 +19,6 @@ import { Status } from '@/app/models/status';
 const ITEMS_PER_PAGE = 20;
 
 export default async function ShowSearch(props: ShowSearchProps) {
-
     const {searchType, userId, currentUserId, pageTitle} = props;
     const searchParams = await props.searchParams || {};
     
@@ -408,7 +407,6 @@ export async function LoadingShowSearch({ pageTitle }: { pageTitle?: string } = 
     
     const pathname = '/';
 
-    
     const filters = await parseFiltersFromSearchParams(searchParams);
     return (
         <div className='fixed top-14 left-0 right-0 bottom-0 flex flex-col overflow-hidden'>
