@@ -11,9 +11,11 @@ import { UserBasicInfo } from "@/app/models/user";
 import { UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
 import { createClient, publicClient } from "@/app/utils/supabase/server";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { cache } from "react";
 import { ShowSearchFiltersType } from "./ShowSearchHeader/ShowSearchHeader";
 import { UserWatchListData } from './types';
+import { currentUserShowDetailsStateTag } from "@/app/utils/cacheTags";
 
 export const getServices = cache(async (): Promise<Service[] | null> => {
     'use cache'
@@ -315,7 +317,7 @@ export async function fetchShows(filters: ShowSearchFiltersType, searchType: Sho
 
 export async function fetchUsersWatchlist(userId: string): Promise<UserWatchListData[] | null> {
     'use cache'
-    cacheLife('seconds');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('fetch_watchlist_for_user', { userid: userId });

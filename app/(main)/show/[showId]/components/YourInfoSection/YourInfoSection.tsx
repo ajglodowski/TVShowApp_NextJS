@@ -1,13 +1,12 @@
 import Divider from "@/app/components/Divider";
 import { Show } from "@/app/models/show";
 import { RGBAToHexA } from "@/app/utils/colorUtil";
-import { createClient } from "@/app/utils/supabase/server";
+import { getCurrentUserId } from "@/app/utils/supabase/server";
 import { getAllStatuses, getUserShowData, updateUserShowData } from "../../UserShowDataService";
 import SeasonsRow from "./SeasonsRow";
 import ShowStatusSection from "./ShowStatusSection";
 import UserRatingsSection from "./UserRatingsSection";
 import { Skeleton } from "@/components/ui/skeleton";
-
 type YourInfoSectionProps = {
     show: Show;
     backgroundColor: string;
@@ -24,10 +23,8 @@ export async function YourInfoSection ({ show, backgroundColor }: YourInfoSectio
     }
 
     // User Data
-    const supabase = await createClient();
-    const { data: { user }, } = await supabase.auth.getUser();
-    const currentUserId = user?.id;
-    const loggedIn = currentUserId !== undefined;
+    const currentUserId = await getCurrentUserId();
+    const loggedIn = currentUserId !== undefined && currentUserId !== null;
 
     const [userInfoData, allStatuses] = await Promise.all([
         getUserShowData({ userId: currentUserId, showId: show.id.toString() }),

@@ -1,7 +1,6 @@
 import ShowSearch from "@/app/components/showSearch/ShowSearch";
 import { ShowSearchType } from "@/app/models/showSearchType";
-import { createClient } from "@/app/utils/supabase/server";
-
+import { getCurrentUserId } from "@/app/utils/supabase/server";
 export default async function DiscoverNewShows({
     searchParams
 }: {
@@ -9,15 +8,14 @@ export default async function DiscoverNewShows({
 }) {
 
     // Get current user ID
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const currentUserId = await getCurrentUserId();
 
     return (
         <div className="w-full">
             <ShowSearch 
                 searchType={ShowSearchType.DISCOVER_NEW} 
                 searchParams={await searchParams}
-                currentUserId={user?.id}
+                currentUserId={currentUserId}
                 pathname="/discoverShows"
                 pageTitle="Discover New Shows"
             />

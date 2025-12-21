@@ -5,6 +5,7 @@ import { ShowTileBadgeProps } from "../show/ShowTile/ShowTileContent";
 import ShowTileSkeleton from "../show/ShowTile/ShowTileSkeleton";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { LocalizedDaysAway, LocalizedReleaseDate } from "../LocalizedDate";
+import { currentUserShowDetailsStateTag } from "@/app/utils/cacheTags";
 export type ComingSoonDTO = {
     showId: string
     releaseDate: Date
@@ -13,7 +14,7 @@ export type ComingSoonDTO = {
 export default async function ComingSoonRow ({userId}: {userId: string}) {
 
     'use cache'
-    cacheTag('currentUserShowData');
+    cacheTag(currentUserShowDetailsStateTag(userId));
 
     const shows = await getComingSoon({userId: userId});
 

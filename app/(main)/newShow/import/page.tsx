@@ -5,21 +5,17 @@ import { WikiImportSearchClient } from '@/app/components/wiki/WikiImportSearchCl
 import { Service } from '@/app/models/service';
 import { ShowTag } from '@/app/models/showTag';
 import { backdropBackground } from '@/app/utils/stylingConstants';
-import { createClient } from '@/app/utils/supabase/server';
+import { createClient, getCurrentUserId } from '@/app/utils/supabase/server';
 import { isAdmin } from '@/app/utils/userService';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getWikidataDraftAction } from './actions';
-import { JwtPayload } from '@supabase/supabase-js';
-
 export default async function WikiImportPage({
     searchParams
 }: {
     searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
-    const supabase = await createClient();
-    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
-    const currentUserId = claims?.sub;
+    const currentUserId = await getCurrentUserId();
     const userIsAdmin = await isAdmin(currentUserId);
 
     if (!userIsAdmin) {
@@ -27,6 +23,7 @@ export default async function WikiImportPage({
     }
 
     const { qid } = await searchParams;
+    const supabase = await createClient();
 
     if (!qid) {
         return (

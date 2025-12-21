@@ -6,7 +6,7 @@ import {
   findActorByNameExactCI,
   createActor
 } from "@/app/(main)/actor/ActorService";
-import { createClient } from "@/app/utils/supabase/server";
+import { getCurrentUserId } from "@/app/utils/supabase/server";
 import { isAdmin } from "@/app/utils/userService";
 import { revalidatePath } from "next/cache";
 
@@ -18,9 +18,8 @@ export type ActionResult = {
 };
 
 async function checkIsAdmin(): Promise<boolean> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return await isAdmin(user?.id);
+  const currentUserId = await getCurrentUserId();
+  return await isAdmin(currentUserId);
 }
 
 export async function handleRemoveActor(formData: FormData) {

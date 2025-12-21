@@ -1,8 +1,6 @@
 import ShowSearch from "@/app/components/showSearch/ShowSearch";
 import { ShowSearchType } from "@/app/models/showSearchType";
-import { createClient } from "@/app/utils/supabase/server";
-import { JwtPayload } from "@supabase/supabase-js";
-
+import { getCurrentUserId } from "@/app/utils/supabase/server";
 
 export default async function CurrentUserWatchlist({
     searchParams
@@ -10,9 +8,7 @@ export default async function CurrentUserWatchlist({
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
     // Get current user ID
-    const supabase = await createClient();
-    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
-    const userId = claims?.sub;
+    const userId = await getCurrentUserId();
     return (
         <div className="w-full h-full">
             <ShowSearch 

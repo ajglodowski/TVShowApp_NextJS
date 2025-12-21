@@ -6,8 +6,9 @@ import { UserShowData, UserShowDataParams } from "@/app/models/userShowData";
 import { Rating } from "@/app/models/rating";
 import { UserUpdate } from "@/app/models/userUpdate";
 import { UserUpdateCategory } from "@/app/models/userUpdateType";
-import { cacheLife, revalidateTag } from 'next/cache';
+import { cacheLife } from 'next/cache';
 import { refreshUserEmbedding } from "@/app/utils/recommendations/RecommendationService";
+import { revalidateCurrentUserShowDetails } from "@/app/utils/cacheTags";
 
 export async function getUserShowData({showId, userId}: {showId: string, userId: string | undefined}): Promise<UserShowData | null> {
 
@@ -47,7 +48,6 @@ export async function updateStatus({userId, showId, newStatus}: {showId: string,
         console.error(error);
         return false;
     }
-    revalidateTag('currentUserShowData', 'max');
     return true;
 }
 
@@ -159,6 +159,12 @@ export async function updateUserShowData({updateType, userId, showId, newValue }
             response = false;
             break;
     }
+    
+    // Revalidate cache tags after successful UserShowDetails mutation
+    if (response) {
+        revalidateCurrentUserShowDetails(userId, showId);
+    }
+    
     if (update && response) {
         response = await insertUpdate({update: update});
     }

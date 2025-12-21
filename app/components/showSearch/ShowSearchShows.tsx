@@ -3,10 +3,8 @@ import { ShowWithAnalytics } from '@/app/models/show';
 import { ShowSearchType } from '@/app/models/showSearchType';
 import { UserShowDataWithUserInfo } from '@/app/models/userShowData';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Suspense } from 'react';
 import Divider from '../Divider';
 import ShowRow from '../show/ShowRow/ShowRow';
-import ShowRowSkeleton from '../show/ShowRow/ShowRowSkeleton';
 import { defaultCurrentUserFilters } from './ShowSearchHeader/ShowSearchCurrentUserFilters';
 import { fetchShows, fetchUsersWatchlist, filterWatchlist, getUserShowData } from './ShowSearchService';
 import { ShowSearchShowsProps } from './types';
@@ -307,9 +305,7 @@ export default async function ShowSearchShows({
                 {paginatedData.length > 0 ? (
                     paginatedData.map((show: ShowWithAnalytics) => (
                         <div className='px-4' key={show.id}>
-
-                            <Suspense fallback={<ShowRowSkeleton />}>
-                                <ShowRow 
+                                <ShowRow key={show.id}  
                                     show={show}
                                     currentUserId={currentUserId}
                                     currentUserInfo={displayUserInfoMap.get(show.id)}
@@ -317,7 +313,6 @@ export default async function ShowSearchShows({
                                     fetchCurrentUsersInfo={(searchType !== ShowSearchType.OTHER_USER_WATCHLIST)}
                                     fetchFriendsInfo={true} 
                                 />
-                            </Suspense>
                             <Divider />
                         </div>
                     ))

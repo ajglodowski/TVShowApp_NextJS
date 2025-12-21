@@ -1,12 +1,10 @@
 import ShowSearch from "@/app/components/showSearch/ShowSearch";
 import { ShowSearchType } from "@/app/models/showSearchType";
-import { createClient } from "@/app/utils/supabase/server";
+import { getCurrentUserId } from "@/app/utils/supabase/server";
 import { getUserByUsername } from "@/app/utils/userService";
 import { Suspense as _Suspense } from "react";
 import _LoadingOtherUserWatchlist from "./loading";
 import { cacheLife as _cacheLife } from "next/dist/server/use-cache/cache-life";
-import { JwtPayload } from "@supabase/supabase-js";
-
 interface PageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
     params: Promise<{ username: string }>;
@@ -30,9 +28,7 @@ export default async function WatchlistPage({ searchParams, params }: PageProps)
     const userId = user.id;
 
     // Check if the current user is logged in
-    const supabase = await createClient();
-    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
-    const currentUserId = claims?.sub;
+    const currentUserId = await getCurrentUserId();
 
     return (
         <div className="w-full">

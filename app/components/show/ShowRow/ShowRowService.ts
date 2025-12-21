@@ -2,16 +2,15 @@ import { Rating } from "@/app/models/rating";
 import { Status } from "@/app/models/status";
 import { UserBasicInfo } from "@/app/models/user";
 import { UserShowDataWithUserInfo, UserShowDataWithUserInfoParams } from "@/app/models/userShowData";
-import { createClient, publicClient } from "@/app/utils/supabase/server";
-import { JwtPayload } from "@supabase/supabase-js";
+import { getCurrentUserId, publicClient } from "@/app/utils/supabase/server";
 import { cacheLife } from "next/cache";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
+import { currentUserShowDetailsStateTag, currentUserShowDetailsTag } from "@/app/utils/cacheTags";
 
 export const getFriendsUserDetails = async (showId: number, currentUserId?: string | undefined): Promise<UserShowDataWithUserInfo[] | undefined> => {
     let userId: string | undefined = currentUserId;
     if (!currentUserId) {
-        const supabase = await createClient();
-        const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
-        userId = claims?.sub;
+        userId = await getCurrentUserId();
         
     }
     if (!userId) {
@@ -70,10 +69,11 @@ export const fetchFriendsUserDetails = async (showId: number, userId: string): P
 
 export const getCurrentUsersShowDetails = async (showId: number, currentUserId?: string | undefined): Promise<UserShowDataWithUserInfo | undefined> => {
     'use cache'
-    cacheLife('seconds');
     if (!currentUserId) {
         return undefined;
     }
+    cacheTag(currentUserShowDetailsStateTag(currentUserId));
+    cacheTag(currentUserShowDetailsTag(currentUserId, showId));
     
     const supabase = await publicClient();
     const { data, error } = await supabase

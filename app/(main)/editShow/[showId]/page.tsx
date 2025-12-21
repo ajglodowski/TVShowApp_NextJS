@@ -1,18 +1,15 @@
 import { getShow } from "@/app/(main)/show/[showId]/ShowService";
 import EditShowPage from "@/app/components/editShow/EditShow";
-import { createClient } from '@/app/utils/supabase/server';
+import { getCurrentUserId } from '@/app/utils/supabase/server';
 import { isAdmin } from '@/app/utils/userService';
 import { getShowImageUrlAction } from "../../show/[showId]/ShowImageService";
 import Unauthorized from "@/app/components/Unauthorized";
-
 export default async function EditShow({ params }: { params: Promise<{ showId: string }> }) {
 
   const showId = (await params).showId;
   
   // Check if user is admin
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const currentUserId = user?.id;
+  const currentUserId = await getCurrentUserId();
   const userIsAdmin = await isAdmin(currentUserId);
   
   if (!userIsAdmin) {

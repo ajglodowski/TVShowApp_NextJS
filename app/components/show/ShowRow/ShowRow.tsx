@@ -1,11 +1,12 @@
 import { Show, ShowWithAnalytics } from "@/app/models/show";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
-import { cacheLife } from "next/cache";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import Link from "next/dist/client/link";
 import { ShowRowInfo } from "./ShowRowInfo";
 import { getCurrentUsersShowDetails, getFriendsUserDetails } from "./ShowRowService";
 import ShowRowSkeleton from "./ShowRowSkeleton";
 import { UserDetailsDropdown } from "./UserDetailsDropdown";
+import { currentUserShowDetailsStateTag, currentUserShowDetailsTag } from "@/app/utils/cacheTags";
 
 type ShowRowProps = {
     show: Show | ShowWithAnalytics | undefined;
@@ -20,9 +21,14 @@ type ShowRowProps = {
 export default async function ShowRow({ show, currentUserId, currentUserInfo, otherUsersInfo, fetchCurrentUsersInfo, fetchFriendsInfo }: ShowRowProps) {
 
     'use cache'
-    cacheLife('seconds');
     const showData = show;
     if (!showData) return <ShowRowSkeleton />;
+
+    // Add cache tags when fetching current user info
+    if (currentUserId && showData && fetchCurrentUsersInfo) {
+        cacheTag(currentUserShowDetailsStateTag(currentUserId));
+        cacheTag(currentUserShowDetailsTag(currentUserId, showData.id));
+    }
 
     if (otherUsersInfo === undefined && fetchFriendsInfo) {
         try {

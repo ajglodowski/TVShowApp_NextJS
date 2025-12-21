@@ -6,7 +6,9 @@ import { ShowTag } from "@/app/models/showTag";
 import { cache } from 'react';
 import { Service } from "../models/service";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
+import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { Actor } from "../models/actor";
+import { currentUserShowDetailsStateTag } from "./cacheTags";
 
 export const getUser = cache(async (userId: string): Promise<User | null> => {
     'use cache'
@@ -37,7 +39,7 @@ export const getUserByUsername = cache(async (username: string): Promise<User | 
 
 export async function getShowsLogged( userId: string ): Promise<number | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { count: count } = await supabase.from("UserShowDetails").select('*', { count: 'exact', head: true }).match({userId: userId});
     
@@ -71,7 +73,7 @@ export type ShowTagCountDTO = {
 
 export async function getUserTopTags(userId: string): Promise<ShowTagCountDTO[] | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_tag_counts', { user_id: userId })
@@ -103,7 +105,7 @@ export type ShowServiceCountDTO = {
 }
 export async function getUserTopServices(userId: string): Promise<ShowServiceCountDTO[] | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_service_counts', { user_id: userId })
@@ -137,7 +139,7 @@ export type TagRatingDTO = {
 
 export async function getUserTagRatings(userId: string): Promise<TagRatingDTO[] | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_avg_rating_by_tag', { user_id: userId })
@@ -173,7 +175,7 @@ export type ServiceRatingDTO = {
 
 export async function getUserServiceRatings(userId: string): Promise<ServiceRatingDTO[] | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_avg_rating_by_service', { user_id: userId })
@@ -208,7 +210,7 @@ export type ActorCountDTO = {
 
 export async function getUserTopActors(userId: string): Promise<ActorCountDTO[] | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_top_actors', { user_id: userId })
@@ -242,7 +244,7 @@ export type ActorRatingDTO = {
 
 export async function getUserHighestRatedActors(userId: string): Promise<ActorRatingDTO[] | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_highest_rated_actors', { user_id: userId })
@@ -272,7 +274,7 @@ export async function getUserHighestRatedActors(userId: string): Promise<ActorRa
 
 export async function getUserLowestRatedActors(userId: string): Promise<ActorRatingDTO[] | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     const { data, error } = await supabase
         .rpc('get_user_lowest_rated_actors', { user_id: userId })
@@ -308,7 +310,7 @@ export type ShowTagWithId = {
 
 export async function getUserWatchedShowsTags(userId: string): Promise<ShowTagWithId[] | null> {
     'use cache'
-    cacheLife('minutes');
+    cacheTag(currentUserShowDetailsStateTag(userId));
     const supabase = await publicClient();
     
     // 1. Get shows logged by user

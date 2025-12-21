@@ -1,12 +1,10 @@
 import type { Show } from '@/app/models/show';
-import { createClient } from '@/app/utils/supabase/server';
+import { getCurrentUserId } from '@/app/utils/supabase/server';
 import { Suspense } from 'react';
 import { getRatingCounts, getShow, getStatusCounts } from './ShowService';
 import ShowPageContent from './components/ShowPageContent';
 import { isAdmin } from '@/app/utils/userService';
 import LoadingShowPage from './loading';
-import { JwtPayload } from '@supabase/supabase-js';
-
 function ShowNotFound() {
   return (
     <div className='text-center my-auto mx-auto'>
@@ -22,19 +20,14 @@ export default async function ShowPage({ params }: { params: Promise<{ showId: s
   const showId = (await params).showId;
 
   // User Data
-  const supabase = await createClient();
-  const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
-  const currentUserId = claims?.sub;
+  const currentUserId = await getCurrentUserId();
   
-  const startTime = performance.now();
   const [userIsAdmin, showData, ratingCounts, statusCounts] = await Promise.all([
     isAdmin(currentUserId),
     getShow(showId),
     getRatingCounts(showId),
     getStatusCounts(showId),
   ]);
-  const endTime = performance.now();
-  console.log(`Time taken: ${endTime - startTime} milliseconds`);
   if (!showData) {
     return <ShowNotFound />
   }

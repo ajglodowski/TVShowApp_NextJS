@@ -1,12 +1,8 @@
-import { createClient } from "@/app/utils/supabase/server";
+import { getCurrentUserId } from "@/app/utils/supabase/server";
 import UserProfile from "./components/ProfilePage/UserProfile";
 import { getUser } from "@/app/utils/userService";
-import { JwtPayload } from "@supabase/supabase-js";
-
 export default async function CurrentUserProfilePage() {
-    const supabase = await createClient();
-    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
-    const currentUserId = claims?.sub;
+    const currentUserId = await getCurrentUserId();
     const loggedIn = currentUserId !== undefined && currentUserId !== null;
     
     const NotLoggedIn = () => {

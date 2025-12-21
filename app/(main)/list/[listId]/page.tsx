@@ -1,9 +1,8 @@
 import { LocalizedDate } from "@/app/components/LocalizedDate";
 import ProfileBubble from "@/app/components/user/ProfileBubble";
-import { createClient } from "@/app/utils/supabase/server";
+import { getCurrentUserId } from "@/app/utils/supabase/server";
 import { getList } from "./ListService";
 import ListShowsSection from "./components/ListShowsSection";
-
 function ListNotFound() {
   return (
     <div className='text-center my-auto mx-auto'>
@@ -19,10 +18,8 @@ export default async function ListPage({ params }: { params: Promise<{ listId: s
   const listId = (await params).listId;
 
   // User Data
-  const supabase = await createClient();
-  const { data: { user }, } = await supabase.auth.getUser();
-  const currentUserId = user?.id;
-  const loggedIn = currentUserId !== undefined;
+  const currentUserId = await getCurrentUserId();
+  const loggedIn = currentUserId !== undefined && currentUserId !== null;
 
   const listData = await getList(listId);
 

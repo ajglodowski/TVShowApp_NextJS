@@ -1,14 +1,14 @@
-import { createClient } from "@/app/utils/supabase/client";
+import { createClient, getCurrentUserId } from "@/app/utils/supabase/client";
 import { upload, UploadOptions as _UploadOptions } from "@vercel/blob/client";
 
 export async function updateCurrentUserProfilePic(imageUrl: string): Promise<boolean> {
-    const supabase = await createClient();
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData || !userData.user) {
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) {
         console.error("User not found");
         return false;
     }
-    const userId = userData.user.id;
+    const userId = currentUserId;
+    const supabase = await createClient();
     const { data: _data, error } = await supabase
         .from('user')
         .update({ profilePhotoURL: imageUrl })

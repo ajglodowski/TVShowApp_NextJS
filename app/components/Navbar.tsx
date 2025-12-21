@@ -1,16 +1,12 @@
-import { createClient } from '@/app/utils/supabase/server';
+import { getCurrentUserId } from '@/app/utils/supabase/server';
 import { isAdmin } from '@/app/utils/userService';
 import AuthButton from '@/supabase_components/AuthButton';
 import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { NavbarMobileMenu } from './NavbarMobileMenu';
 import { ClientSearch } from './search/ClientSearch';
-import { JwtPayload } from '@supabase/supabase-js';
-
 async function Navbar() {
-    const supabase = await createClient();
-    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
-    const user = claims?.sub;
+    const user = await getCurrentUserId();
     const userIsAdmin = await isAdmin(user);
 
     return (

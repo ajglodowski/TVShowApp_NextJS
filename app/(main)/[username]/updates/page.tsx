@@ -1,15 +1,14 @@
-import { createClient } from "@/app/utils/supabase/server";
-import { getUserByUsername } from "@/app/utils/userService";
-import { getUserUpdatesPage } from "@/app/components/userUpdate/UserUpdateService";
-import UserUpdateRow, { LoadingUserUpdateRow } from "@/app/components/userUpdate/UserUpdateRow";
-import UpdatesPaginationControls from "@/app/components/userUpdate/UpdatesPaginationControls";
 import HiddenUpdatesToggle from "@/app/components/userUpdate/HiddenUpdatesToggle";
+import UpdatesPaginationControls from "@/app/components/userUpdate/UpdatesPaginationControls";
+import UserUpdateRow, { LoadingUserUpdateRow } from "@/app/components/userUpdate/UserUpdateRow";
+import { getUserUpdatesPage } from "@/app/components/userUpdate/UserUpdateService";
 import { backdropBackground } from "@/app/utils/stylingConstants";
+import { getCurrentUserId } from "@/app/utils/supabase/server";
+import { getUserByUsername } from "@/app/utils/userService";
 import { Button } from "@/components/ui/button";
-import { Clock, Frown, ArrowLeft } from "lucide-react";
+import { ArrowLeft, Clock, Frown } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
-
 const ITEMS_PER_PAGE = 20;
 
 interface PageProps {
@@ -51,9 +50,8 @@ export default async function UserUpdatesPage({ searchParams, params }: PageProp
     const userId = user.id;
 
     // Check if the current viewer is logged in (and if they are the owner)
-    const supabase = await createClient();
-    const { data: { user: currentUser } } = await supabase.auth.getUser();
-    const isOwner = currentUser?.id === userId;
+    const currentUserId = await getCurrentUserId();
+    const isOwner = currentUserId === userId;
 
     // Only allow hidden toggle for owner
     const includeHidden = isOwner && includeHiddenParam;
@@ -122,7 +120,7 @@ export default async function UserUpdatesPage({ searchParams, params }: PageProp
                             }>
                                 <UpdatesPaginationWrapper
                                     userId={userId}
-                                    currentUserId={currentUser?.id}
+                                    currentUserId={currentUserId}
                                     currentPage={currentPage}
                                     includeHidden={includeHidden}
                                     previousPageUrl={previousPageUrl}
@@ -140,7 +138,7 @@ export default async function UserUpdatesPage({ searchParams, params }: PageProp
                     <Suspense fallback={<UpdatesListLoading />}>
                         <UpdatesListContent
                             userId={userId}
-                            currentUserId={currentUser?.id}
+                            currentUserId={currentUserId}
                             currentPage={currentPage}
                             includeHidden={includeHidden}
                         />

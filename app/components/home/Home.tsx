@@ -1,6 +1,6 @@
 import { ComingSoonStatusId, CurrentlyAiringStatusId, Status, WatchlistStatusId } from '@/app/models/status';
 import { StatusIcon } from '@/app/utils/StatusIcon';
-import { createClient } from '@/app/utils/supabase/server';
+import { getCurrentUserId } from '@/app/utils/supabase/server';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartNoAxesCombined, ChevronRight, History, Hourglass, Play, Repeat, Sparkles, Tv } from 'lucide-react';
 import Link from 'next/link';
@@ -17,8 +17,6 @@ import WelcomeBanner from './WelcomeBanner';
 import { LoadingYourShowsRow } from './YourShowsRow/LoadingYourShowsRow';
 import YourShowsRow from './YourShowsRow/YourShowsRow';
 import YourUpdatesRow, { LoadingYourUpdatesRow } from './YourUpdatesRow';
-import { JwtPayload } from '@supabase/supabase-js';
-
 const getHeaderIcon = (header: string): React.ReactNode => {
     // Create a mock status object for StatusIcon function
     const createMockStatus = (name: string): Status => ({
@@ -54,9 +52,7 @@ const getHeaderIcon = (header: string): React.ReactNode => {
 
 export default async function Home () {
     
-    const supabase = await createClient();
-    const { data: { claims } } = await supabase.auth.getClaims() as { data: { claims: JwtPayload } };
-    const currentUserId = claims?.sub;
+    const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
         return (
             <div>Login Please</div>
