@@ -10,20 +10,17 @@ type RecommendationsRowProps = {
 };
 
 export default async function RecommendationsRow({ userId }: RecommendationsRowProps) {
-    // Check if user has an embedding (has rated shows)
     const hasEmbedding = await userHasEmbedding(userId);
-    
-    // Fetch recommendations
     const recommendations = await getRecommendationsForUser(userId, 15);
 
     if (!recommendations || recommendations.length === 0) {
         return (
-            <div className="w-full px-4 py-4">
-                <div className="flex flex-col items-center justify-center text-center text-white/70 gap-2">
-                    <Star className="w-8 h-8 text-yellow-400/50" />
-                    <p className="text-sm">
+            <div className="py-4">
+                <div className="flex flex-col items-center justify-center text-center gap-2">
+                    <Star className="w-5 h-5 text-white/20" />
+                    <p className="text-xs text-white/40">
                         {hasEmbedding 
-                            ? "No new recommendations available right now."
+                            ? "No new recommendations available."
                             : "Rate some shows to get personalized recommendations!"}
                     </p>
                 </div>
@@ -31,7 +28,6 @@ export default async function RecommendationsRow({ userId }: RecommendationsRowP
         );
     }
 
-    // Badge for similarity score
     const similarityBadge = (score: number, isFallback: boolean): ShowTileBadgeProps => {
         if (isFallback) {
             return { text: "Trending", iconName: "TrendingUp" };
@@ -41,17 +37,17 @@ export default async function RecommendationsRow({ userId }: RecommendationsRowP
     };
 
     return (
-        <div className="w-full px-2">
+        <div className="w-full">
             {!hasEmbedding && (
-                <div className="px-2 pb-2 text-xs text-white/50 flex items-center gap-1">
+                <div className="pb-2 text-xs text-white/40 flex items-center gap-1">
                     <Sparkles className="w-3 h-3" />
-                    <span>These are trending shows. Rate some shows to get personalized picks!</span>
+                    <span>Trending shows — rate to personalize</span>
                 </div>
             )}
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-3">
                     {recommendations.map((rec) => (
-                        <div key={rec.showId} className="rounded-md p-2">
+                        <div key={rec.showId} className="flex-shrink-0">
                             <ShowTile 
                                 showId={rec.showId.toString()} 
                                 badges={[similarityBadge(rec.similarityScore, rec.isFallback)]}
@@ -59,7 +55,7 @@ export default async function RecommendationsRow({ userId }: RecommendationsRowP
                         </div>
                     ))}
                 </div>
-                <ScrollBar orientation="horizontal" />
+                <ScrollBar orientation="horizontal" className="opacity-0" />
             </ScrollArea>
         </div>
     );
@@ -67,18 +63,17 @@ export default async function RecommendationsRow({ userId }: RecommendationsRowP
 
 export function LoadingRecommendationsRow() {
     return (
-        <div className="w-full px-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
-                    {Array.from({ length: 10 }).map((_, index) => (
-                        <div key={index} className="rounded-md p-2">
-                            <ShowTileSkeleton />
-                        </div>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-        </div>
+        <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-3">
+                {Array.from({ length: 6 }).map((_, index) => (
+                    <div key={index} className="flex-shrink-0">
+                        <ShowTileSkeleton />
+                    </div>
+                ))}
+            </div>
+            <ScrollBar orientation="horizontal" className="opacity-0" />
+        </ScrollArea>
     );
 }
+
 

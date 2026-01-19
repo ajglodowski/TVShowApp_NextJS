@@ -5,18 +5,16 @@ import CheckInShowTile from "./CheckInShowTile";
 
 export async function LoadingCheckInRow() {
     return (
-        <div className="w-full px-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <div key={index} className="m-2">
-                            <ShowTileSkeleton />
-                        </div>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-        </div>
+        <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-3">
+                {Array.from({ length: 5 }).map((_, index) => (
+                    <div key={index} className="flex-shrink-0">
+                        <ShowTileSkeleton />
+                    </div>
+                ))}
+            </div>
+            <ScrollBar orientation="horizontal" className="opacity-0" />
+        </ScrollArea>
     )
 }
 
@@ -25,26 +23,25 @@ export default async function CheckInRow({ userId }: { userId: string }) {
 
     if (!shows || shows.length === 0) {
         return (
-            <div className="p-4 text-center text-gray-400">
+            <div className="py-4 text-center text-sm text-white/40">
                 You're all caught up on your active shows!
             </div>
         );
     }
 
     return (
-        <div className="w-full px-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md pb-2">
-                <div className="flex">
-                    {shows.map((checkInShow) => (
+        <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-3">
+                {shows.map((checkInShow) => (
+                    <div key={checkInShow.show.id} className="flex-shrink-0">
                         <CheckInShowTile 
-                            key={checkInShow.show.id} 
                             checkInShow={checkInShow}
                             userId={userId}
                         />
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-        </div>
+                    </div>
+                ))}
+            </div>
+            <ScrollBar orientation="horizontal" className="opacity-0" />
+        </ScrollArea>
     )
 }

@@ -16,10 +16,10 @@ import { LoadingShows, LoadingStatusFilters } from "./LoadingYourShowsRow"
 type YourShowsRowClientProps = {
   userId: string
   allStatuses: Status[] | null
+  isHero?: boolean
 }
 
-
-export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRowClientProps) {
+export default function YourShowsRowClient({ userId, allStatuses, isHero = false }: YourShowsRowClientProps) {
   const [selectedStatus, setSelectedStatus] = useState<Status[]>([])
   const [displayedShows, setDisplayedShows] = useState<Show[] | null | undefined>(undefined)
 
@@ -36,7 +36,6 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
   }
 
   useEffect(() => {
-    // On page load
     setDisplayedShows(undefined)
     getYourShows({userId, selectedStatuses: selectedStatus}).then((shows) => {
       if (!shows) setDisplayedShows(null)
@@ -44,25 +43,21 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
     });
   }, [selectedStatus, userId])
 
-
-
   function ShowRow() {
     if (displayedShows === undefined) return <LoadingShows />;
-    if (displayedShows === null) return <div>Error Loading your shows</div>;
-    if (displayedShows.length === 0) return <div>No Shows match this criteria</div>;
+    if (displayedShows === null) return <div className="py-4 text-center text-sm text-white/40">Error loading your shows</div>;
+    if (displayedShows.length === 0) return <div className="py-4 text-center text-sm text-white/40">No shows match this criteria</div>;
     return (
-      <div className="w-full">
-        <ScrollArea className="w-full whitespace-nowrap rounded-md">
-          <div className="flex">
-            {displayedShows.map((showData) => (
-              <div key={showData.id} className="m-2">
-                <ClientShowTile key={showData.id} showDto={showData} />
-              </div>
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
+      <ScrollArea className="w-full whitespace-nowrap">
+        <div className="flex gap-3">
+          {displayedShows.map((showData) => (
+            <div key={showData.id} className="flex-shrink-0">
+              <ClientShowTile showDto={showData} />
+            </div>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" className="opacity-0" />
+      </ScrollArea>
     )
   }
 
@@ -77,7 +72,7 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
               variant="outline"
               size="sm"
               onClick={clearAllSelections}
-              className="flex items-center gap-1 h-8 border border-white/20 bg-transparent hover:bg-white/10 text-white"
+              className="flex items-center gap-1 h-8 border border-white/10 bg-transparent hover:bg-white/[0.06] hover:border-primary/50 text-white/70 hover:text-white rounded-md transition-all duration-200"
             >
               Clear all <X className="h-3 w-3" />
             </Button>
@@ -89,7 +84,7 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
               >
                 <Badge
                   variant="secondary"
-                  className="flex font-medium items-center gap-1 h-8 px-3 bg-white text-black rounded-lg"
+                  className="flex font-medium items-center gap-1 h-8 px-3 bg-white/[0.12] text-white rounded-md hover:bg-white/[0.18] transition-colors duration-150"
                 >
                   {status.name}
                   <X className="h-3 w-3" />
@@ -102,7 +97,7 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
         <div className="relative">
           <Tabs defaultValue="all" className="w-full">
             <ScrollArea className="w-full">
-              <TabsList className={`h-auto w-auto gap-1 p-1 ${backdropTabs}`}>
+              <TabsList className={backdropTabs}>
                 {allStatuses.map((status) => (
                   <TabsTrigger
                     key={status.id}
@@ -110,8 +105,8 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
                     onClick={() => handleStatusChange(status)}
                     className={
                       selectedStatus.includes(status)
-                        ? "bg-white text-black rounded-lg font-medium"
-                        : "text-white/60 hover:bg-white/20 hover:text-white rounded-lg"
+                        ? "bg-white/[0.12] text-white rounded-md font-medium border border-transparent transition-all duration-200"
+                        : "text-white/70 hover:text-white hover:bg-white/[0.06] border border-transparent hover:border-primary/50 rounded-md transition-all duration-200"
                     }
                   >
                     <div className="flex items-center gap-1">
@@ -130,8 +125,8 @@ export default function YourShowsRowClient({ userId, allStatuses }: YourShowsRow
   }
 
   return (
-    <div className="">
-      <div className="px-2 pb-2">
+    <div className="w-full">
+      <div className={isHero ? "pb-3" : "px-1 pb-3"}>
         <StatusFilters />
       </div>
       <ShowRow />

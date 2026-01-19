@@ -6,29 +6,29 @@ import ShowTileSkeleton from "../../show/ShowTile/ShowTileSkeleton";
 
 export default function CurrentlyAiringLoading() {
     return (
-        <div className="w-full px-2">
-      <Tabs
-        className="w-full"
-      >
-        <TabsList className={`${backdropTabs} my-2`}>
-          {Array.from({ length: 7 }).map((_, index) => (
-            <TabsTrigger key={index} value={index.toString()}>
-                <Skeleton className="w-24 h-6" />
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        <ScrollArea className="w-full whitespace-nowrap rounded-md">
-            <div className="flex">
-                {Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className="m-2">
-                        <ShowTileSkeleton />
-                    </div>
+        <div className="w-full">
+          <Tabs className="w-full">
+            <div className="px-1 pb-3">
+              <TabsList className={`${backdropTabs}`}>
+                {Array.from({ length: 7 }).map((_, index) => (
+                  <TabsTrigger key={index} value={index.toString()}>
+                      <Skeleton className="w-20 h-5" />
+                  </TabsTrigger>
                 ))}
+              </TabsList>
             </div>
-            <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </Tabs>
-    </div>
+
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-3 px-1">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                        <div key={index} className="flex-shrink-0">
+                            <ShowTileSkeleton />
+                        </div>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" className="opacity-0" />
+            </ScrollArea>
+          </Tabs>
+        </div>
     );
 }

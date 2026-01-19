@@ -27,11 +27,11 @@ export default async function Top10Row() {
     }
 
     return (
-        <div className="w-full px-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
+        <div className="w-full">
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-3 px-1">
                     {shows.map((showInfo,index) => (
-                        <div key={showInfo.showId} className="rounded-md p-2">
+                        <div key={showInfo.showId} className="flex-shrink-0">
                             <ShowTile 
                                 showId={showInfo.showId.toString()} 
                                 badges={[tileBadge(showInfo.updates), positionBadge(index+1)]}
@@ -39,7 +39,7 @@ export default async function Top10Row() {
                         </div>
                     ))}
                 </div>
-                <ScrollBar orientation="horizontal" />
+                <ScrollBar orientation="horizontal" className="opacity-0" />
             </ScrollArea>
         </div>
     )
@@ -47,16 +47,16 @@ export default async function Top10Row() {
 
 export async function LoadingTop10Row() {
     return (
-        <div className="w-full px-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
+        <div className="w-full">
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-3 px-1">
                     {Array.from({ length: 10 }).map((_, index) => (
-                        <div key={index} className="rounded-md p-2">
+                        <div key={index} className="flex-shrink-0">
                             <ShowTileSkeleton />
                         </div>
                     ))}
                 </div>
-                <ScrollBar orientation="horizontal" />
+                <ScrollBar orientation="horizontal" className="opacity-0" />
             </ScrollArea>
         </div>
     )

@@ -43,6 +43,10 @@ const nextConfig = {
         //ppr: true,
         //dynamicIO: true,
         useCache: true,
+        staleTimes: {
+            dynamic: 30,  // Cache client-side navigations to dynamic pages for 30 seconds
+            static: 180,  // Cache client-side navigations to static pages for 3 minutes
+        },
     }
 }
 

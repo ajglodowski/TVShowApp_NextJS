@@ -7,18 +7,16 @@ import { getStaleShows } from "./HomeService";
 
 export async function LoadingStaleShowsRow() {
     return (
-        <div className="w-full px-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <div key={index} className="m-2">
-                            <ShowTileSkeleton />
-                        </div>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-        </div>
+        <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-3">
+                {Array.from({ length: 5 }).map((_, index) => (
+                    <div key={index} className="flex-shrink-0">
+                        <ShowTileSkeleton />
+                    </div>
+                ))}
+            </div>
+            <ScrollBar orientation="horizontal" className="opacity-0" />
+        </ScrollArea>
     )
 }
 
@@ -27,7 +25,7 @@ export default async function StaleShowsRow({ userId }: { userId: string }) {
 
     if (!shows || shows.length === 0) {
         return (
-            <div className="p-4 text-center text-gray-400">
+            <div className="py-4 text-center text-sm text-white/40">
                 No stale shows found. Great job keeping up!
             </div>
         );
@@ -42,21 +40,19 @@ export default async function StaleShowsRow({ userId }: { userId: string }) {
     }
 
     return (
-        <div className="w-full px-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
-                    {shows.map((staleShow) => (
-                        <div key={staleShow.show.id} className="m-2">
-                            <ClientShowTile 
-                                showDto={staleShow.show} 
-                                badges={[daysAgoBadge(staleShow.updated), dateBadge(staleShow.updated)]}
-                            />
-                        </div>
-                    ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-        </div>
+        <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-3">
+                {shows.map((staleShow) => (
+                    <div key={staleShow.show.id} className="flex-shrink-0">
+                        <ClientShowTile 
+                            showDto={staleShow.show} 
+                            badges={[daysAgoBadge(staleShow.updated), dateBadge(staleShow.updated)]}
+                        />
+                    </div>
+                ))}
+            </div>
+            <ScrollBar orientation="horizontal" className="opacity-0" />
+        </ScrollArea>
     )
 }
 

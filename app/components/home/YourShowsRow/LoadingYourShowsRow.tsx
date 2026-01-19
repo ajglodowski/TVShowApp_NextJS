@@ -10,18 +10,16 @@ import { backdropTabs } from "@/app/utils/stylingConstants"
 
 export const LoadingShows = () => {
     return (
-      <div className="w-full">
-        <ScrollArea className="w-full whitespace-nowrap rounded-md border-2">
-          <div className="flex">
-          {Array.from({ length: 10 }).map((_, index) => (
-            <div key={index} className="m-2">
-              <ShowTileSkeleton />
-            </div>
-          ))}
+      <ScrollArea className="w-full whitespace-nowrap">
+        <div className="flex gap-3">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div key={index} className="flex-shrink-0">
+            <ShowTileSkeleton />
           </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
+        ))}
+        </div>
+        <ScrollBar orientation="horizontal" className="opacity-0" />
+      </ScrollArea>
     )
   }
   
@@ -54,7 +52,7 @@ export const LoadingStatusFilters = () => {
 export async function LoadingYourShowsRow() {
     return (
       <div className="w-full">
-        <div className="mb-2">
+        <div className="pb-3">
           <LoadingStatusFilters />
         </div>
         <LoadingShows />

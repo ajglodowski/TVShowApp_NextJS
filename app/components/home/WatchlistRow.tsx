@@ -15,10 +15,10 @@ export default async function WatchListRow ({userId}: {userId: string}) {
 
     if (!recommendations || recommendations.length === 0) {
         return (
-            <div className="w-full px-4 py-4">
-                <div className="flex flex-col items-center justify-center text-center text-white/70 gap-2">
-                    <Star className="w-8 h-8 text-yellow-400/50" />
-                    <p className="text-sm">No shows in your watchlist yet. Add some shows to start watching!</p>
+            <div className="px-1 py-6">
+                <div className="flex flex-col items-center justify-center text-center gap-2">
+                    <Star className="w-6 h-6 text-white/20" />
+                    <p className="text-sm text-white/40">No shows in your watchlist yet. Add some shows to start watching!</p>
                 </div>
             </div>
         );
@@ -34,17 +34,17 @@ export default async function WatchListRow ({userId}: {userId: string}) {
     };
 
     return (
-        <div className="w-full px-2">
+        <div className="w-full">
             {!hasEmbedding && recommendations.length > 0 && (
-                <div className="px-2 pb-2 text-xs text-white/50 flex items-center gap-1">
+                <div className="px-1 pb-3 text-xs text-white/40 flex items-center gap-1.5">
                     <Sparkles className="w-3 h-3" />
                     <span>Rate some shows to get personalized start recommendations!</span>
                 </div>
             )}
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-3 px-1">
                     {recommendations.map((rec) => (
-                        <div key={rec.showId} className="m-2">
+                        <div key={rec.showId} className="flex-shrink-0">
                             <ShowTile 
                                 showId={rec.showId.toString()} 
                                 badges={hasEmbedding && !rec.isFallback ? [similarityBadge(rec.similarityScore, rec.isFallback)] : undefined}
@@ -52,7 +52,7 @@ export default async function WatchListRow ({userId}: {userId: string}) {
                         </div>
                     ))}
                 </div>
-                <ScrollBar orientation="horizontal" />
+                <ScrollBar orientation="horizontal" className="opacity-0" />
             </ScrollArea>
         </div>
     );
@@ -60,16 +60,16 @@ export default async function WatchListRow ({userId}: {userId: string}) {
 
 export async function LoadingWatchlistRow() {
     return (
-        <div className="w-full px-2">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex">
+        <div className="w-full">
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-3 px-1">
                     {Array.from({ length: 10 }).map((_, index) => (
-                        <div key={index} className="m-2">
+                        <div key={index} className="flex-shrink-0">
                             <ShowTileSkeleton />
                         </div>
                     ))}
                 </div>
-                <ScrollBar orientation="horizontal" />
+                <ScrollBar orientation="horizontal" className="opacity-0" />
             </ScrollArea>
         </div>
     )
