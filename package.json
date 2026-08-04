@@ -6,16 +6,17 @@
     "start": "next start",
     "lint": "eslint .",
     "backfill:embeddings": "npx tsx scripts/backfillShowEmbeddings.ts",
-    "backfill:embeddings:all": "npx tsx scripts/backfillShowEmbeddings.ts --include-users"
+    "backfill:embeddings:all": "npx tsx scripts/backfillShowEmbeddings.ts --include-users",
+    "postinstall": "node scripts/link-eslint-typescript.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
     "@google-cloud/storage": "^7.16.0",
-    "@next/bundle-analyzer": "16.0.3",
+    "@next/bundle-analyzer": "16.3.0",
     "@radix-ui/react-slot": "^1.2.4",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "latest",
-    "@vercel/blob": "^1.1.1",
+    "@vercel/blob": "^2.6.1",
     "@vercel/speed-insights": "^1.2.0",
     "autoprefixer": "10.4.21",
     "class-variance-authority": "^0.7.1",
@@ -23,12 +24,12 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
-    "eslint-config-next": "16.0.3",
+    "eslint-config-next": "16.3.0",
     "formidable": "^3.5.4",
     "geist": "^1.4.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.503.0",
-    "next": "^16.1.0",
+    "next": "^16.3.0",
     "next-themes": "^0.4.6",
     "postcss": "^8.5.3",
     "radix-ui": "latest",
@@ -40,13 +41,13 @@
     "react-image-crop": "^11.0.10",
     "react-resizable-panels": "^2.1.9",
     "recharts": "^2.15.3",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.4.0",
-    "typescript": "5.8.3",
-    "uuid": "^11.1.0",
+    "typescript": "7.0.2",
+    "uuid": "^11.1.1",
     "vaul": "^1.1.2"
   },
   "devDependencies": {
@@ -59,10 +60,30 @@
     "eslint": "^9.25.1",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.0.0",
+    "typescript-5": "npm:typescript@5.9.3",
     "typescript-eslint": "^8.31.1"
   },
   "overrides": {
     "@types/react": "19.2.6",
-    "@types/react-dom": "19.2.3"
+    "@types/react-dom": "19.2.3",
+    "uuid": "$uuid",
+    "typescript-eslint": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/typescript-estree": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/parser": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/type-utils": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/eslint-plugin": {
+      "typescript": "$typescript"
+    },
+    "@typescript-eslint/project-service": {
+      "typescript": "$typescript"
+    }
   }
 }

@@ -36,7 +36,7 @@ export default [
     }]
   }},
   {
-    files: ["next.config.js", "postcss.config.js"],
+    files: ["next.config.js", "postcss.config.js", "scripts/**"],
     languageOptions: {
       globals: globals.node
     },
