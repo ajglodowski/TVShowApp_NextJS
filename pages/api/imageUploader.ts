@@ -1,7 +1,7 @@
 import formidable from 'formidable';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import sharp from 'sharp';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { putImmutableJpeg, R2_PROFILE_PICS_BUCKET, R2_SHOW_IMAGES_BUCKET } from '@/app/utils/r2';
 
@@ -102,7 +102,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // The UUID is what gets stored in show.pictureUrl / user.profilePhotoURL
-    const imageId = uuidv4();
+    const imageId = randomUUID();
     if (type === 'show') await uploadShowImage(imageId, imageFile.filepath);
     else await uploadProfilePic(imageId, imageFile.filepath);
 
