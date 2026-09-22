@@ -4,7 +4,8 @@ import { getUser } from "@/app/utils/userService";
 import { Button } from "@/components/ui/button";
 import { LogIn, UserX } from "lucide-react";
 import Link from "next/link";
-import { getUserImageUrlAction, updateUserProfile } from "../UserService";
+import { getProfilePicUrl } from "@/app/utils/imageUrls";
+import { updateUserProfile } from "../UserService";
 
 export default async function EditProfilePage() {
 
@@ -66,7 +67,7 @@ export default async function EditProfilePage() {
     }
 
     let presignedImageUrl: string | null = null;
-    presignedImageUrl = user.profilePhotoURL ? getUserImageUrlAction(user.profilePhotoURL) : null;
+    presignedImageUrl = user.profilePhotoURL ? getProfilePicUrl(user.profilePhotoURL) : null;
 
     async function submitChanges(data: ProfileFormValues): Promise<boolean> {
         'use server';

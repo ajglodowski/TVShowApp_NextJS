@@ -1,4 +1,3 @@
-import { serverBaseURL } from "@/app/envConfig";
 import { createClient, publicClient } from "./supabase/server";
 import { User, UserBasicInfo } from "@/app/models/user";
 import { UserFollowRelationship } from "@/app/models/userFollowRelationship";
@@ -46,14 +45,6 @@ export async function getShowsLogged( userId: string ): Promise<number | null> {
     if (!count) return null;   
     
     return count as number;
-}
-
-export function getUserImageURL(username: string): string {
-  const apiURL = `${serverBaseURL}/api/imageFetcher?path=profilePics&imageName=`;
-  const transformedName = encodeURIComponent(username);
-  //const dimensions = tile ? "200x200" : "640x640";
-  const showNameURL = `${apiURL}${transformedName}`;
-  return showNameURL;
 }
 
 export async function getUserFollowRelationship(followingUser: string, followerUser: string): Promise<UserFollowRelationship | null> {

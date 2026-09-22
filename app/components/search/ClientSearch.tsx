@@ -10,6 +10,7 @@ import { LoadingImageSkeleton } from '../image/LoadingImageSkeleton';
 import { hoverBackdropBackground, backdropBackground } from '@/app/utils/stylingConstants';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getProfilePicUrl, getShowImageUrl } from '@/app/utils/imageUrls';
 
 export const ClientSearch = ({ onResultClick, usePortal = true }: { onResultClick?: () => void; usePortal?: boolean } = {}) => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -18,14 +19,6 @@ export const ClientSearch = ({ onResultClick, usePortal = true }: { onResultClic
     const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number; width: number } | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    const getUserImageUrl = (imagePath: string): string => {
-        return `https://1mvtjcpfzmphqyox.public.blob.vercel-storage.com/profilePics/${imagePath}`;
-    };
-    
-    const getShowImageUrl = (imagePath: string): string => {
-        return `https://1mvtjcpfzmphqyox.public.blob.vercel-storage.com/${imagePath}.jpeg`;
-    };
 
     const handleSearch = async (query: string) => {
         if (query.trim().length === 0) {
@@ -173,7 +166,7 @@ export const ClientSearch = ({ onResultClick, usePortal = true }: { onResultClic
             }
             case 'user': {
                 const user = result.data;
-                const imageUrl = user.profilePhotoURL ? getUserImageUrl(user.profilePhotoURL) : null;
+                const imageUrl = user.profilePhotoURL ? getProfilePicUrl(user.profilePhotoURL) : null;
                 return (
                     <Link key={`user-${user.id}`} href={link} onClick={handleResultClick}>
                         <div className={`flex items-center gap-2 p-2 rounded-lg ${hoverBackdropBackground} hover:bg-white/10 transition-colors`}>

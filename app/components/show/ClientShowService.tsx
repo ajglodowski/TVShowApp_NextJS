@@ -1,4 +1,3 @@
-import { apiRoute } from "@/app/envConfig";
 import { OtherService, Service } from "@/app/models/service";
 import { Show, ShowPropertiesWithService } from "@/app/models/show";
 import { ShowTag } from "@/app/models/showTag";
@@ -129,47 +128,6 @@ export async function updateShow(show: Show): Promise<boolean> {
 
     return true;
 }
-
-export function getShowImageURL(showName: string, tile: boolean): string {
-    const apiURL = `${apiRoute}/api/imageFetcher?path=showImages/resizedImages&imageName=`;
-    const transformedName = encodeURIComponent(showName);
-    const dimensions = tile ? "200x200" : "640x640";
-    const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
-    return showNameURL;
-}
-
-export const getImageURLFromCache = (fullPath: string): string | null => {
-    const sessionStorageValue = JSON.parse(sessionStorage.getItem(fullPath) || "{}");
-    if (sessionStorageValue.timestamp > Date.now() - (60 * 90 * 1000)) { // 90 minutes in milliseconds
-        return sessionStorageValue.url;
-    } else {
-        sessionStorage.removeItem(fullPath);
-        return null;
-    }
-}
-
-export const setImageURLInCache = (fullPath: string, url: string): void => {
-    const sessionStorageItem = JSON.stringify({ url, timestamp: Date.now() });
-    sessionStorage.setItem(fullPath, sessionStorageItem);
-}
-
-export const getPresignedShowImageURL = async (showName: string, tile: boolean): Promise<string | null> => {
-    const apiURL = `${apiRoute}/api/imageUrlFetcher?path=showImages/resizedImages&imageName=`;
-    const transformedName = encodeURIComponent(showName);
-    const dimensions = tile ? "200x200" : "640x640";
-    const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
-
-    if (getImageURLFromCache(showNameURL)) {
-        return getImageURLFromCache(showNameURL);
-    }
-
-    const response = await fetch(showNameURL);
-    
-    if (response.status !== 200) return null;
-    const data = await response.json();
-    setImageURLInCache(showNameURL, data.url);
-    return data.url;
-};
 
 export async function addShowTag(showId: string, tag: ShowTag): Promise<boolean> {
     const supabase = createClient();

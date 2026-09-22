@@ -1,5 +1,4 @@
-import { generatePresignedUrlAction, getAverageColorAction } from "@/app/actions/imageActions";
-import { serverBaseURL } from '@/app/envConfig';
+import { getAverageColorAction } from "@/app/actions/imageActions";
 import { Actor } from "@/app/models/actor";
 import { Rating } from "@/app/models/rating";
 import { RatingCounts } from "@/app/models/ratingCounts";
@@ -110,31 +109,10 @@ export const getAllTagCategories = async function (): Promise<TagCategory[] | nu
   return categories;
 };
 
-export const getShowImageURL = cache((showName: string, tile: boolean): string => {
-  const apiURL = `${serverBaseURL}/api/imageFetcher?path=showImages/resizedImages&imageName=`;
-  const transformedName = encodeURIComponent(showName);
-  const dimensions = tile ? "200x200" : "640x640";
-  const showNameURL = `${apiURL}${transformedName}_${dimensions}.jpeg`;
-  return showNameURL;
-});
-
-export const getPresignedShowImageURL = cache(async (showName: string, tile: boolean): Promise<string | null> => {
-  const dimensions = tile ? "200x200" : "640x640";
-  const imageName = `${showName}_${dimensions}.jpeg`; 
-  const path = 'showImages/resizedImages';
-
-  const presignedUrl = await generatePresignedUrlAction(path, imageName);
-  return presignedUrl;
-});
-
-export const fetchAverageShowColor = async (showName: string): Promise<string> => {
+export const fetchAverageShowColor = async (imageId: string): Promise<string> => {
   'use cache';
   cacheLife('days');
-  // Construct the image path using the raw showName
-  const imagePath = `showImages/resizedImages/${showName}_200x200.jpeg`; 
-  // Call the server action directly
-  const averageColor = await getAverageColorAction(imagePath);
-  // Return the result from the action, defaulting to black if null
+  const averageColor = await getAverageColorAction(imageId);
   return averageColor || "rgb(0,0,0)";
 };
 

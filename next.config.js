@@ -26,11 +26,11 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: '1mvtjcpfzmphqyox.public.blob.vercel-storage.com',
+                hostname: 'assets.showlog.tv',
             },
             {
                 protocol: 'https',
-                hostname: 'storage.googleapis.com',
+                hostname: 'avatars.showlog.tv',
             },
             {
                 protocol: 'http',

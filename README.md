@@ -9,15 +9,14 @@
 - **Show pages**: show details, ratings + status counts, tags/categories, cast/actors, similar show recommendations.
 - **Profiles**: user pages, following/followers, lists, stats (including tag/service breakdowns and charts).
 - **Images**:
-  - Show images + profile pictures stored in **Google Cloud Storage**, served via `/pages/api` routes and/or pre-signed URLs.
-  - Optional Vercel Blob upload path (experimental).
+  - Show images + profile pictures stored in **Cloudflare R2**, served straight from `assets.showlog.tv` / `avatars.showlog.tv`.
 - **Modern UI**: App Router, React 19, Tailwind, Radix/shadcn UI components, charts.
 
 ## Tech stack
 
 - **Next.js (App Router)**: UI and routing live under `app/` (with some legacy `/pages/api` API routes for file handling).
 - **Supabase**: Auth + Postgres data (tables/views/RPC).
-- **Storage**: Google Cloud Storage for images (plus optional Vercel Blob support).
+- **Storage**: Cloudflare R2 for images.
 - **Caching**: uses Next.js `useCache` (`'use cache'`) + `cacheLife()` and React `cache()` to reduce repeated Supabase calls.
 
 ## High-level architecture
@@ -51,23 +50,24 @@ Common traits:
 
 ### Images and media
 
-This repo uses **Google Cloud Storage** for images, with multiple access patterns:
+Images are stored in **Cloudflare R2** and served directly from custom domains, cached at the edge with `Cache-Control: immutable`:
 
+| Bucket | Public domain | Keys |
+|---|---|---|
+| `showlog-images` | `https://assets.showlog.tv` | `shows/{uuid}.jpeg`, `shows/{uuid}_200x200.jpeg`, `shows/{uuid}_640x640.jpeg` |
+| `showlog-profile-pics` | `https://avatars.showlog.tv` | `{uuid}.jpeg` (`blank.jpeg` is the default avatar) |
+
+`show.pictureUrl` and `user.profilePhotoURL` store the bare UUID. The iOS app builds the same URLs, so the key layout is shared between both clients.
+
+- **URLs**: `app/utils/imageUrls.ts` (`getShowImageUrl`, `getProfilePicUrl`). No signing or proxying is needed.
 - **Upload (authenticated)**: `pages/api/imageUploader.ts`
-  - Accepts multipart form uploads (Formidable), converts to JPEG (Sharp), writes to GCS, returns the stored path.
-  - Checks the current user via a Supabase server client before allowing upload.
-- **Fetch (stream bytes)**: `pages/api/imageFetcher.ts`
-  - Reads an object from GCS and returns the binary with caching headers.
-- **Fetch (pre-signed URL)**: `pages/api/imageUrlFetcher.ts` and `app/actions/imageActions.ts`
-  - Generates a short-lived signed URL for reads from GCS.
-- **Average color**: `pages/api/averageColor.ts` and `app/actions/imageActions.ts`
-  - Computes a 1x1 resize and returns an `rgb(r,g,b)` string used for UI styling.
-
-There is also an **optional** Vercel Blob integration at `pages/api/vercelBlobUpload.ts` plus `app/components/imageUploader/imageUploaderService.tsx`.
+  - Accepts a multipart upload (Formidable) with `type` = `show` or `profile`, converts to JPEG (Sharp), writes to R2 via `app/utils/r2.ts`, and returns a new `imageId` that the client saves to the DB.
+  - Show uploads also generate the 200x200 and 640x640 variants.
+- **Average color**: `app/actions/imageActions.ts` fetches the 200x200 variant from the CDN and computes a 1x1 resize.
 
 ### “Environment-aware” base URLs
 
-`app/envConfig.tsx` centralizes how the app chooses a base URL in local vs production. Some services build API URLs using this (for example `/api/imageFetcher` URLs).
+`app/envConfig.tsx` centralizes how the app chooses a base URL in local vs production. Some services build API URLs using this.
 
 ## Project structure (guide)
 
@@ -108,21 +108,18 @@ Create `.env.local` (not committed) and configure at least:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (used by the cookie-aware server client in `app/utils/supabase/server.ts`)
 
-### Google Cloud Storage (for production/deploy)
+### Cloudflare R2 (image uploads)
 
-- `GCP_BUCKET_NAME`
-- `GCP_PROJECT_ID`
-- `GCP_SERVICE_ACCOUNT_EMAIL`
-- `GCP_PRIVATE_KEY` (make sure newlines are correctly escaped if needed)
+- `R2_ACCOUNT_ID`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY` (from an R2 API token with Object Read & Write on both buckets)
 
-### Local GCP auth
-
-For local dev, the code supports using a local credential file (`gcpCreds.json`) and/or falling back to your `gcloud` default credentials depending on the route/action.
+Reads need no credentials; the buckets are public through their custom domains.
 
 ## Deployment notes
 
 - **Vercel** is the intended deployment target.
-- `next.config.js` allows remote images from Vercel-hosted domains, Google Cloud Storage (`storage.googleapis.com`), and `localhost`.
+- `next.config.js` allows remote images from Vercel-hosted domains, the R2 image domains (`assets.showlog.tv`, `avatars.showlog.tv`), and `localhost`.
 
 ## Contributing / maintenance
 

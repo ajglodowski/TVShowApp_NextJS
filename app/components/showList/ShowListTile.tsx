@@ -1,5 +1,5 @@
 import { getListData, getListEntries } from "@/app/(main)/list/[listId]/ListService";
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import { getShowImageUrl } from "@/app/utils/imageUrls";
 import ProfileBubble from "@/app/components/user/ProfileBubble";
 import { backdropBackground } from "@/app/utils/stylingConstants";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
@@ -38,7 +38,7 @@ async function ShowListTileContent({listId}: {listId: number}) {
     //   }
     // });
     // const imageUrls = await Promise.all(imageUrlPromises);
-    const imageUrls = listEntries.map(entry => entry.show.pictureUrl ? getShowImageUrlAction(entry.show.pictureUrl) : null);
+    const imageUrls = listEntries.map(entry => entry.show.pictureUrl ? getShowImageUrl(entry.show.pictureUrl) : null);
 
     const translateMap: {[key: number]: string} = {
       0: '',

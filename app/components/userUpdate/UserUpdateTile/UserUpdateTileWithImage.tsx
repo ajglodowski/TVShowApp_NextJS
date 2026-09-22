@@ -1,4 +1,4 @@
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import { getShowImageUrl } from "@/app/utils/imageUrls";
 import Image from "next/image";
 import { LoadingImageSkeleton } from "../../image/LoadingImageSkeleton";
 import { UserUpdateTileDTO } from "../UserUpdateService";
@@ -13,7 +13,7 @@ export default async function UserUpdateTileWithImage(props: UserUpdateTileProps
     // if (updateData.showPictureUrl) {
     //     showImageUrl = await getPresignedShowImageURL(updateData.showPictureUrl, true);
     // }
-    showImageUrl = updateData.showPictureUrl ? getShowImageUrlAction(updateData.showPictureUrl) : null;
+    showImageUrl = updateData.showPictureUrl ? getShowImageUrl(updateData.showPictureUrl) : null;
 
     const ShowImage = () => {
         if (!showImageUrl) return <LoadingImageSkeleton />;

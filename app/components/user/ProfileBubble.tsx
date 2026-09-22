@@ -1,4 +1,4 @@
-import { getUserImageUrlAction } from "@/app/(main)/profile/UserService";
+import { getProfilePicUrl } from "@/app/utils/imageUrls";
 import { getUser } from "@/app/utils/userService";
 import { cacheLife } from "next/dist/server/use-cache/cache-life";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
@@ -12,7 +12,7 @@ export default async function ProfileBubble({ userId }: ProfileBubbleProps) {
     cacheLife('hours');
 
     const userData = await getUser(userId);
-    const profilePicUrl = userData?.profilePhotoURL ? getUserImageUrlAction(userData.profilePhotoURL) : null;
+    const profilePicUrl = userData?.profilePhotoURL ? getProfilePicUrl(userData.profilePhotoURL) : null;
     // const profilePicUrl: string | null = userData?.profilePhotoURL ? await getPresignedUserImageURL(userData.profilePhotoURL) : null;
     
     return (

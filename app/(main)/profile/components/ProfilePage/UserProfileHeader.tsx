@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight, Tv, Users, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { getUserImageUrlAction } from "../../UserService";
+import { getProfilePicUrl } from "@/app/utils/imageUrls";
 import EditButton from "./EditButton";
 import FollowButton from "./FollowButton/FollowButton";
 
@@ -12,7 +12,7 @@ export default async function UserProfileHeader({userId, userData}: {userId: str
     const user = userData;
 
     let profilePicUrl: string | undefined = undefined;
-    profilePicUrl = user.profilePhotoURL ? getUserImageUrlAction(user.profilePhotoURL) : undefined;
+    profilePicUrl = user.profilePhotoURL ? getProfilePicUrl(user.profilePhotoURL) : undefined;
 
     const [showsLogged, followersCount, followingCount] = await Promise.all([
         getShowsLogged(userId),

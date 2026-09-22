@@ -1,5 +1,5 @@
 'use client'
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import { getShowImageUrl } from "@/app/utils/imageUrls";
 import { Show } from "@/app/models/show";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ export default function ClientShowTile(props: ClientShowTileProps) {
 
     const [showData, setShowData] = useState<Show | null>(('showDto' in props) ? props.showDto : null);
     // const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
-    const presignedUrl = showData?.pictureUrl ? getShowImageUrlAction(showData.pictureUrl) : null;
+    const presignedUrl = showData?.pictureUrl ? getShowImageUrl(showData.pictureUrl) : null;
 
     const showId = ('showDto' in props) ? props.showDto.id.toString() : props.showId;
     const badges = props.badges;

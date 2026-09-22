@@ -10,13 +10,12 @@
     "postinstall": "node scripts/link-eslint-typescript.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1137.0",
     "@base-ui/react": "^1.0.0",
-    "@google-cloud/storage": "^7.16.0",
     "@next/bundle-analyzer": "16.3.0",
     "@radix-ui/react-slot": "^1.2.4",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "latest",
-    "@vercel/blob": "^2.6.1",
     "@vercel/speed-insights": "^1.2.0",
     "autoprefixer": "10.4.21",
     "class-variance-authority": "^0.7.1",

@@ -1,19 +1,5 @@
-import { apiRoute } from "@/app/envConfig";
 import { UserFollowRelationship } from "@/app/models/userFollowRelationship";
 import { createClient } from "@/app/utils/supabase/client";
-
-export function getUserImageURL(username: string): string {
-  const apiURL = `${apiRoute}/api/imageFetcher?path=profilePics&imageName=`;
-  const transformedName = encodeURIComponent(username);
-  //const dimensions = tile ? "200x200" : "640x640";
-  const showNameURL = `${apiURL}${transformedName}`;
-  return showNameURL;
-}
-
-
-export function getProfilePic (username: string): string {
-    return getUserImageURL(username);
-}
 
 export async function followUser(userToFollow: string, userFollowing: string): Promise<UserFollowRelationship | null> {
     const supabase = await createClient();

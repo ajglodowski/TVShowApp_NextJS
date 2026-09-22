@@ -1,4 +1,4 @@
-import { getUserImageUrlAction } from '@/app/(main)/profile/UserService'
+import { getProfilePicUrl } from "@/app/utils/imageUrls";
 import { backdropBackground } from '@/app/utils/stylingConstants'
 import { createClient, getCurrentUserId } from '@/app/utils/supabase/server'
 import { getUser } from '@/app/utils/userService'
@@ -45,7 +45,7 @@ async function AuthButtonContent() {
         />
       )
     } else if (userInfo && userInfo.profilePhotoURL) {
-      const profilePhotoURL = getUserImageUrlAction(userInfo.profilePhotoURL);
+      const profilePhotoURL = getProfilePicUrl(userInfo.profilePhotoURL);
       return (
         <Image
           src={profilePhotoURL!}

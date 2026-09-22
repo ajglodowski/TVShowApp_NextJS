@@ -2,7 +2,7 @@ import { getShow } from "@/app/(main)/show/[showId]/ShowService";
 import EditShowPage from "@/app/components/editShow/EditShow";
 import { getCurrentUserId } from '@/app/utils/supabase/server';
 import { isAdmin } from '@/app/utils/userService';
-import { getShowImageUrlAction } from "../../show/[showId]/ShowImageService";
+import { getShowImageUrl } from "@/app/utils/imageUrls";
 import Unauthorized from "@/app/components/Unauthorized";
 export default async function EditShow({ params }: { params: Promise<{ showId: string }> }) {
 
@@ -20,7 +20,7 @@ export default async function EditShow({ params }: { params: Promise<{ showId: s
   // const presignedShowImageUrl = show?.pictureUrl
   //   ? await getPresignedShowImageURL(show.pictureUrl, false)
   //   : null;
-  const presignedShowImageUrl = show?.pictureUrl ? getShowImageUrlAction(show.pictureUrl) : null;
+  const presignedShowImageUrl = show?.pictureUrl ? getShowImageUrl(show.pictureUrl) : null;
   if (!show) {
     return (
       <div className='text-center my-auto mx-auto'>

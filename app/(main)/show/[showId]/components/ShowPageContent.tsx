@@ -17,7 +17,7 @@ import { SimilarShowsSection } from './SimilarShowsSection';
 import StatusStatsSection from './StatusStatsSection';
 import { LoadingUserUpdatesSection, UserUpdatesSection } from './UserUpdatesSection';
 import { LoadingYourInfoSection, YourInfoSection } from './YourInfoSection/YourInfoSection';
-import { getShowImageUrlAction } from '../ShowImageService';
+import { getShowImageUrl } from "@/app/utils/imageUrls";
 import { fetchAverageShowColor } from '../ShowService';
 import { ShowMatchBadge, ShowMatchBadgeLoading } from './ShowMatchBadge';
 
@@ -62,7 +62,7 @@ export default async function ShowPageContent({
   statusCounts,
 }: ShowPageContentProps) {
   const pictureUrl = show.pictureUrl;
-  const showImageUrl = pictureUrl ? getShowImageUrlAction(pictureUrl) : null;
+  const showImageUrl = pictureUrl ? getShowImageUrl(pictureUrl) : null;
   const backgroundColor = pictureUrl 
     ? await fetchAverageShowColor(pictureUrl)
     : 'rgb(0,0,0)';

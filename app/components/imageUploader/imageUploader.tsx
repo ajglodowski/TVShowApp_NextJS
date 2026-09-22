@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Upload, Check, Loader2 } from "lucide-react"
 import ImageCropper from "./imageCropper"
 import { backdropBackground } from "@/app/utils/stylingConstants"
-import { updateCurrentShowImage, updateCurrentUserProfilePic, uploadImageToVercelBlob } from "./imageUploaderService"
+import { updateCurrentShowImage, updateCurrentUserProfilePic } from "./imageUploaderService"
 
 export enum ImageUploadType {
     PROFILE,
@@ -16,12 +16,11 @@ export enum ImageUploadType {
 }
 
 interface ImageUploaderProps {
-  path: string,
   uploadType: ImageUploadType,
   showId?: number
 }
 
-export default function ImageUploader({ path, uploadType, showId }: ImageUploaderProps) {
+export default function ImageUploader({ uploadType, showId }: ImageUploaderProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [croppedImage, setCroppedImage] = useState<Blob | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -97,8 +96,7 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
     try {
       const formData = new FormData()
       formData.append("image", croppedImage, "cropped-image.jpg")
-      // Add path to form data instead of URL query parameter
-      formData.append("path", path)
+      formData.append("type", uploadType === ImageUploadType.PROFILE ? "profile" : "show")
 
       const endpoint = `/api/imageUploader`
       const response = await fetch(endpoint, {
@@ -124,14 +122,7 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
         
         console.log("Image uploaded successfully:", responseData);
         if (uploadType === ImageUploadType.PROFILE) {
-
-          const uploadResponse = await uploadImageToVercelBlob(`profilePics/${responseData.fileName}`, croppedImage);
-          if (!uploadResponse) {
-            console.error("Error uploading image to Vercel Blob");
-            return;
-          }
-
-          const saveResponse = await updateCurrentUserProfilePic(responseData.fileName);
+          const saveResponse = await updateCurrentUserProfilePic(responseData.imageId);
             if (!saveResponse) {
                 console.error("Error saving image URL to user profile");
                 return;
@@ -139,14 +130,7 @@ export default function ImageUploader({ path, uploadType, showId }: ImageUploade
             setIsSuccess(true);
         }
         else if (uploadType === ImageUploadType.SHOW) {
-
-          const uploadResponse = await uploadImageToVercelBlob(`${responseData.fileName}`, croppedImage);
-          if (!uploadResponse) {
-            console.error("Error uploading image to Vercel Blob");
-            return;
-          }
-
-          const saveResponse = await updateCurrentShowImage(showId!, responseData.fileName);
+          const saveResponse = await updateCurrentShowImage(showId!, responseData.imageId);
           if (!saveResponse) {
               console.error("Error saving image URL to show");
               return;

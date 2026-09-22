@@ -28,7 +28,7 @@ export default function ShowImageSection({ showData, presignedImageUrl }: { show
         return (
             <div className="space-y-2 ">
                 <h2 className="text-xl font-semibold">Update Show Image</h2>
-                <ImageUploader uploadType={ImageUploadType.SHOW} path="showImages" showId={showData.id}  />
+                <ImageUploader uploadType={ImageUploadType.SHOW} showId={showData.id} />
                 <Button
                     variant="outline"
                     className={`bg-red-700 hover:bg-white hover:text-red-700 hover:border-red-700 text-white`}

@@ -1,4 +1,4 @@
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import { getShowImageUrl } from "@/app/utils/imageUrls";
 import { ShowWithAnalytics } from "@/app/models/show";
 
 import { Show } from "@/app/models/show";
@@ -20,7 +20,7 @@ export async function ShowRowInfo({ showData }: { showData: Show | ShowWithAnaly
     //         showImageUrl = null; // Handle error case, e.g., set to null
     //     }
     // }
-    showImageUrl= showData.pictureUrl ? getShowImageUrlAction(showData.pictureUrl) : null;
+    showImageUrl= showData.pictureUrl ? getShowImageUrl(showData.pictureUrl) : null;
 
     return (
         <div className="relative flex space-x-2 w-full my-auto justify-start overflow-hidden">

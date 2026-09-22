@@ -1,4 +1,4 @@
-import { getUserImageUrlAction } from "@/app/(main)/profile/UserService";
+import { getProfilePicUrl } from "@/app/utils/imageUrls";
 import { Rating } from "@/app/models/rating";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,7 +18,7 @@ export async function UserDetails({ userInfo }: { userInfo: UserShowDataWithUser
     // if (userInfo.user.profilePhotoURL) {
     //     profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
     // }
-    profilePicUrl = userInfo.user.profilePhotoURL ? getUserImageUrlAction(userInfo.user.profilePhotoURL) : null;
+    profilePicUrl = userInfo.user.profilePhotoURL ? getProfilePicUrl(userInfo.user.profilePhotoURL) : null;
 
     const RatingIcon = ({rating}: {rating: Rating}) => {
         switch (rating) {

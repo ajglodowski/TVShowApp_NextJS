@@ -1,4 +1,4 @@
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import { getShowImageUrl } from "@/app/utils/imageUrls";
 import { getShow } from "@/app/(main)/show/[showId]/ShowService";
 import { Show } from "@/app/models/show";
 import Link from "next/link";
@@ -31,7 +31,7 @@ export default async function ShowTile(props: ShowTileProps) {
     //     presignedUrl = await getPresignedShowImageURL(showData.pictureUrl, true);
     // }
 
-    const imageUrl = showData.pictureUrl ? getShowImageUrlAction(showData.pictureUrl) : null;
+    const imageUrl = showData.pictureUrl ? getShowImageUrl(showData.pictureUrl) : null;
 
     return (
         <Link key={showId} href={`/show/${showId}`}>

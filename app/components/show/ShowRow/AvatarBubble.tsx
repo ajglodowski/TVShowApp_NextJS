@@ -1,4 +1,4 @@
-import { getUserImageUrlAction } from "@/app/(main)/profile/UserService";
+import { getProfilePicUrl } from "@/app/utils/imageUrls";
 import { Rating } from "@/app/models/rating";
 import { UserShowDataWithUserInfo } from "@/app/models/userShowData";
 import { backdropBackground } from "@/app/utils/stylingConstants";
@@ -18,7 +18,7 @@ export default async function AvatarBubble({ userInfo }: { userInfo: UserShowDat
     // if (userInfo.user.profilePhotoURL) {
     //     profilePicUrl = await getPresignedUserImageURL(userInfo.user.profilePhotoURL);
     // }
-    profilePicUrl = getUserImageUrlAction(userInfo.user.profilePhotoURL);
+    profilePicUrl = getProfilePicUrl(userInfo.user.profilePhotoURL);
 
     const RatingIcon = ({rating}: {rating: Rating}) => {
         switch (rating) {

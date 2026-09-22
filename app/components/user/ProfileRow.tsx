@@ -1,4 +1,4 @@
-import { getUserImageUrlAction } from "@/app/(main)/profile/UserService";
+import { getProfilePicUrl } from "@/app/utils/imageUrls";
 import { UserBasicInfo } from "@/app/models/user";
 import { hoverBackdropBackground } from "@/app/utils/stylingConstants";
 import { getUser } from "@/app/utils/userService";
@@ -29,7 +29,7 @@ export async function ProfileRow({ userId, profileData }: ProfileRowProps) {
     // if (userData?.profilePhotoURL) {
     //     imageUrl = await getPresignedUserImageURL(userData?.profilePhotoURL || "");
     // }
-    imageUrl = userData?.profilePhotoURL ? getUserImageUrlAction(userData?.profilePhotoURL || "") : null;
+    imageUrl = userData?.profilePhotoURL ? getProfilePicUrl(userData?.profilePhotoURL || "") : null;
     
     return (
         <Link

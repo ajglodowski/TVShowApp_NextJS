@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getShowImageUrlAction } from "@/app/(main)/show/[showId]/ShowImageService";
+import { getShowImageUrl } from "@/app/utils/imageUrls";
 import { getUserUpdateMessage } from "@/app/utils/getUserUpdateMessage";
 import { LocalizedDate } from "@/app/components/LocalizedDate";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,7 +15,7 @@ export default function UserUpdateRow({ updateDto }: UserUpdateRowProps) {
     const update = updateDto.userUpdate;
     const showName = updateDto.showName;
     const showImageUrl = updateDto.showPictureUrl 
-        ? getShowImageUrlAction(updateDto.showPictureUrl) 
+        ? getShowImageUrl(updateDto.showPictureUrl) 
         : null;
 
     const message = getUserUpdateMessage(update);

@@ -31,7 +31,7 @@ export default function ProfilePictureSection({ userData, presignedImageUrl }: {
                     </Button>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-4">
-                    <ImageUploader uploadType={ImageUploadType.PROFILE} path="profilePics" />
+                    <ImageUploader uploadType={ImageUploadType.PROFILE} />
                 </div>
             </div>
         );
