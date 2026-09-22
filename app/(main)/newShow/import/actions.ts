@@ -33,7 +33,7 @@ export async function searchWikidataAction(query: string): Promise<WikidataSearc
         const url = `https://www.wikidata.org/w/api.php?action=wbsearchentities&format=json&language=en&type=item&continue=0&search=${encodeURIComponent(query)}`;
         const res = await fetch(url, {
             headers: {
-                'User-Agent': 'TVShowApp/1.0 (contact@example.com)' // Good etiquette
+                'User-Agent': 'ShowLog/1.0 (+https://showlog.tv)' // Good etiquette
             },
             next: { revalidate: 3600 } // Cache for 1 hour
         });
@@ -61,7 +61,7 @@ export async function getWikidataDraftAction(qid: string): Promise<WikidataDraft
         const url = `https://www.wikidata.org/wiki/Special:EntityData/${qid}.json`;
         const res = await fetch(url, {
             headers: {
-                'User-Agent': 'TVShowApp/1.0'
+                'User-Agent': 'ShowLog/1.0 (+https://showlog.tv)'
             },
             next: { revalidate: 86400 } // Cache for 24 hours
         });
@@ -163,7 +163,7 @@ export async function getWikidataDraftAction(qid: string): Promise<WikidataDraft
                 // Fetch with multiple language fallbacks: en, en-us, en-gb, mul (multilingual)
                 const networkLabelsUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${networkIds.join('|')}&props=labels|aliases&languages=en|mul&format=json`;
                 const networkRes = await fetch(networkLabelsUrl, {
-                    headers: { 'User-Agent': 'TVShowApp/1.0' },
+                    headers: { 'User-Agent': 'ShowLog/1.0 (+https://showlog.tv)' },
                     next: { revalidate: 86400 }
                 });
                 if (networkRes.ok) {
@@ -219,7 +219,7 @@ export async function getWikidataDraftAction(qid: string): Promise<WikidataDraft
             try {
                 const genreLabelsUrl = `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${genreIds.join('|')}&props=labels&languages=en&format=json`;
                 const genreRes = await fetch(genreLabelsUrl, {
-                    headers: { 'User-Agent': 'TVShowApp/1.0' },
+                    headers: { 'User-Agent': 'ShowLog/1.0 (+https://showlog.tv)' },
                     next: { revalidate: 86400 }
                 });
                 if (genreRes.ok) {

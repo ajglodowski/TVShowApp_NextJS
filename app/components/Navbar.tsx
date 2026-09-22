@@ -14,7 +14,7 @@ async function Navbar() {
             <div className="flex h-14 items-center px-4 md:px-6 gap-4">
                 {/* Logo */}
                 <Link href="/" className="flex items-center shrink-0 mr-4 md:mr-8">
-                    <span className="font-semibold text-base sm:text-lg text-white whitespace-nowrap">TV Show App</span>
+                    <span className="font-semibold text-base sm:text-lg text-white whitespace-nowrap">ShowLog</span>
                 </Link>
 
                 {/* Desktop Navigation */}

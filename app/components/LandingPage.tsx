@@ -89,7 +89,7 @@ export default function LandingPage() {
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
               <Tv2 className="w-4 h-4" />
             </div>
-            <span className="text-sm font-medium text-white/80">TV Show App</span>
+            <span className="text-sm font-medium text-white/80">ShowLog</span>
           </div>
 
           {/* Main headline */}
@@ -292,7 +292,7 @@ export default function LandingPage() {
             <div className="w-6 h-6 rounded bg-primary flex items-center justify-center transition-transform duration-300 group-hover:rotate-12">
               <Tv2 className="w-3 h-3 text-primary-foreground" />
             </div>
-            <span className="text-sm font-medium text-white/60">TV Show App</span>
+            <span className="text-sm font-medium text-white/60">ShowLog</span>
           </div>
           <p className="text-xs text-white/30">
             Built with care by @ajglodo

@@ -10,7 +10,7 @@ const defaultUrl = serverBaseURL ?? 'http://localhost:3000';
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: 'TV Show App',
+  title: 'ShowLog',
   description: 'A social media app for TV shows by @ajglodo',
 }
 

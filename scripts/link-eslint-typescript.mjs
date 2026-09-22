@@ -15,7 +15,7 @@
 // Delete this script, its postinstall hook, the `typescript-5` devDependency,
 // and the typescript overrides once typescript-eslint ships TS7 support.
 
-import { existsSync, mkdirSync, rmSync, symlinkSync, cpSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, symlinkSync, cpSync, readFileSync, unlinkSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -46,7 +46,14 @@ for (const consumer of consumers) {
 
   const target = join(base, 'node_modules', 'typescript');
   mkdirSync(dirname(target), { recursive: true });
-  rmSync(target, { recursive: true, force: true });
+  // unlink first: rmSync leaves behind a dangling symlink (e.g. after the repo
+  // folder is moved), which then blocks the new link. Falls back to rmSync
+  // for a copied directory or nothing at all.
+  try {
+    unlinkSync(target);
+  } catch {
+    rmSync(target, { recursive: true, force: true });
+  }
 
   try {
     symlinkSync(source, target, 'junction');

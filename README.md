@@ -1,6 +1,6 @@
-## TV Show App
+## ShowLog
 
-**TV Show App** is a social TV tracking + discovery app with a “social feed” feel: log shows, track watch status, rate shows, explore tags, follow users, and browse profiles with stats/visualizations.
+**ShowLog** is a social TV tracking + discovery app with a “social feed” feel: log shows, track watch status, rate shows, explore tags, follow users, and browse profiles with stats/visualizations.
 
 ## Features
 

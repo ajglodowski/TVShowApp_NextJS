@@ -60,7 +60,7 @@ export default async function Login({
             <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground">
               <Tv2 className="w-6 h-6" />
             </div>
-            <span className="text-2xl font-bold tracking-tight text-white">TV Show App</span>
+            <span className="text-2xl font-bold tracking-tight text-white">ShowLog</span>
           </div>
           
           <h2 className="text-4xl font-bold tracking-tight text-white mb-4 leading-tight">
@@ -103,7 +103,7 @@ export default async function Login({
             </div>
             <div>
               <h1 className="text-lg font-semibold text-white tracking-tight">
-                TV Show App
+                ShowLog
               </h1>
               <p className="text-xs text-white/60">
                 Track what you watch
